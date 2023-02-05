@@ -1,7 +1,5 @@
-#+title: Colors and Theme Configuration
-#+author: Johnny Sigman
-
-* Emacs Theme
+* Colors and Theme
+** Emacs Theme
 #+begin_src elisp :load yes
 ;-------------COLOR THEME----------------;
 (if (eq window-system nil)
@@ -19,7 +17,7 @@
 (setq frame-title-format nil)
 #+end_src
 
-* Colors in Dired
+** Colors in Dired
 #+begin_src elisp :load yes
 (use-package
  rainbow-mode

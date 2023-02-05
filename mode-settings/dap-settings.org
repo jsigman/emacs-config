@@ -1,5 +1,4 @@
-#+title: Debug Adapter Protocal (DAP) Configuration
-#+author: Johnny Sigman
+* Debug Adapter Protocal (DAP)
 
 #+BEGIN_SRC elisp :load yes
 (straight-use-package 'dap-mode)

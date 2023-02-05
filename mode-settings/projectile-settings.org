@@ -1,5 +1,4 @@
-#+title: Projectile Configuration
-#+author: Johnny Sigman
+* Projectile
 
 #+BEGIN_SRC elisp :load yes
 ;; (setq projectile-git-submodule-command "git submodule --quiet foreach 'echo $(git rev-parse --show-toplevel)' | xargs realpath --relative-to=$PWD 2> /dev/null")

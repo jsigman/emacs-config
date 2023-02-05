@@ -1,5 +1,4 @@
-#+title: Dired Mode Configuration
-#+author: Johnny Sigman
+* Dired Mode
 
 #+BEGIN_SRC elisp :load yes
 (setq

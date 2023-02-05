@@ -1,5 +1,4 @@
-#+title: Ripgrep (rg) Configuration
-#+author: Johnny Sigman
+* Ripgrep
 
 #+BEGIN_SRC elisp :load yes
 (straight-use-package 'wgrep)

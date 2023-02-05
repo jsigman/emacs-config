@@ -1,6 +1,5 @@
-#+title: Path Configuration
-#+author: Johnny Sigman
-* Exec Path from Shell
+* Path
+
 #+BEGIN_SRC elisp :load yes
 (setq default-directory "~/")
 

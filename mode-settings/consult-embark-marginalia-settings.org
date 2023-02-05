@@ -1,5 +1,4 @@
-#+title: Consult/Embark/Marginalia Configuration
-#+author: Johnny Sigman
+* Consult/Embark/Marginalia
 
 #+BEGIN_SRC elisp :load yes
 (straight-use-package 'marginalia)

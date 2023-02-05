@@ -1,4 +1,4 @@
-#+title: Parens Configuration
+* Parens
 #+author: Johnny Sigman
 
 #+BEGIN_SRC elisp :load yes

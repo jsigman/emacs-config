@@ -1,5 +1,4 @@
-#+title: Corfu-Vertico-Orderless Configuration
-#+author: Johnny Sigman
+* Corfu-Vertico-Orderless
 
 #+BEGIN_SRC elisp :load yes
 (use-package

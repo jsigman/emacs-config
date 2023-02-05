@@ -1,5 +1,4 @@
-#+title: Java/Javascript/JSON Configuration
-#+author: Johnny Sigman
+* Java/Javascript/JSON
 
 #+BEGIN_SRC elisp :load yes
 (straight-use-package 'jq-mode)

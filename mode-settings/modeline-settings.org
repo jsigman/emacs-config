@@ -1,5 +1,4 @@
-#+title: Modeline Configuration
-#+author: Johnny Sigman
+* Modeline
 
 #+BEGIN_SRC elisp :load yes
 (straight-use-package 'diminish)

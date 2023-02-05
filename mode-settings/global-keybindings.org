@@ -1,5 +1,4 @@
-#+title: Global Keybindings Configuration
-#+author: Johnny Sigman
+* Global Keybindings
 
 #+BEGIN_SRC elisp :load yes
 ;-------------CUSTOM KEYBINDINGS-----------;

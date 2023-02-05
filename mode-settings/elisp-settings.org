@@ -1,5 +1,4 @@
-#+title: Elisp Configuration
-#+author: Johnny Sigman
+* Elisp
 
 #+BEGIN_SRC elisp :load yes
 ;; elisp settings

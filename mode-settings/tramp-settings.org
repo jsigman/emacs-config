@@ -1,5 +1,4 @@
-#+title: TRAMP Configuration
-#+author: Johnny Sigman
+* TRAMP
 
 #+BEGIN_SRC elisp :load yes
 ;; (straight-use-package 'counsel-tramp)
@@ -22,8 +21,6 @@
 ;; (setq create-lockfiles nil)
 
 (setq enable-remote-dir-locals 't)
-
-
 (setq tramp-chunksize 4050)
 
 (provide 'tramp-settings)

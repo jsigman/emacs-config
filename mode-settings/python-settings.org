@@ -1,5 +1,4 @@
-#+title: Python Configuration
-#+author: Johnny Sigman
+* Python
 
 #+BEGIN_SRC elisp :load yes
 (require 'python)

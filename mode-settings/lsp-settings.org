@@ -1,5 +1,4 @@
-#+title: Language Server Protocol (LSP) Configuration
-#+author: Johnny Sigman
+* Language Server Protocol (LSP)
 
 #+BEGIN_SRC elisp :load yes
 (setq my/lsp-package "lsp")

@@ -1,5 +1,4 @@
-#+title: Treemacs Configuration
-#+author: Johnny Sigman
+* Treemacs
 
 #+BEGIN_SRC elisp :load yes
 (literate-elisp-load "projectile-settings.org")

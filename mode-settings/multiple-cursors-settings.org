@@ -1,5 +1,4 @@
-#+title: Multiple Cursors (MC) Configuration
-#+author: Johnny Sigman
+* Multiple Cursors (MC)
 
 #+BEGIN_SRC elisp :load yes
 (straight-use-package 'multiple-cursors)

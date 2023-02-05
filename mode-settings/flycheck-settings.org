@@ -1,5 +1,5 @@
-#+title: Flycheck Configuration
-#+author: Johnny Sigman
+* Flycheck
+
 
 #+BEGIN_SRC elisp :load yes
 (use-package

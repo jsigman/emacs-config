@@ -1,5 +1,5 @@
-#+title: Global Configuration for Editing
-#+author: Johnny Sigman
+* Global Settings for Editing
+
 
 #+BEGIN_SRC elisp :load yes
   ;--------------GLOBAL SETTINGS-------------;

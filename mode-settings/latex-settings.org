@@ -1,5 +1,4 @@
-#+title: Latex Configuration
-#+author: Johnny Sigman
+* Latex
 
 #+BEGIN_SRC elisp :load yes
 (setq TeX-auto-save t)

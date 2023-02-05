@@ -1,5 +1,4 @@
-#+title: Terminal Configuration
-#+author: Johnny Sigman
+* Terminal
 
 #+BEGIN_SRC elisp :load yes
 (use-package

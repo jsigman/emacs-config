@@ -1,4 +1,4 @@
-#+title: Magit Configuration
+* Magit
 #+author: Johnny Sigman
 
 #+BEGIN_SRC elisp :load yes

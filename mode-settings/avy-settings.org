@@ -1,4 +1,4 @@
-* Avy Configuration
+* Avy
 #+begin_src elisp :load t
 (straight-use-package 'avy)
 (require 'avy)

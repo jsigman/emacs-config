@@ -1,5 +1,4 @@
-#+title: Org Mode Configuration
-#+author: Johnny Sigman
+* Org Mode
 
 #+BEGIN_SRC elisp :load yes
 ;; (require 'lsp-settings)

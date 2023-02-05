@@ -1,5 +1,4 @@
-#+title: Snippets Configuration
-#+author: Johnny Sigman
+* Snippets
 
 #+BEGIN_SRC elisp :load yes
 (use-package yasnippet :straight t :demand t)

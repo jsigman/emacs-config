@@ -1,5 +1,4 @@
-#+title: Markdown Configuration
-#+author: Johnny Sigman
+* Markdown
 
 #+BEGIN_SRC elisp :load yes
 (use-package
