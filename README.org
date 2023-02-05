@@ -1,4 +1,4 @@
-#+title: Emacs Lisp Configuration
+#+title: Emacs Lisp Configuration (work in progress)
 #+author: Johnny Sigman
 
 This folder tracks my [[https://github.com/jingtaozf/literate-elisp][literate]] Emacs lisp config. Please use any content that you discover here.
