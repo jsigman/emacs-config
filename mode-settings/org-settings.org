@@ -78,7 +78,7 @@
 (use-package ob-napkin :straight t)
 (use-package mermaid-mode :straight t)
 (use-package ob-mermaid :straight t)
-
+(use-package htmlize :straight t :after org)
 
 (defun my/org-babel-execute-and-next ()
   (interactive)
