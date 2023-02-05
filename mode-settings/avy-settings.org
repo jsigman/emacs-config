@@ -1,6 +1,4 @@
-#+TITLE: Avy Configuration
-#+AUTHOR: Johnny Sigman
-
+* Avy Configuration
 #+begin_src elisp :load t
 (straight-use-package 'avy)
 (require 'avy)
