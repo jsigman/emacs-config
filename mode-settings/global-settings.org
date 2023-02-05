@@ -1,0 +1,410 @@
+#+title: Global Configuration for Editing
+#+author: Johnny Sigman
+
+#+BEGIN_SRC elisp :load yes
+  ;--------------GLOBAL SETTINGS-------------;
+  (setq native-comp-async-report-warnings-errors nil)
+  ;; Show the line number of the cursor in the mode bar at the bottom of each buffer
+  (setq line-number-mode t)
+
+  ;; Make sure all backup files only live in one place
+  (setq backup-directory-alist `((".*" . ,temporary-file-directory)))
+  (setq auto-save-file-name-transforms
+        `((".*" ,temporary-file-directory t)))
+  ;; Don't truncate lines
+  (setq truncate-lines t)
+  (setq-default indent-tabs-mode nil)
+
+  ;; Don't show the scroll bar on the side of buffers
+  (scroll-bar-mode -1)
+  ;; Don't show the toolbar, it just takes up space
+  (tool-bar-mode -1)
+
+  ;; Show column number in the modeline
+  (setq column-number-mode t)
+  (setq blink-paren-function nil)
+
+  ; ------------- Buffer management settings ----------------;
+  (setq inhibit-startup-screen t)
+  ;; make buffer switch command auto suggestions, also for find-file command
+  ;; (ido-mode t)
+  ;; (setq ido-separator ";")
+  ;; ;; Display Any Item That contains the chars you typed
+  ;; (setq ido-enable-flex-matching t)
+  ;; (setq ido-auto-merge-work-directories-length
+  ;;       -1)
+
+  (use-package yaml-mode :straight t)
+
+  ;Ace window
+  (literate-elisp-load "term-settings.org")
+
+  (define-key term-raw-map (kbd "M-o") 'next-multiframe-window)
+  (define-key term-raw-map (kbd "M-i") 'previous-multiframe-window)
+  (define-key global-map (kbd "M-o") 'next-multiframe-window)
+  (define-key global-map (kbd "M-i") 'previous-multiframe-window)
+
+  :config
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+
+  ;; don't use these with ace window on?
+  ;; (global-set-key (kbd "M-o")
+  ;;                 'next-multiframe-window)
+  ;; (global-set-key (kbd "M-i")
+  ;;                 'previous-multiframe-window)
+
+  (use-package
+   anzu
+   :straight t
+   :bind
+   (([remap query-replace] . #'anzu-query-replace)
+    ([remap query-replace-regexp] . #'anzu-query-replace-regexp))
+   :config (global-anzu-mode +1))
+
+  ;; Disable the loud bell
+  (setq ring-bell-function
+        (lambda ()
+          (let ((orig-fg (face-foreground 'mode-line)))
+            (set-face-foreground 'mode-line "#F2804F")
+            (run-with-idle-timer 0.1 nil
+                                 (lambda (fg)
+                                   (set-face-foreground 'mode-line fg))
+                                 orig-fg))))
+
+  (use-package lin :straight t)
+  (lin-global-mode t)
+
+
+  (global-hl-line-mode t)
+
+  (require 'term-settings)
+  (add-hook
+   'eshell-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
+  (add-hook
+   'term-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
+  (add-hook
+   'vterm-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
+
+  (use-package dash :straight t)
+  (use-package ht :straight t)
+
+  ;; (straight-use-package 'beacon)
+  ;; (use-package beacon
+  ;;   :config
+  ;;   (setq beacon-color "#666600"))
+  ;; (beacon-mode 1)
+  ;; (add-to-list 'beacon-dont-blink-major-modes 'yaml-mode)
+  ;; (add-to-list 'beacon-dont-blink-major-modes 'python-base-mode)
+
+  ;; Replace the text of selections
+  (pending-delete-mode t)
+
+  ;; UndoTree
+  ;; (straight-use-package 'undo-tree)
+  ;; (straight-use-package 'undo-tree)
+  ;; (require 'undo-tree)
+  ;; (global-undo-tree-mode)
+
+  ;; Long lines
+  (global-so-long-mode t)
+
+  ;; Info modes
+  ;; (straight-use-package 'info-plus)
+  ;; (straight-use-package 'info-colors)
+  ;; (add-hook 'Info-selection-hook 'info-colors-fontify-node)
+
+  ; -----STARTUP SCREEN------- ;
+  (straight-use-package
+   '(emacs-dashboard
+     :type git
+     :host github
+     :repo "emacs-dashboard/emacs-dashboard"
+     :files ("banners" :defaults)))
+
+  ;; Set the title
+  (setq dashboard-banner-logo-title "Welcome to Emacs!")
+  ;; Set the banner
+  (setq dashboard-startup-banner 'official)
+  (setq dashboard-items
+        '((projects . 5)
+          (recents . 5) (bookmarks . 5)
+          ;; (agenda . 5)
+          (registers . 5)))
+  ;; ;; Value can be
+  ;; ;; 'official which displays the official emacs logo
+  ;; ;; 'logo which displays an alternative emacs logo
+  ;; ;; 1, 2 or 3 which displays one of the text banners
+  ;; ;; "path/to/your/image.png" which displays whatever image you would prefer
+
+  ;; ;; Content is not centered by default. To center, set
+  (setq dashboard-center-content t)
+  (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+
+  ;; ;; To disable shortcut "jump" indicators for each section, set
+  ;; (setq dashboard-show-shortcuts nil)
+  (require 'dashboard)
+
+  ;; Override this function so that we can filter remote projects
+  (defun dashboard-projects-backend-load-projects ()
+    "Depending on `dashboard-projects-backend' load corresponding backend.
+  Return function that returns a list of projects."
+    (cl-remove-if
+     (lambda (x) (string-search "/ssh" x))
+     (cl-case
+      dashboard-projects-backend
+      (`projectile
+       (require 'projectile)
+       (dashboard-mute-apply (projectile-cleanup-known-projects))
+       (projectile-load-known-projects))
+      (`project-el
+       (require 'project)
+       (dashboard-mute-apply
+        (dashboard-funcall-fboundp #'project-forget-zombie-projects))
+       (project-known-project-roots))
+      (t
+       (display-warning
+        '(dashboard) "Invalid value for `dashboard-projects-backend'"
+        :error)))))
+
+
+  (dashboard-setup-startup-hook)
+
+
+  (use-package
+   page-break-lines
+   :straight t
+   :config (global-page-break-lines-mode))
+
+  (use-package all-the-icons :straight t)
+  (use-package
+   all-the-icons-ibuffer
+   :straight t
+   :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
+
+  ;; I don't think I like buffer expose after all
+  ;; (straight-use-package 'buffer-expose)
+  ;; (require 'buffer-expose)
+  ;; (buffer-expose-mode 'nil)
+  (use-package
+   all-the-icons-completion
+   :straight t
+   :config (all-the-icons-completion-mode)
+   :hook
+   (marginalia-mode . all-the-icons-completion-marginalia-setup))
+
+
+(literate-elisp-load "projectile-settings.org")
+
+  (use-package eldoc :straight t :hook (prog-mode . eldoc-mode))
+
+  ;; Font settings
+
+  (if (eq system-type 'darwin)
+      (if (> (x-display-pixel-width) 1440)
+          ;; Set default font larger if on a big screen
+          (set-face-font 'default "roboto mono-15")
+        ;; (set-face-font 'default "arial-15")
+
+        ;; else
+        (set-face-font 'default "roboto mono-14")
+        ;; (set-fontset-font "fontset-default" "Menlo 12")
+        )
+    ;; else
+    (if (not (eq window-system nil))
+        (if (> (x-display-pixel-width) 1440)
+            ;; Set default font larger if on a big screen
+            (set-face-font 'default "roboto mono-15")
+          ;; else
+          (set-face-font 'default "roboto mono-14")
+          ;; (set-fontset-font "fontset-default" "Menlo 12")
+          )
+      ;; else
+      ))
+
+  ;; Use ace-popup-menu for completions
+  (straight-use-package 'ace-popup-menu)
+  (ace-popup-menu-mode 1)
+  (setq ace-popup-menu-show-pane-header t)
+
+  ;; Start-up profiler
+  (use-package esup :straight t)
+
+  ;; Scratch.el
+  (straight-use-package
+   '(scratch
+     :host nil
+     :type git
+     :repo "https://codeberg.org/emacs-weirdware/scratch.git"))
+
+
+  (straight-use-package 'scratch)
+  (require 'scratch)
+  (scratch--create 'lisp-interaction-mode "*scratch*")
+
+
+  (straight-use-package 'fuzzy)
+  (straight-use-package 'fuzzy-match)
+
+  (straight-use-package 'free-keys)
+  (straight-use-package 'restart-emacs)
+
+  ; ---- Auto Revert Modes ----- ;
+  (autoload 'eimp-mode "eimp" "Emacs Image Manipulation Package." t)
+  (add-hook 'image-mode-hook 'auto-revert-mode)
+
+  ; --- CSV --- ;
+  (straight-use-package
+   '(csv-mode :type git :host github :repo "emacsmirror/csv-mode"))
+  (require 'csv-mode)
+
+  (straight-use-package
+   '(explain-pause-mode
+     :type git
+     :host github
+     :repo "lastquestion/explain-pause-mode"))
+  ;; (explain-pause-mode)
+
+  ;; use helpful instead of the normal help buffers
+  ;; Note that the built-in `describe-function' includes both functions
+  ;; and macros. `helpful-function' is functions only, so we provide
+  ;; `helpful-callable' as a drop-in replacement.
+  (straight-use-package 'helpful)
+  (require 'helpful)
+  (global-set-key (kbd "C-h f") #'helpful-callable)
+
+  (global-set-key (kbd "C-h v") #'helpful-variable)
+  (global-set-key (kbd "C-h k") #'helpful-key)
+
+  (straight-use-package 'dimmer)
+  (require 'dimmer)
+  (dimmer-configure-which-key)
+  (dimmer-configure-org)
+  (dimmer-configure-posframe)
+  (dimmer-configure-magit)
+  (dimmer-configure-hydra)
+
+  (setq dimmer-fraction 0.15)
+  (dimmer-mode t)
+
+  (straight-use-package 'volatile-highlights)
+  (require 'volatile-highlights)
+  (volatile-highlights-mode t)
+
+  ;; (use-package hl-todo :straight t :init (global-hl-todo-mode))
+
+  ; disable electric indent
+  (electric-indent-mode 0)
+  (use-package
+   aggressive-indent
+   :straight t
+   :config (aggressive-indent-global-mode t))
+
+
+  (straight-use-package 'grip-mode)
+  (require 'grip-mode)
+
+  ;; (straight-use-package 'markdownfmt)
+  ;; (require 'markdownfmt)
+
+  (use-package
+   apheleia
+   :config
+   (setf (alist-get 'isort apheleia-formatters)
+         '("isort" "--stdout" "-"))
+   (setf (alist-get 'python-base-mode apheleia-mode-alist)
+         '(isort black))
+   (add-to-list
+    'apheleia-formatters
+    '(prettier-toml
+      npx "prettier" "--stdin-filepath" filepath "--parser=toml"))
+   (add-to-list 'apheleia-mode-alist '(conf-toml-mode . prettier-toml))
+   (defun apheleia-indent-region+ (orig scratch callback)
+     (with-current-buffer scratch
+       (setq-local indent-line-function
+                   (buffer-local-value 'indent-line-function orig))
+       (indent-region (point-min) (point-max))
+       (funcall callback scratch)))
+
+   (push '(indent-region . apheleia-indent-region+) apheleia-formatters)
+   (push '(elisp-mode . indent-region) apheleia-mode-alist)
+   (push '(lisp-interaction-mode . indent-region) apheleia-mode-alist))
+
+
+  (literate-elisp-load "elisp-settings.org")
+
+
+  ;; (defun apheleia-indent-region+ (orig scratch callback)
+  ;;   (with-current-buffer scratch
+  ;;     (setq-local indent-line-function
+  ;;                 (buffer-local-value 'indent-line-function orig))
+  ;;     (indent-region (point-min)
+  ;;                    (point-max))
+  ;;     (funcall callback scratch)))
+
+  ;; (push '(indent-region . apheleia-indent-region+) apheleia-formatters)
+  ;; (push '(elisp-mode . indent-region) apheleia-mode-alist)
+  ;; (push '(lisp-interaction-mode . indent-region) apheleia-mode-alist)
+
+  ;; (add-to-list 'apheleia-mode-alist '(python-base-mode . isort))
+  ;; (add-to-list 'apheleia-formatters '(isort . ("isort" "-" "--stdout")))
+  (apheleia-global-mode t)
+
+
+  (use-package direnv :straight t :config (direnv-mode 't))
+
+
+  (straight-use-package 'ctrlf)
+  (require 'ctrlf)
+  ;; (add-to-list 'ctrlf-minibuffer-bindings '("C-r" . nil))
+
+  (add-to-list
+   'ctrlf-minibuffer-bindings '("C-r" . ctrlf-backward-default))
+  (setq ctrlf-default-search-style 'fuzzy-regexp)
+  (setq ctrlf-default-search-style 'literal)
+
+  (ctrlf-mode t)
+  ;; (add-to-list 'ctrlf-minibuffer-bindings '("C-r" . nil))
+
+  (straight-use-package 'whole-line-or-region)
+  (require 'whole-line-or-region)
+  (whole-line-or-region-global-mode t)
+
+  ;; (straight-use-package 'svg-tag-mode)
+  ;; (require 'svg-tag-mode)
+  ;; (global-svg-tag-mode +1)
+
+  (use-package
+   popper
+   :straight t
+   :bind
+   (("C-`" . popper-toggle-latest)
+    ("M-`" . popper-cycle)
+    ("C-M-`" . popper-toggle-type))
+   :init
+   (setq popper-reference-buffers
+         '("\\*Messages\\*"
+           "Output\\*$"
+           "\\*Async Shell Command\\*"
+           help-mode
+           compilation-mode))
+   (popper-mode +1) (popper-echo-mode +1))
+
+  ;; (use-package topsy
+  ;;   :straight t
+  ;;   :hook (prog-mode . topsy-mode))
+
+  (require 'colors-settings)
+  (use-package
+   combobulate
+   ;; Optional, but recommended.
+   ;;
+   ;; You can manually enable Combobulate with `M-x
+   ;; combobulate-mode'.
+   :hook ((python-mode . combobulate-mode) (yaml-mode . combobulate-mode))
+   ;; Amend this to the directory where you keep Combobulate's source
+   ;; code.
+   :straight '(combobulate :type git :host github :repo "mickeynp/combobulate"))
+
+
+  (provide 'global-settings)
+#+END_SRC

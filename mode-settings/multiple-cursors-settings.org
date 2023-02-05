@@ -1,0 +1,17 @@
+#+title: Multiple Cursors (MC) Configuration
+#+author: Johnny Sigman
+
+#+BEGIN_SRC elisp :load yes
+(straight-use-package 'multiple-cursors)
+(require 'multiple-cursors)
+
+;----MULTIPLE_CURSORS----;
+(global-set-key (kbd "C-M-j") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+(global-set-key (kbd "C-M-=") 'mc/mark-all-symbols-like-this)
+
+
+(provide `multiple-cursors-settings)
+#+END_SRC

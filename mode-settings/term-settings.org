@@ -1,0 +1,112 @@
+#+title: Terminal Configuration
+#+author: Johnny Sigman
+
+#+BEGIN_SRC elisp :load yes
+(use-package
+ vterm
+ :straight t
+ :init
+ (setq vterm-always-compile-module t)
+ (setq vterm-timer-delay 0.01)
+ :config (define-key vterm-mode-map (kbd "M-k") 'kill-this-buffer)
+ ;; (define-key vterm-mode-map (kbd "M-i") 'previous-multiframe-window)
+ ;; (define-key vterm-mode-map (kbd "M-o") 'next-multiframe-window)
+ (define-key vterm-mode-map (kbd "M-0") 'delete-window)
+ (define-key vterm-mode-map (kbd "M-1") 'delete-other-windows)
+ (define-key vterm-mode-map (kbd "M-2") 'split-window-below)
+ (define-key vterm-mode-map (kbd "M-3") 'split-window-right)
+ (define-key vterm-mode-map (kbd "M-T") 'vterm-toggle)
+ (define-key vterm-mode-map (kbd "M-R") 'vterm-toggle-cd)
+ ; Unbind M-s so we can use this for other commands
+ (define-key vterm-mode-map (kbd "M-s") 'nil)
+ (setq vterm-toggle-scope 'dedicated)
+ (setq vterm-toggle-project-root t)
+ (setq vterm-toggle-cd-auto-create-buffer nil)
+ (setq vterm-toggle-reset-window-configration-after-exit t)
+ (setq vterm-toggle-fullscreen-p nil)
+ (setq vterm-toggle-hide-method 'bury-all-vterm-buffer))
+
+(use-package
+ vterm-toggle
+ :straight t
+ :config
+ (defun vterm-toggle--new (&optional buffer-name)
+   "New vterm buffer."
+   (let ((default-directory default-directory)
+         (buffer-name (or buffer-name vterm-buffer-name))
+         project-root)
+     (when vterm-toggle-project-root
+       (setq project-root (vterm-toggle--project-root))
+       (when project-root
+         (setq default-directory project-root)))
+     (if vterm-toggle-fullscreen-p
+         (vterm buffer-name)
+       (if (eq major-mode 'vterm-mode)
+           (let ((display-buffer-alist nil))
+             (vterm buffer-name))
+         (vterm-other-window buffer-name)))))
+ (defun vterm-toggle--project-root ()
+   (projectile-project-root)))
+
+
+(define-key vterm-mode-map (kbd "<escape>") 'vterm-send-C-c)
+(define-key vterm-mode-map (kbd "M-T") 'vterm-toggle)
+(define-key vterm-mode-map (kbd "M-R") 'vterm-toggle-cd)
+;Switch to next vterm buffer
+(global-set-key (kbd "M-T") 'vterm-toggle)
+(global-set-key (kbd "M-R") 'vterm-toggle-cd)
+
+(setq vterm-toggle-fullscreen-p nil)
+(add-to-list
+ 'display-buffer-alist
+ '((lambda (bufname _)
+     (with-current-buffer bufname
+       (equal major-mode 'vterm-mode)))
+   (display-buffer-reuse-window display-buffer-at-bottom)
+   ;; (display-buffer-reuse-window display-buffer-in-direction)
+   ;;display-buffer-in-direction/direction/dedicated is added in emacs27
+   (direction . bottom)
+   (dedicated . t) ;dedicated is supported in emacs27
+   (reusable-frames . visible) (window-height . 0.3)))
+
+;;Switch to next vterm buffer
+(define-key vterm-mode-map (kbd "M-n") 'vterm-toggle-forward)
+;;Switch to previous vterm buffer
+(define-key vterm-mode-map (kbd "M-p") 'vterm-toggle-backward)
+
+(defun kill-buffer-and-its-windows (buffer)
+  "Kill BUFFER and delete its windows.  Default is `current-buffer'.
+BUFFER may be either a buffer or its name (a string)."
+  (interactive (list
+                (read-buffer "Kill buffer: "
+                             (current-buffer)
+                             'existing)))
+  (setq buffer (get-buffer buffer))
+  (if (buffer-live-p buffer) ; Kill live buffer only.
+      (let
+          ((wins (get-buffer-window-list buffer nil t))) ; On all frames.
+        (when (and (buffer-modified-p buffer)
+                   (fboundp '1on1-flash-ding-minibuffer-frame))
+          (1on1-flash-ding-minibuffer-frame t)) ; Defined in `oneonone.el'.
+        (when
+            (kill-buffer buffer) ; Only delete windows if buffer killed.
+          (dolist (win wins) ; (User might keep buffer if modified.)
+            (when (window-live-p win)
+              ;; Ignore error, in particular,
+              ;; "Attempt to delete the sole visible or iconified frame".
+              (condition-case nil
+                  (delete-window win)
+                (error nil))))))
+    (when (interactive-p)
+      (error "Cannot kill buffer.  Not a live buffer: `%s'" buffer))))
+
+(setq vterm-kill-buffer-on-exit t)
+(define-key
+ vterm-mode-map (kbd "M-k")
+ (lambda ()
+   (interactive)
+   (kill-buffer-and-its-windows (current-buffer))))
+
+
+(provide 'term-settings)
+#+END_SRC

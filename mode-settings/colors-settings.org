@@ -1,0 +1,66 @@
+#+title: Colors and Theme Configuration
+#+author: Johnny Sigman
+
+* Emacs Theme
+#+begin_src elisp :load yes
+;-------------COLOR THEME----------------;
+(if (eq window-system nil)
+    (progn
+      (+ 1 2) ;; no-op if we're in terminal mode
+      ;; (load-theme 'dracula t)
+      (set-background-color "brightwhite"))
+  (progn
+    (straight-use-package 'ef-themes)
+    (load-theme 'ef-day t)
+    ))
+
+;; Treat all themes as safe; no query before use.
+(setf custom-safe-themes 't)
+(setq frame-title-format nil)
+#+end_src
+
+* Colors in Dired
+#+begin_src elisp :load yes
+(use-package
+ rainbow-mode
+ :straight t
+ :hook (LaTeX-mode . rainbow-mode))
+(use-package
+ dired-hacks
+ :straight t
+ :hook (emacs-lisp-mode . rainbow-mode))
+
+;; Set the font
+;; (set-frame-font "-outline-Noto Serif SemCond SemBd-semibold-normal-normal-serif-*-*-*-*-p-*-iso10646-1")
+;; (set-frame-font "")
+;; (add-to-list 'default-frame-alist '(font . "FantasqueSansMono:"))
+
+(use-package
+ tree-sitter
+ :straight t
+ :config (global-tree-sitter-mode t)
+ :hook ((tree-sitter-after-on-hook . tree-sitter-hl-mode)))
+
+(use-package tree-sitter-langs :straight t)
+
+;; (setq treesit-extra-load-path
+;;       '("/Users/jsigman/.emacs.d/tree-sitter-grammars"))
+
+;; ; Auto
+;; (use-package
+;;  treesit-auto
+;;  :straight '(treesit-auto :type git :host github :repo "renzmann/treesit-auto")
+;;  :config (treesit-auto-apply-remap)
+;;  ;undo for  these
+;;  ;; (setf (cdr (rassoc 'yaml-ts-mode auto-mode-alist)) 'yaml-mode)
+;;  )
+
+;; (while (rassoc 'python-mode auto-mode-alist)
+;;   (setf (cdr (rassoc 'python-mode auto-mode-alist)) 'python-ts-mode))
+
+
+;; (use-package treesit-auto :straight t)
+
+
+(provide 'colors-settings)
+#+END_SRC

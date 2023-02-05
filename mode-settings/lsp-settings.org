@@ -1,0 +1,191 @@
+#+title: Language Server Protocol (LSP) Configuration
+#+author: Johnny Sigman
+
+#+BEGIN_SRC elisp :load yes
+(setq my/lsp-package "lsp")
+;------------------------LSP---------------------------;
+; PATCH BELOW
+(setenv "LSP_USE_PLISTS" "true")
+(literate-elisp-load "corfu-vertico-settings.org")
+(use-package
+ lsp-mode
+ :straight t
+ :custom (lsp-completion-provider :none) ; We use corfu
+ :init
+ (setq lsp-signature-render-documentation t)
+ (setq lsp-signature-auto-activate t)
+ (setq lsp-signature-doc-lines 3)
+ (setq lsp-prefer-flymake nil)
+ (setq lsp-idle-delay 0.0)
+ (setq lsp-enable-snippet t)
+ (setq lsp-keymap-prefix "M-P")
+ (setq lsp-log-io nil)
+ (setq lsp-print-performance nil)
+ (setq lsp-response-timeout 10)
+ (setq lsp-enable-on-type-formatting nil)
+ (setq lsp-keep-workspace-alive nil)
+ (setq lsp-headerline-breadcrumb-enable-diagnostics nil)
+ (setq read-process-output-max (* 1024 1024))
+ (setq lsp-semantic-highlighting-faces t)
+ (setq lsp-enable-imenu nil)
+ (setq lsp-enable-text-document-color t)
+ (setq lsp-completion-no-cache t)
+ (setq lsp-completion-filter-on-incomplete nil)
+ (setq lsp-enable-file-watchers t)
+ (setq lsp-auto-execute-action nil)
+ (setq lsp-auto-guess-root 't)
+ (setq lsp-document-sync-method nil)
+ (setq lsp-completion-use-last-result nil)
+ (setq lsp-completion-show-kind t)
+ (setq lsp-completion-show-detail t)
+
+ ;; (defun my/lsp-mode-setup-completion ()
+ ;;   (setf (alist-get
+ ;;          'styles
+ ;;          (alist-get 'lsp-capf completion-category-defaults))
+ ;;         '(orderless))) ;; Configure orderless
+
+ (defun my/lsp-mode-setup-completion ()
+   (setf (alist-get
+          'styles
+          (alist-get 'lsp-capf completion-category-defaults))
+         '(orderless)))
+
+ ;; Optionally configure the cape-capf-buster.
+ (setq-local completion-at-point-functions
+             (list (cape-capf-buster #'lsp-completion-at-point)))
+
+ :hook
+ (lsp-mode . lsp-enable-which-key-integration)
+ (lsp-completion-mode . my/lsp-mode-setup-completion)
+ ;; (lsp-mode . lsp-ui-mode)
+ )
+
+;; (use-package lsp-ui
+;;   :straight t
+;;   :config
+;;   (setq lsp-ui-doc-enable nil)
+;;   (setq lsp-ui-peek-enable nil)
+;;   (setq lsp-ui-peek-fontify "never") ;; never, on-demand, or always
+;;   (setq lsp-ui-peek-list-width 50)
+;;   (setq lsp-ui-peek-peek-height 20)
+;;   (setq lsp-ui-sideline-code-actions-prefix
+;;         "")
+;;   (setq lsp-ui-doc nil)
+;;                                         ;inline right flush docs
+;;   (setq lsp-ui-sideline-enable nil)
+;;   (setq lsp-ui-sideline-ignore-duplicate t)
+;;   (setq lsp-ui-sideline-show-code-actions nil)
+;;   (setq lsp-ui-sideline-show-diagnostics nil)
+;;   (setq lsp-ui-sideline-show-hover nil)
+;;   (setq lsp-ui-sideline-show-symbol nil)
+;;   (setq lsp-ui-sideline-delay 0.01)
+;;   :bind
+;;   (:map lsp-ui-imenu-mode-map
+;;         ("<return" . lsp-ui-imenu--view)
+;;         ("RET" . lsp-ui-imenu--view)))
+
+
+;; (add-hook 'lsp--managed-mode-hook (lambda nil (interactive) (remove-hook 'post-self-insert-hook 'lsp--on-self-insert t)))
+;;
+;------------------------LSP-UI---------------------------;
+;; (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+;; (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+
+(literate-elisp-load "flycheck-settings.org")
+(setq lsp-ui-flycheck-enable nil)
+;; (add-hook 'flycheck-mode-hook 'lsp-ui-sideline-mode)
+
+;; (require 'lsp-ui-flycheck)
+;; (define-key lsp-ui-flycheck-list-mode-map (kbd "<M-RET>") 'lsp-ui-flycheck-list--visit)
+;; (define-key lsp-ui-flycheck-list-mode-map (kbd "RET") 'lsp-ui-flycheck-list--view)
+
+;                                        top right docs
+
+
+;; (setq lsp-ui-doc-header t)
+;; (setq lsp-ui-doc-include-signature t)
+;; (setq lsp-ui-doc-max-height 30)
+;; (setq lsp-ui-doc-max-width 120)
+;; (setq lsp-ui-doc-position (quote at-point))
+;; (setq lsp-ui-doc-use-childframe nil)
+
+;; If this is true then you can't see the docs in terminal
+;; (setq lsp-ui-doc-use-webkit nil)
+
+;--------------------- LSP IVY -----------------;
+;; (straight-use-package 'lsp-ivy)
+;; (require 'lsp-ivy)
+;; (define-key lsp-mode-map (kbd "RET") 'lsp-ivy-workspace-symbol)
+
+;---Multiple cursors------;
+(literate-elisp-load "multiple-cursors-settings.org")
+
+
+(use-package
+ iedit
+ :straight t
+ :init (setq iedit-toggle-key-default (kbd "C-,")))
+(defun my/lsp-iedit ()
+  (lsp-iedit-highlights)
+  ;; (iedit-switch-to-mc-mode)
+  )
+
+(setq my/lsp-highlight-setup "iedit")
+(pcase my/lsp-highlight-setup
+  ("iedit" (use-package
+    iedit
+    :straight t
+    :init
+    (setq iedit-toggle-key-default nil)
+    (setq iedit-auto-narrow t)
+    :bind (:map lsp-mode-map ("M-S" . lsp-iedit-highlights))
+    :after (:all lsp-mode)))
+  ("lsp-mc" (straight-use-package
+    '(lsp-mc :type git :host github :repo "jsigman/lsp-mc"))
+   (require 'lsp-mc) (add-hook 'lsp-mode-hook 'lsp-mc-mode)))
+
+(add-hook 'LaTeX-mode-hook #'lsp-deferred)
+(add-hook 'yaml-base-mode-hook #'lsp-deferred)
+(add-hook 'json-mode-hook #'lsp-deferred)
+
+(setq lsp-enable-on-type-formatting t)
+(setq lsp-enable-indentation t)
+
+(add-hook 'sh-mode-hook #'lsp-deferred)
+(straight-use-package 'lsp-docker)
+
+(require 'lsp-docker)
+(add-hook 'dockerfile-mode-hook #'lsp-deferred)
+
+(use-package lsp-mssql :straight t :hook (sql-mode . lsp))
+(require 'lsp-markdown)
+(add-hook 'markdown-mode-hook 'lsp-markdown)
+
+(add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\venv\\'")
+(add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\.dvc\\'")
+(add-to-list
+ 'lsp-file-watch-ignored-directories "[/\\\\]\\kubernetes\\'")
+(add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\notes\\'")
+(add-to-list
+ 'lsp-file-watch-ignored-directories "[/\\\\]\\checkpoints\\'")
+(add-to-list
+ 'lsp-file-watch-ignored-directories "[/\\\\]\\experiments\\'")
+(add-to-list
+ 'lsp-file-watch-ignored-directories "[/\\\\]\\.mypy_cache\\'")
+(add-to-list
+ 'lsp-file-watch-ignored-directories "[/\\\\]\\.pytest_cache\\'")
+
+;; Automatically install lsp servers
+(defun my/install-lsp-servers ()
+  (interactive)
+  (lsp-install-server t 'pyright)
+  (lsp-install-server t 'xmlls)
+  (lsp-install-server t 'yamlls)
+  (lsp-install-server t 'html-ls)
+  (lsp-install-server t 'json-ls)
+  (lsp-install-server t 'dockerfile-ls)
+  (lsp-install-server t 'bash-ls))
+
+(provide 'lsp-settings)
+#+END_SRC

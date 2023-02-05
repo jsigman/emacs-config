@@ -1,0 +1,65 @@
+#+title: Elisp Configuration
+#+author: Johnny Sigman
+
+#+BEGIN_SRC elisp :load yes
+;; elisp settings
+(straight-use-package 'eros)
+(require 'eros)
+(eros-mode t)
+
+;; (straight-use-package 'srefactor)
+;; (require 'srefactor)
+;; (require 'srefactor-lisp)
+
+;; (define-key c-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
+;; (define-key c++-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
+;; (define-key emacs-lisp-mode-map (kbd "M-RET o") 'srefactor-lisp-one-line)
+;; (define-key emacs-lisp-mode-map (kbd "M-RET m") 'srefactor-lisp-format-sexp)
+;; (define-key emacs-lisp-mode-map (kbd "M-RET d") 'srefactor-lisp-format-defun)
+;; (define-key emacs-lisp-mode-map (kbd "M-RET b") 'srefactor-lisp-format-buffer)
+
+(use-package
+  lisp-extra-font-lock
+  :straight t
+  :config (lisp-extra-font-lock-global-mode 1))
+
+
+(use-package elisp-docstring-mode :straight t)
+(use-package
+ highlight-function-calls
+ :straight t
+ :hook (emacs-lisp-mode . highlight-function-calls-mode))
+
+(use-package
+ format-all
+ :straight t
+ :hook (elisp-mode . format-all-mode))
+
+
+(straight-use-package
+ '(inspector :type git :host github :repo "mmontone/emacs-inspector"))
+(require 'inspector)
+
+; print the full value of eval'ed variables
+(setq eval-expression-print-length nil)
+(setq eval-expression-print-level nil)
+
+(use-package
+ elisp-autofmt
+ :commands (elisp-autofmt-mode)
+ :hook (emacs-lisp-mode . elisp-autofmt-mode)
+ :straight
+ (elisp-autofmt
+  ;; :files (:defaults "elisp-autofmt")
+  :host nil
+  :type git
+  :repo "https://codeberg.org/ideasman42/emacs-elisp-autofmt.git")
+ :config (setq elisp-autofmt-on-save-p 'always))
+
+
+(add-to-list
+ 'auto-mode-alist
+ '("\\.dir-locals\\(?:-2\\)?\\.el\\'" . emacs-lisp-mode))
+
+(provide 'elisp-settings)
+#+END_SRC

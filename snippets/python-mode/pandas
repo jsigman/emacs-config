@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: pandas
+# key: pandas
+# group: debug
+# --
+import pandas as pd

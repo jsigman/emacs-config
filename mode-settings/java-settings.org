@@ -1,0 +1,20 @@
+#+title: Java/Javascript/JSON Configuration
+#+author: Johnny Sigman
+
+#+BEGIN_SRC elisp :load yes
+(straight-use-package 'jq-mode)
+(require 'jq-mode)
+
+;; (straight-use-package '(jq :type git
+;;                                         :host github
+;;                                         :repo "p-baleine/jq.el"
+;;                                         ))
+;; (require 'jq)
+
+(straight-use-package
+ '(jsonian :type git :host github :repo "iwahbe/jsonian"))
+(require 'jsonian)
+
+
+(provide 'java-settings)
+#+END_SRC

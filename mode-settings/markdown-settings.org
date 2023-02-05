@@ -1,0 +1,16 @@
+#+title: Markdown Configuration
+#+author: Johnny Sigman
+
+#+BEGIN_SRC elisp :load yes
+(use-package
+ markdown-mode
+ :straight t
+ :mode ("README\\.md\\'" . gfm-mode)
+ :init (setq markdown-command "multimarkdown")
+ :hook (markdown-mode . lsp)
+ :config
+ (setq lsp-markdown-server-command "~/.local/bin")
+ (require 'lsp-marksman))
+
+(provide 'markdown-settings)
+#+END_SRC

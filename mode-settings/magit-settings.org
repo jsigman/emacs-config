@@ -1,0 +1,80 @@
+#+title: Magit Configuration
+#+author: Johnny Sigman
+
+#+BEGIN_SRC elisp :load yes
+(literate-elisp-load "projectile-settings.org")
+(use-package
+ magit
+ :straight t
+ :config
+ ;; (add-hook 'magit-post-refresh-hook 'projectile-invalidate-cache)
+ )
+(use-package transient :straight t)
+
+(setq vc-handled-backends nil)
+
+(define-key magit-mode-map (kbd "C-x g") nil)
+(define-key magit-mode-map (kbd "M-G") 'magit-status)
+(define-key global-map (kbd "M-G") 'magit-status)
+
+(define-key magit-mode-map (kbd "M-0") nil)
+(define-key magit-mode-map (kbd "M-1") nil)
+(define-key magit-mode-map (kbd "M-2") nil)
+(define-key magit-mode-map (kbd "M-3") nil)
+
+(use-package forge :straight t)
+
+; This is so we can access forge information
+(setq auth-sources '("~/.authinfo"))
+
+(straight-use-package 'git-gutter+)
+(require 'git-gutter+)
+(global-git-gutter+-mode t)
+
+(setq git-gutter+-modified-sign " ") ;; two space
+(setq git-gutter+-added-sign "+") ;; multiple character is OK
+(setq git-gutter+-deleted-sign "-")
+
+(set-face-foreground 'git-gutter+-modified "magenta")
+(set-face-foreground 'git-gutter+-added "dark green")
+(set-face-foreground 'git-gutter+-deleted "red")
+
+(straight-use-package 'pcre2el)
+(straight-use-package 'async)
+(straight-use-package 'hl-todo)
+(straight-use-package 'rg)
+(straight-use-package 'ag)
+
+(use-package magit-todos :straight t :config (magit-todos-mode t))
+
+(straight-use-package 'ghub)
+(require 'ghub)
+
+;; (straight-use-package 'magit-delta)
+;; (use-package magit-delta
+;;   :ensure t
+;;   :hook (magit-mode . magit-delta-mode))
+
+
+(setq magit-delete-by-moving-to-trash nil)
+
+; add this so that git gutter plus does not screw up tramp sessions
+; it disables GGP during tramp
+(defun git-gutter+-refresh ()
+  (git-gutter+-clear)
+  (when (not (file-remote-p (buffer-file-name)))
+    (let ((file (buffer-file-name)))
+      (when (and file (file-exists-p file))
+        (if (file-remote-p file)
+            (let* ((repo-root (git-gutter+-root-directory file))
+                   (default-directory
+                    (git-gutter+-remote-default-directory
+                     repo-root file)))
+              (git-gutter+-process-diff
+               (git-gutter+-remote-file-path repo-root file)))
+          (git-gutter+-process-diff
+           (git-gutter+-local-file-path file)))))))
+
+
+(provide 'magit-settings)
+#+END_SRC

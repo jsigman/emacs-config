@@ -1,0 +1,183 @@
+#+title: Org Mode Configuration
+#+author: Johnny Sigman
+
+#+BEGIN_SRC elisp :load yes
+;; (require 'lsp-settings)
+
+
+; Below for OB-ipython
+;; (straight-use-package 'ob-ipython)
+;; (require 'ob-ipython)
+;; (setq ob-ipython-resources-dir "~/.obipy-resources/")
+;; (define-key org-mode-map (kbd "C-c C-v C-k") 'ob-ipython-kill-kernel)
+
+(require 'python-settings)
+(require 'jupyter-settings)
+
+(setq ob-ipython-command "jupyter")
+
+;; USE ASYNC IN JUPYTER?
+;; (setq ob-async-no-async-languages-alist '("jupyter-python" "jupyter-julia"))
+
+;; (add-to-list 'org-latex-minted-langs '(ipython "python"))
+
+
+(defun org-src-format-and-save ()
+  (interactive)
+  (when (eq major-mode 'python-base-mode)
+    (apheleia-format-buffer 'black))
+  (sit-for 0.500)
+  (org-edit-src-save))
+
+(use-package
+ org
+ :straight t
+ ;; :demand t
+ :defer t
+ :hook (org-mode-hook . visual-line-mode)
+ :hook (org-babel-after-execute-hook . org-display-inline-images)
+ :hook (org-babel-after-execute-hook . append)
+ :hook (org-mode-hook . org-bullets-mode)
+ :bind
+ (:map
+  org-mode-map
+  ;; ("\C-cl" . org-store-link)
+  ;; ("\C-ca" . org-agenda)
+  ("C-'" . nil)
+  ("C-c C-c" . org-ctrl-c-ctrl-c)
+  ("C-M-<return>" . my/org-babel-execute-and-next)
+  ("C-c <" . nil)
+  :map
+  org-src-mode-map
+  ("C-x C-s" . org-src-format-and-save))
+ :config
+ (setq org-format-latex-options
+       (plist-put org-format-latex-options :scale 2.0))
+
+ (org-babel-do-load-languages
+  'org-babel-load-languages
+  '((emacs-lisp . t)
+    (sqlite . t)
+    (shell . t)
+    (jq . t)
+    (jupyter . nil)
+    (python . t)))
+
+ (defun my/load-org-jupyter ()
+   (org-babel-do-load-languages
+    'org-babel-load-languages '((jupyter . t)))
+   (org-babel-jupyter-aliases-from-kernelspecs 'refresh))
+ (visual-line-mode t))
+
+(use-package
+ plantuml-mode
+ :straight t
+ :config
+ (setq plantuml-default-exec-mode 'executable)
+ (setq org-plantuml-exec-mode 'plantuml)
+ (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode)))
+(use-package ob-napkin :straight t)
+(use-package mermaid-mode :straight t)
+(use-package ob-mermaid :straight t)
+
+
+(defun my/org-babel-execute-and-next ()
+  (interactive)
+  (org-babel-execute-src-block)
+  (org-babel-next-src-block))
+
+
+(setq org-log-done t)
+
+;; adding this does some weird stuff in colors
+(setq org-startup-indented nil)
+
+
+;; (straight-use-package 'citeproc)
+;; (straight-use-package 'org-ref)
+;; (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
+;; (require 'org-ref)
+
+
+;; (defun my-org-mode-hook ()
+;;   (add-hook 'completion-at-point-functions 'pcomplete-completions-at-tpoint
+;;             nil t))
+;; (add-hook 'org-mode-hook #'my-org-mode-hook)
+
+
+;; fontify code in code blocks
+(setq org-src-fontify-natively t)
+(setq org-confirm-babel-evaluate nil) ;don't prompt me to confirm everytime I want to evaluate a block
+(setq org-src-preserve-indentation t)
+
+(require 'colors-settings)
+(with-eval-after-load 'org
+  (dolist (face
+           '(org-block
+             org-block-begin-line
+             org-block-end-line
+             org-level-1
+             org-drawer
+             org-meta-line))
+    (set-face-attribute face nil :extend t)))
+
+(with-eval-after-load 'org
+  (dolist (face '(org-level-1))
+    (set-face-attribute face nil :height 2.0)))
+
+(with-eval-after-load 'org
+  (dolist (face '(org-level-2))
+    (set-face-attribute face nil :height 1.5)))
+
+
+;; (straight-use-package 'org-roam)
+;; (use-package org-roam
+;;   :ensure t
+;;   :custom (org-roam-directory (file-truename "~/Documents/PERSONAL/ORG_ROAM/")):bind
+;;   (("C-c n l" . org-roam-buffer-toggle)
+;;    ("C-c n f" . org-roam-node-find)
+;;    ("C-c n g" . org-roam-graph)
+;;    ("C-c n i" . org-roam-node-insert)
+;;    ("C-c n c" . org-roam-capture)
+;;    ;; Dailies
+;;    ("C-c n j" . org-roam-dailies-capture-today))
+;;   :config (org-roam-setup)(require 'org-roam-protocol))
+
+(use-package org-bullets :defer t :straight t)
+
+;; (straight-use-package 'polymode)
+;; (require 'polymode)
+;; (straight-use-package 'poly-org)
+;; (require 'poly-org)
+;; (add-hook 'org-mode-hook 'poly-org-mode)
+
+
+;; custom-set-faces was added by Custom.
+;; If you edit it by hand, you could mess it up, so be careful.
+;; Your init file should contain only one such instance.
+;; If there is more than one, they won't work right.
+;; (face-remap-add-relative 'org-block-begin-line :box)
+
+;; (defun company-org-setup ()
+;;   (when (boundp 'company-backends)
+;;     (make-local-variable 'company-backends)
+;;     ;; remove
+;;     (setq company-backends (delete 'company-dabbrev company-backends))))
+;; (add-hook 'org-mode-hook 'company-org-setup)
+
+;; Org exporter for github markdown
+;; (use-package ox-gfm
+;;   :straight t
+;;   :defer t)
+
+;;nil means to wrap lines in org mode
+(setq org-startup-truncated t)
+
+(use-package
+ org-modern
+ :straight t
+ :defer t
+ :config (global-org-modern-mode))
+
+(provide 'org-settings)
+#+END_SRC

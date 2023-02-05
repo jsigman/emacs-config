@@ -1,0 +1,181 @@
+#+title: Python Configuration
+#+author: Johnny Sigman
+
+#+BEGIN_SRC elisp :load yes
+(require 'python)
+(add-hook 'python-mode-hook 'tree-sitter-hl-mode)
+;; (use-package
+;;  python
+;;  :straight t
+;;  :hook (python-mode . tree-sitter-hl-mode))
+
+(straight-use-package 'exec-path-from-shell)
+(require 'exec-path-from-shell)
+
+(setq
+ python-shell-interpreter "python3"
+ python-shell-interpreter-args "-i")
+
+(define-key python-base-mode-map (kbd "C-c C-c") nil)
+
+
+;; (require 'python-black)
+;; ;: Test if black exists
+;; (setq python-black-command "black")
+;; (add-hook 'python-base-mode-hook 'python-black-on-save-mode)
+
+;; (straight-use-package 'blacken)
+;; (require 'blacken)
+;; (setq blacken-only-if-project-is-blackened
+;;       t)
+;; (define-key python-base-mode-map (kbd "M-B") 'blacken-buffer)
+
+;; (add-hook 'python-base-mode-hook 'blacken-mode)
+
+(require 'python-lsp-settings)
+;; (require 'eglot-settings)
+
+;; Handling virtual environments
+;; (straight-use-package 'virtualenvwrapper)
+;; (require 'virtualenvwrapper)
+;; (venv-initialize-interactive-shells)
+;; (setq projectile-switch-project-action
+;;       '(lambda ()
+;;          (venv-projectile-auto-workon)
+;;          (projectile-find-file)))
+;; (setq venv-location nil)
+;; add the active virtual environment to the modeline
+;; (setq-default mode-line-format (cons '(:exec venv-current-name) mode-line-format))
+
+(use-package highlight-indent-guides :straight t)
+(add-hook 'python-base-mode-hook 'highlight-indent-guides-mode)
+
+;; (use-package
+;;  hl-indent-scope
+;;  :commands (hl-indent-scope-mode)
+;;  :straight
+;;  :hook
+;;  ((c-mode c++-mode cmake-mode python-mode emacs-lisp-mode)
+;;   .
+;;   hl-indent-scope-mode))
+
+(add-hook
+ 'python-base-mode-hook
+ (lambda ()
+   (mapc
+    (lambda (pair) (push pair prettify-symbols-alist))
+    '( ;; Syntax
+      ;; ("def" .      #x2131)
+      ;; ("not" .      #x2757)
+      ("in" . #x2208)
+      ;; ("not in" .   #x2209)
+      ("return" . #x27fc) ("yield" . #x27fb)
+      ;; ("for" .      #x2200)
+      ;; Base Types
+      ;; ("int" .      #x2124)
+      ;; ("float" .    #x211d)
+      ;; ("str" .      #x1d54a)
+      ;; ("True" .     #x1d54b)
+      ;; ("False" .    #x1d53d)
+      ;; Mypy
+      ;; ("Dict" .     #x1d507)
+      ;; ("List" .     #x2112)
+      ;; ("Tuple" .    #x2a02)
+      ;; ("Set" .      #x2126)
+      ;; ("Iterable" . #x1d50a)
+      ;; ("Any" .      #x2754)
+      ;; ("Union" .    #x22c3)
+      ))))
+
+;; python mode keymap
+(define-key python-base-mode-map (kbd "C-c C-p") nil)
+
+;; (require 'python-dap-settings)
+
+(use-package
+ py-isort
+ :straight t
+ :config
+ (define-key python-base-mode-map (kbd "M-I") 'py-isort-buffer))
+
+
+;; (straight-use-package '(ein :type git :host github :repo "millejoh/emacs-ipython-notebook"))
+(use-package
+ pip-requirements
+ :straight t
+ :init
+ (add-to-list
+  'auto-mode-alist
+  `(,(rx "requirements" (zero-or-more anything) ".in" string-end)
+    . pip-requirements-mode)))
+
+;; (straight-use-package
+;;  '(csv-mode :type git :host github :repo "emacsmirror/csv-mode"))
+
+(use-package
+ buftra
+ :straight
+ '(buftra.el :type git :host github :repo "humitos/buftra.el"))
+
+(use-package
+ py-pyment
+ :straight
+ '(py-cmd-buffer.el
+   :type git
+   :host github
+   :repo "humitos/py-cmd-buffer.el")
+ :after python
+ :config (setq py-pyment-options '("--output=google")))
+
+;; (defun chomp (str)
+;;   "Chomp leading and tailing whitespace from STR."
+;;   (let ((s
+;;          (if (symbolp str)
+;;              (symbol-name str)
+;;            str)))
+;;     (replace-regexp-in-string
+;;      "\\(^[[:space:]\n]*\\|[[:space:]\n]*$\\)" "" s)))
+;; (defun get-function-definition (sentence)
+;;   (if (string-match "def.*(.*):" sentence)
+;;       (match-string 0 sentence)))
+;; (defun get-parameters (sentence)
+;;   (setq y (get-function-definition sentence))
+;;   (if y
+;;       (if (string-match "(.*)" y)
+;;           (match-string 0 y))))
+;; (autoload 'thing-at-point "thingatpt" nil t) ;; build-in librairie
+;; (defun python-insert-docstring ()
+;;   (interactive)
+;;   (setq p (get-parameters (thing-at-point 'sentence)))
+;;   (forward-line 1)
+;;   (insert "    \"\"\"\n")
+;;   (insert "\tArgs:\n")
+;;   (setq params (split-string p "[?\,?\(?\)?\ ]"))
+;;   (while params
+;;     (if (/= (length (chomp (car params))) 0)
+;;         (progn
+;;           (insert "        ")
+;;           (insert (chomp (car params)))
+;;           (insert ": \n")))
+;;     (setq params (cdr params)))
+;;   (insert "    Returns:\n    \"\"\"\n"))
+;; (global-set-key (kbd "<f9>") 'python-insert-docstring)
+
+;; (defun python-google-docstring ()
+;;   "Generate google-style docstring for python."
+;;   (interactive)
+;;   (if (region-active-p)
+;;       (progn
+;;         (call-process-region (region-beginning) (region-end) "python3"
+;;                              nil
+;;                              t
+;;                              t
+;;                              "-c ")
+;;         (message "Docs are generated")
+;;         (deactivate-mark))
+;;     (message "No region active; can't generate docs!")))
+;; (evil-leader/set-key "o o" 'python-google-docstring)
+
+
+(provide 'python-settings)
+#+END_SRC

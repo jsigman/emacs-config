@@ -1,0 +1,42 @@
+#+title: Projectile Configuration
+#+author: Johnny Sigman
+
+#+BEGIN_SRC elisp :load yes
+;; (setq projectile-git-submodule-command "git submodule --quiet foreach 'echo $(git rev-parse --show-toplevel)' | xargs realpath --relative-to=$PWD 2> /dev/null")
+
+(use-package
+ projectile
+ :straight t
+ :init (setq projectile-git-submodule-command nil)
+ ;; always ignore the home directory and root
+ (setq projectile-ignored-projects
+       `("/" "~/" ,(expand-file-name "~/")))
+
+ (setq projectile-track-known-projects-automatically nil)
+
+ ;; Use alien as the default, and project-wise add other files
+ (setq projectile-indexing-method 'native)
+ (setq projectile-enable-caching t)
+ (setq projectile-files-cache-expire 300)
+ (setq projectile-file-exists-remote-cache-expire nil)
+
+ :config
+
+ (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+ (define-key
+  projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+ (define-key projectile-mode-map (kbd "M-K") 'projectile-kill-buffers)
+
+ (add-to-list 'projectile-globally-ignored-directories "/venv")
+ (add-to-list 'projectile-globally-ignored-directories "/data")
+ (add-to-list 'projectile-globally-ignored-directories "/typings")
+ (add-to-list 'projectile-globally-ignored-directories "/.mypy_cache")
+ (add-to-list
+  'projectile-globally-ignored-directories "/.pytest_cache")
+ (add-to-list 'projectile-globally-ignored-directories "/.cache")
+ (add-to-list 'projectile-globally-ignored-directories "/.dvc/cache")
+ (add-to-list 'projectile-globally-ignored-directories "/.dvc/tmp")
+ (projectile-mode +1))
+
+(provide 'projectile-settings)
+#+END_SRC

@@ -1,0 +1,8 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: Logger
+# key: log
+# group: debug
+# --
+import logging
+logger = logging.getLogger(__name__)
+

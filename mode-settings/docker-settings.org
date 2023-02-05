@@ -1,0 +1,11 @@
+#+title: Docker Configuration
+#+author: Johnny Sigman
+
+#+BEGIN_SRC elisp :load yes
+;; (use-package docker :straight t)
+(use-package dockerfile-mode :straight t)
+(setq dockerfile-mode-command "docker")
+
+;; (use-package docker-tramp :straight t)
+(provide 'docker-settings)
+#+END_SRC

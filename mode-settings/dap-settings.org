@@ -1,0 +1,26 @@
+#+title: Debug Adapter Protocal (DAP) Configuration
+#+author: Johnny Sigman
+
+#+BEGIN_SRC elisp :load yes
+(straight-use-package 'dap-mode)
+(add-hook
+ 'dap-stopped-hook (lambda (arg) (call-interactively #'dap-hydra)))
+
+;; Enabling only some features
+(setq dap-auto-configure-features '(sessions locals controls tooltip))
+(setq dap-python-debugger 'debugpy)
+
+(require 'dap-mode)
+(require 'dap-python)
+(require 'dap-ui)
+
+(add-hook 'python-base-mode-hook 'dap-mode)
+(add-hook 'python-base-mode-hook 'dap-ui-mode)
+(add-hook 'python-base-mode-hook 'dap-tooltip-mode)
+
+;; (define-key python-base-mode-map (kbd "C-r") 'dap-debug)
+(define-key python-base-mode-map (kbd "M-D") #'dap-hydra)
+
+
+(provide 'dap-settings)
+#+END_SRC
