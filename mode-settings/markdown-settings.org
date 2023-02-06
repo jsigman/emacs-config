@@ -6,10 +6,11 @@
  :straight t
  :mode ("README\\.md\\'" . gfm-mode)
  :init (setq markdown-command "multimarkdown")
- :hook (markdown-mode . lsp)
+ ;; :hook (markdown-mode . lsp)
  :config
- (setq lsp-markdown-server-command "~/.local/bin")
- (require 'lsp-marksman))
+ ;; (setq lsp-markdown-server-command "~/.local/bin")
+ ;; (require 'lsp-marksman)
+)
 
 (provide 'markdown-settings)
 #+END_SRC
