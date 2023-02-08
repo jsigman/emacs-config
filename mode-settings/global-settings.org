@@ -93,7 +93,7 @@ yes
 
 #+end_src
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :load yes
 (literate-elisp-load "term-settings.org")
 
 (define-key term-raw-map (kbd "M-o") 'next-multiframe-window)
@@ -166,7 +166,7 @@ yes
 
 #+end_src
 ** Dashboard
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :load yes
 (use-package
  dashboard
  :straight
@@ -225,7 +225,7 @@ yes
 #+end_src
 
 ** Icons
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :load yes
 (use-package all-the-icons :straight t)
 (use-package
  all-the-icons-ibuffer
@@ -258,7 +258,7 @@ yes
  :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 #+end_src
 ** Fonts
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :load yes
 ;; Font settings
 (if (eq system-type 'darwin)
     (if (> (x-display-pixel-width) 1440)
@@ -360,7 +360,7 @@ yes
 #+end_src
 
 ** Indentation
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :load yes
 ; disable electric indent
 (electric-indent-mode 0)
 (use-package
@@ -371,7 +371,7 @@ yes
 #+end_src
 
 ** Autoformatting
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :load yes
 (use-package
  apheleia
  :config
@@ -413,7 +413,7 @@ yes
 #+end_src
 
 ** Global Keybindings
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :load yes
 * Global Keybindings
 #+PROPERTY: header-args:elisp :load yes
 

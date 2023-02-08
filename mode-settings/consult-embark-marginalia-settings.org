@@ -29,7 +29,7 @@
     (window-parameters (mode-line-format . none)))))
 #+end_src
 ** Consult
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :load yes
 
 ;; Example configuration for Consult
 (use-package

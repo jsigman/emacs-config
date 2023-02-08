@@ -43,7 +43,7 @@
  :config (corfu-history-mode))
 #+end_src
 ** Cape
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :load yes
 (defun add-cape-completions ()
   (add-to-list 'completion-at-point-functions #'cape-file)
   ;; (add-to-list 'completion-at-point-functions
@@ -79,7 +79,7 @@
 #+end_src
 
 ** Orderless
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :load yes
 ;; Optionally use the `orderless' completion style.
 (use-package
  orderless

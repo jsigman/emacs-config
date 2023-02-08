@@ -62,7 +62,7 @@ BUFFER may be either a buffer or its name (a string)."
     (kill-buffer-and-its-windows (current-buffer)))))
 #+end_src
 ** Vterm Toggle
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :load yes
 (use-package
  vterm-toggle
  :straight t
