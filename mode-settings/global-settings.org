@@ -234,7 +234,7 @@
 (literate-elisp-load "projectile-settings.org")
 
 ; Re-enable with SVG support
-(use-package
+(use-package svg-lib
  :straight '(svg-lib :host github :repo "emacs-straight/svg-lib"))
 (use-package '(kind-icon :host github :repo "jdtsmith/kind-icon"))
 (use-package
