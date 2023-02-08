@@ -93,7 +93,7 @@
 
 #+begin_src emacs-lisp :load yes
 
-(require 'colors-settings)
+(literate-elisp-load "colors-settings.org")
 (with-eval-after-load 'org
   (dolist (face
            '(org-block
