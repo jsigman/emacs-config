@@ -1,7 +1,7 @@
 * Dired Mode
 #+PROPERTY: header-args:elisp :load yes
 
-#+BEGIN_SRC elisp :load yes
+#+BEGIN_SRC elisp
 (setq
  dired-omit-files
  "^\\.?#\\|^\\.\\(DS_Store\\|localized\\|AppleDouble\\)$\\|^\\.\\.$")

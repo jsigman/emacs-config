@@ -1,7 +1,7 @@
 * Corfu-Vertico-Orderless
 #+PROPERTY: header-args:elisp :load yes
 ** Corfu
-#+BEGIN_SRC elisp :load yes
+#+BEGIN_SRC elisp
 (use-package
  corfu
  ;; Optional customizations
@@ -40,7 +40,7 @@
  ;; Quit on save
  :hook (before-save-hook . corfu-quit)
  ;; (corfu-mode-hook . corfu-doc-mode)
- )
+ :config (corfu-history-mode))
 #+end_src
 ** Cape
 #+begin_src emacs-lisp :tangle yes

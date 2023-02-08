@@ -1,7 +1,7 @@
 * Terminal
 #+PROPERTY: header-args:elisp :load yes
-
-#+BEGIN_SRC elisp :load yes
+** Vterm
+#+BEGIN_SRC elisp
 (use-package
  vterm
  :straight t
@@ -24,8 +24,45 @@
  (setq vterm-toggle-cd-auto-create-buffer nil)
  (setq vterm-toggle-reset-window-configration-after-exit t)
  (setq vterm-toggle-fullscreen-p nil)
- (setq vterm-toggle-hide-method 'bury-all-vterm-buffer))
+ (setq vterm-toggle-hide-method 'bury-all-vterm-buffer)
 
+
+ (defun kill-buffer-and-its-windows (buffer)
+   "Kill BUFFER and delete its windows.  Default is `current-buffer'.
+BUFFER may be either a buffer or its name (a string)."
+   (interactive (list
+                 (read-buffer "Kill buffer: "
+                              (current-buffer)
+                              'existing)))
+   (setq buffer (get-buffer buffer))
+   (if (buffer-live-p buffer) ; Kill live buffer only.
+       (let
+           ((wins (get-buffer-window-list buffer nil t))) ; On all frames.
+         (when (and (buffer-modified-p buffer)
+                    (fboundp '1on1-flash-ding-minibuffer-frame))
+           (1on1-flash-ding-minibuffer-frame t)) ; Defined in `oneonone.el'.
+         (when
+             (kill-buffer buffer) ; Only delete windows if buffer killed.
+           (dolist (win wins) ; (User might keep buffer if modified.)
+             (when (window-live-p win)
+               ;; Ignore error, in particular,
+               ;; "Attempt to delete the sole visible or iconified frame".
+               (condition-case nil
+                   (delete-window win)
+                 (error nil))))))
+     (when (interactive-p)
+       (error
+        "Cannot kill buffer.  Not a live buffer: `%s'" buffer))))
+
+ (setq vterm-kill-buffer-on-exit t)
+ (define-key
+  vterm-mode-map (kbd "M-k")
+  (lambda ()
+    (interactive)
+    (kill-buffer-and-its-windows (current-buffer)))))
+#+end_src
+** Vterm Toggle
+#+begin_src emacs-lisp :tangle yes
 (use-package
  vterm-toggle
  :straight t
@@ -47,7 +84,6 @@
          (vterm-other-window buffer-name)))))
  (defun vterm-toggle--project-root ()
    (projectile-project-root)))
-
 
 (define-key vterm-mode-map (kbd "<escape>") 'vterm-send-C-c)
 (define-key vterm-mode-map (kbd "M-T") 'vterm-toggle)
@@ -73,40 +109,4 @@
 (define-key vterm-mode-map (kbd "M-n") 'vterm-toggle-forward)
 ;;Switch to previous vterm buffer
 (define-key vterm-mode-map (kbd "M-p") 'vterm-toggle-backward)
-
-(defun kill-buffer-and-its-windows (buffer)
-  "Kill BUFFER and delete its windows.  Default is `current-buffer'.
-BUFFER may be either a buffer or its name (a string)."
-  (interactive (list
-                (read-buffer "Kill buffer: "
-                             (current-buffer)
-                             'existing)))
-  (setq buffer (get-buffer buffer))
-  (if (buffer-live-p buffer) ; Kill live buffer only.
-      (let
-          ((wins (get-buffer-window-list buffer nil t))) ; On all frames.
-        (when (and (buffer-modified-p buffer)
-                   (fboundp '1on1-flash-ding-minibuffer-frame))
-          (1on1-flash-ding-minibuffer-frame t)) ; Defined in `oneonone.el'.
-        (when
-            (kill-buffer buffer) ; Only delete windows if buffer killed.
-          (dolist (win wins) ; (User might keep buffer if modified.)
-            (when (window-live-p win)
-              ;; Ignore error, in particular,
-              ;; "Attempt to delete the sole visible or iconified frame".
-              (condition-case nil
-                  (delete-window win)
-                (error nil))))))
-    (when (interactive-p)
-      (error "Cannot kill buffer.  Not a live buffer: `%s'" buffer))))
-
-(setq vterm-kill-buffer-on-exit t)
-(define-key
- vterm-mode-map (kbd "M-k")
- (lambda ()
-   (interactive)
-   (kill-buffer-and-its-windows (current-buffer))))
-
-
-(provide 'term-settings)
 #+END_SRC

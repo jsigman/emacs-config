@@ -1,7 +1,7 @@
 * Python
 #+PROPERTY: header-args:elisp :load yes
 
-#+BEGIN_SRC elisp :load yes
+#+BEGIN_SRC elisp
 (require 'python)
 (add-hook 'python-mode-hook 'tree-sitter-hl-mode)
 ;; (use-package

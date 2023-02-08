@@ -1,7 +1,7 @@
 * Modeline
 #+PROPERTY: header-args:elisp :load yes
 
-#+BEGIN_SRC elisp :load yes
+#+BEGIN_SRC elisp
 (straight-use-package 'diminish)
 (require 'diminish)
 (diminish 'anzu-mode)

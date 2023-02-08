@@ -1,7 +1,7 @@
 * Markdown
 #+PROPERTY: header-args:elisp :load yes
 
-#+BEGIN_SRC elisp :load yes
+#+BEGIN_SRC elisp
 (use-package
  markdown-mode
  :straight t

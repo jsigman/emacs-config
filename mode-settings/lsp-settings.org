@@ -1,7 +1,7 @@
 * Language Server Protocol (LSP)
 #+PROPERTY: header-args:elisp :load yes
 
-#+BEGIN_SRC elisp :load yes
+#+BEGIN_SRC elisp
 (setq my/lsp-package "lsp")
 ;------------------------LSP---------------------------;
 ; PATCH BELOW

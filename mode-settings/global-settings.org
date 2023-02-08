@@ -1,7 +1,7 @@
 * Global Settings for Editing
 #+PROPERTY: header-args:elisp :load yes
 
-#+BEGIN_SRC elisp :load yes
+#+BEGIN_SRC elisp
 
 (setq native-comp-async-report-warnings-errors nil)
 ;; Show the line number of the cursor in the mode bar at the bottom of each buffer
@@ -44,7 +44,10 @@
  :straight t
  :config (whole-line-or-region-global-mode t))
 
-#+begin_src emacs-lisp :tangle yes
+,#+begin_src
+emacs-lisp
+:tangle
+yes
 (use-package
  popper
  :straight t
@@ -72,6 +75,20 @@
  ;; Amend this to the directory where you keep Combobulate's source
  ;; code.
  :straight '(combobulate :type git :host github :repo "mickeynp/combobulate"))
+
+(use-package
+ expand-region
+ :straight t
+ :config (global-set-key (kbd "M-J") 'er/expand-region))
+
+(use-package which-key :straight t :config (which-key-mode 1))
+
+(use-package
+ ibuffer
+ :straight t
+ :config
+ (global-set-key (kbd "C-x C-b") 'ibuffer)
+ (define-key ibuffer-mode-map (kbd "M-o") nil))
 #+END_SRC
 
 #+end_src
@@ -225,7 +242,6 @@
  :config (all-the-icons-completion-mode)
  :hook
  (marginalia-mode . all-the-icons-completion-marginalia-setup))
-
 
 (literate-elisp-load "projectile-settings.org")
 
@@ -396,3 +412,31 @@
 
 #+end_src
 
+** Global Keybindings
+#+begin_src emacs-lisp :tangle yes
+* Global Keybindings
+#+PROPERTY: header-args:elisp :load yes
+
+#+BEGIN_SRC elisp
+;-------------CUSTOM KEYBINDINGS-----------;
+(global-set-key (kbd "M-k") 'kill-this-buffer)
+;Window management
+;Switch window with M-k
+
+(global-set-key (kbd "C-c C-b") 'compile)
+(global-set-key (kbd "M-0") 'delete-window)
+(global-set-key (kbd "M-1") 'delete-other-windows)
+(global-set-key (kbd "M-2") 'split-window-below)
+(global-set-key (kbd "M-3") 'split-window-right)
+
+; Unbind reverse search because we'll use swiper
+(global-unset-key (kbd "C-r"))
+
+(global-set-key (kbd "M-u") 'upcase-dwim)
+(global-set-key (kbd "M-l") 'downcase-dwim)
+
+(global-set-key (kbd "C-.") 'xref-find-definitions-other-window)
+(define-key global-map (kbd "RET") 'newline-and-indent)
+#+END_SRC
+
+#+end_src

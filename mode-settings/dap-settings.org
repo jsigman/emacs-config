@@ -1,7 +1,7 @@
 * Debug Adapter Protocal (DAP)
 #+PROPERTY: header-args:elisp :load yes
 
-#+BEGIN_SRC elisp :load yes
+#+BEGIN_SRC elisp
 (straight-use-package 'dap-mode)
 (add-hook
  'dap-stopped-hook (lambda (arg) (call-interactively #'dap-hydra)))

@@ -1,7 +1,7 @@
 * Elisp
 #+PROPERTY: header-args:elisp :load yes
 
-#+BEGIN_SRC elisp :load yes
+#+BEGIN_SRC elisp
 ;; elisp settings
 (use-package eros :straight t :config (eros-mode t))
 (use-package

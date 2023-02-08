@@ -1,7 +1,7 @@
 * TRAMP
 #+PROPERTY: header-args:elisp :load yes
 
-#+BEGIN_SRC elisp :load yes
+#+BEGIN_SRC elisp
 ;; (straight-use-package 'counsel-tramp)
 
 

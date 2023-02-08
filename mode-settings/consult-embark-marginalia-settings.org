@@ -1,21 +1,21 @@
 * Consult/Embark/Marginalia
 #+PROPERTY: header-args:elisp :load yes
-#+BEGIN_SRC elisp :load yes
-(straight-use-package 'marginalia)
-(use-package marginalia :ensure t :config (marginalia-mode))
-
-(straight-use-package 'embark)
+** Marginalia
+#+BEGIN_SRC elisp
+(use-package marginalia :straight t :ensure t :config (marginalia-mode))
+#+end_src
+** Embark
+#+begin_src emacs-lisp
 (use-package
  embark
+ :straight t
  :ensure t
-
  :bind
  (("C-." . embark-act) ;; pick some comfortable binding
   ("C-;" . embark-dwim) ;; good alternative: M-.
   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
 
  :init
-
  ;; Optionally replace the key help with a completing-read interface
  (setq prefix-help-command #'embark-prefix-help-command)
 
@@ -27,11 +27,14 @@
   '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
     nil
     (window-parameters (mode-line-format . none)))))
+#+end_src
+** Consult
+#+begin_src emacs-lisp :tangle yes
 
-(straight-use-package 'consult)
 ;; Example configuration for Consult
 (use-package
  consult
+ :straight t
  ;; Replace bindings. Lazily loaded due by `use-package'.
  :bind
  ( ;; C-c bindings (mode-specific-map)
@@ -118,7 +121,6 @@
  ;; after lazily loading the package.
  :config
 
-
  (defun consult-ripgrep-project-root (&optional initial)
    (interactive "P")
    (let ((dir (funcall consult-project-function)))
@@ -170,24 +172,18 @@
  ;; (setq consult-project-root-function (lambda () (locate-dominating-file "." ".git")))
  )
 
-(literate-elisp-load "snippets-settings.org")
-(use-package
- consult-yasnippet
- :straight t
- :config (global-set-key (kbd "M-Y") 'consult-yasnippet))
-
 ;; Optionally add the `consult-flycheck' command.
 (use-package
  consult-flycheck
+ :after consult
  :bind (:map flycheck-command-map ("!" . consult-flycheck)))
 ;; Enable Consult-Selectrum integration.
 ;; This package should be installed if Selectrum is used.
 
 ;; ;; Optionally add the `consult-flycheck' command.
-(straight-use-package 'consult-flycheck)
 (use-package
  consult-flycheck
+ :straight t
+ :after (consult flycheck)
  :bind (:map flycheck-command-map ("!" . consult-flycheck)))
-
-(provide 'consult-embark-marginalia-settings)
 #+END_SRC

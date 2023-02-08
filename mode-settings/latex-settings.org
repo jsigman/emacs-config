@@ -1,38 +1,25 @@
 * Latex
 #+PROPERTY: header-args:elisp :load yes
 
-#+BEGIN_SRC elisp :load yes
-(setq TeX-auto-save t)
-(setq TeX-parse-self t)
-(setq-default TeX-master nil)
+#+BEGIN_SRC elisp
+(use-package
+ tex
+ :straight auctex
+ :hook (LaTeX-mode . visual-line-mode)
+ :hook (LaTeX-mode . flyspell-mode)
+ :hook (LaTeX-mode . LaTeX-math-mode)
+ :hook (LaTeX-mode . TeX-source-correlate-mode)
+ :config
+ (setq TeX-auto-save t)
+ (setq TeX-parse-self t)
+ (setq-default TeX-master nil)
 
-(add-hook 'LaTeX-mode-hook 'visual-line-mode)
-(add-hook 'LaTeX-mode-hook 'flyspell-mode)
-(add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
-(add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
+ ;; (add-hook 'LaTeX-mode-hook 'company-auctex-init)
+ ;; (add-hook 'LaTeX-mode-hook 'company-mode)
+ (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+ (setq reftex-plug-into-AUCTeX t)
+ (setq TeX-PDF-mode t))
+(use-package cdlatex :straight t)
 
-;; (add-hook 'LaTeX-mode-hook 'company-auctex-init)
-;; (add-hook 'LaTeX-mode-hook 'company-mode)
-(add-hook 'LaTeX-mode-hook 'turn-on-reftex)
-(setq reftex-plug-into-AUCTeX t)
-(setq TeX-PDF-mode t)
 ;; -------------------------/AucTex-------------------------------;;
-(use-package tex :straight auctex)
-(use-package cdlatex :straight t)
-
-(use-package cdlatex :straight t)
-
-;; Setting up writegood-mode
-;(require 'writegood-mode)
-;(global-set-key "\C-cg" 'writegood-mode)
-
-;Autoindent on
-(define-key global-map (kbd "RET") 'newline-and-indent)
-;; (custom-set-faces)
-;; custom-set-faces was added by Custom.
-;; If you edit it by hand, you could mess it up, so be careful.
-;; Your init file should contain only one such instance.
-;; If there is more than one, they won't work right.
-
-(provide 'latex-settings)
 #+END_SRC

@@ -17,7 +17,6 @@
 (literate-elisp-load "latex-settings.org")
 (literate-elisp-load "snippets-settings.org")
 (literate-elisp-load "term-settings.org")
-(literate-elisp-load "global-keybindings.org")
 (literate-elisp-load "rg-settings.org")
 (literate-elisp-load "avy-settings.org")
 (literate-elisp-load "lsp-settings.org")

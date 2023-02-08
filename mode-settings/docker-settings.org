@@ -2,7 +2,7 @@
 #+PROPERTY: header-args:elisp :load yes
 
 
-#+BEGIN_SRC elisp :load yes
+#+BEGIN_SRC elisp
 ;; (use-package docker :straight t)
 (use-package dockerfile-mode :straight t)
 (setq dockerfile-mode-command "docker")

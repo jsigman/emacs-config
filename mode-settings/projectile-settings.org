@@ -1,7 +1,7 @@
 * Projectile
 #+PROPERTY: header-args:elisp :load yes
 
-#+BEGIN_SRC elisp :load yes
+#+BEGIN_SRC elisp
 (use-package
  projectile
  :straight t

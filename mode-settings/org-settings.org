@@ -1,7 +1,7 @@
 * Org Mode
 #+PROPERTY: header-args:elisp :load yes
 
-#+BEGIN_SRC elisp :load yes
+#+BEGIN_SRC elisp
 (setq ob-ipython-command "jupyter")
 
 (defun org-src-format-and-save ()

@@ -1,17 +1,16 @@
 * Ripgrep
 #+PROPERTY: header-args:elisp :load yes
 
-#+BEGIN_SRC elisp :load yes
-(straight-use-package 'wgrep)
-(require 'wgrep)
-(setq wgrep-auto-save-buffer t)
+#+BEGIN_SRC elisp
+(use-package
+ wgrep
+ :straight t
+ :config (setq wgrep-auto-save-buffer t))
 
-(straight-use-package 'rg)
-(require 'rg)
-;; (rg-enable-default-bindings)
-(rg-enable-menu)
-
-
-(setq rg-executable "rg")
-(provide 'rg-settings)
+(use-package
+ rg
+ :straight t
+ :config
+ (rg-enable-menu)
+ (setq rg-executable "rg"))
 #+END_SRC

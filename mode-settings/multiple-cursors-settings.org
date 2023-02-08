@@ -1,7 +1,7 @@
 * Multiple Cursors (MC)
 #+PROPERTY: header-args:elisp :load yes
 
-#+BEGIN_SRC elisp :load yes
+#+BEGIN_SRC elisp
 (straight-use-package 'multiple-cursors)
 (require 'multiple-cursors)
 
