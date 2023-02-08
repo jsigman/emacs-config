@@ -1,6 +1,6 @@
 * Corfu-Vertico-Orderless
 #+PROPERTY: header-args:elisp :load yes
-
+** Corfu
 #+BEGIN_SRC elisp :load yes
 (use-package
  corfu
@@ -41,15 +41,9 @@
  :hook (before-save-hook . corfu-quit)
  ;; (corfu-mode-hook . corfu-doc-mode)
  )
-
-
-;; Use dabbrev with Corfu!
-;; (use-package dabbrev
-;;   ;; Swap M-/ and C-M-/
-;;   :bind (("M-/" . dabbrev-completion)
-;;          ("C-M-/" . dabbrev-expand)))
-
-
+#+end_src
+** Cape
+#+begin_src emacs-lisp :tangle yes
 (defun add-cape-completions ()
   (add-to-list 'completion-at-point-functions #'cape-file)
   ;; (add-to-list 'completion-at-point-functions
@@ -82,7 +76,10 @@
 
 ;; A few more useful configurations...
 (setq completion-cycle-threshold 3)
+#+end_src
 
+** Orderless
+#+begin_src emacs-lisp :tangle yes
 ;; Optionally use the `orderless' completion style.
 (use-package
  orderless
@@ -161,21 +158,4 @@
 
  ;; Enable recursive minibuffers
  (setq enable-recursive-minibuffers t))
-
-; Re-enable with SVG support
-(straight-use-package
- '(svg-lib :host github :repo "emacs-straight/svg-lib"))
-(require 'svg-lib)
-(straight-use-package
- '(kind-icon :host github :repo "jdtsmith/kind-icon"))
-(use-package
- kind-icon
- :ensure t
- :after corfu
- :custom
- (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
- :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
-
-
-(provide 'corfu-vertico-settings)
 #+END_SRC

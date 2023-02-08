@@ -2,8 +2,6 @@
 #+PROPERTY: header-args:elisp :load yes
 
 #+BEGIN_SRC elisp :load yes
-;; (setq projectile-git-submodule-command "git submodule --quiet foreach 'echo $(git rev-parse --show-toplevel)' | xargs realpath --relative-to=$PWD 2> /dev/null")
-
 (use-package
  projectile
  :straight t
@@ -21,7 +19,6 @@
  (setq projectile-file-exists-remote-cache-expire nil)
 
  :config
-
  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
  (define-key
   projectile-mode-map (kbd "C-c p") 'projectile-command-map)
@@ -37,6 +34,4 @@
  (add-to-list 'projectile-globally-ignored-directories "/.dvc/cache")
  (add-to-list 'projectile-globally-ignored-directories "/.dvc/tmp")
  (projectile-mode +1))
-
-(provide 'projectile-settings)
 #+END_SRC

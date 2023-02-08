@@ -1,127 +1,29 @@
 * Parens
 #+PROPERTY: header-args:elisp :load yes
 
-#+BEGIN_SRC elisp :load yes
-;;                                    :repo "raxod502/dumbparens"))
-;; https://git.sr.ht/~protesilaos/lin
-;; finding the cursor
-;; Make it very easy to see the line with the cursor.
-
-;; electric pair
+#+BEGIN_SRC elisp
 (setq show-paren-when-point-inside-paren 't)
 (setq show-paren-style 'mixed)
 (setq show-paren-context-when-offscreen 't)
-(straight-use-package 'elec-pair)
 
-;; Disable electric pair in minibuffer
-(defun my/inhibit-electric-pair-mode (char)
-  (or (minibufferp) (electric-pair-conservative-inhibit char)))
-(setq electric-pair-inhibit-predicate #'my/inhibit-electric-pair-mode)
+(use-package
+ elec-pair
+ :straight t
+ :config ;; Disable electric pair in minibuffer
+ (defun my/inhibit-electric-pair-mode (char)
+   (or (minibufferp) (electric-pair-conservative-inhibit char)))
+ (setq electric-pair-inhibit-predicate
+       #'my/inhibit-electric-pair-mode)
 
-(electric-pair-mode t)
-;; The ‘<’ and ‘>’ are not ‘parenthesis’, so give them no compleition.
-(setq electric-pair-inhibit-predicate
-      (lambda (c)
-        (or (member c '(?< ?> ?~))
-            (electric-pair-default-inhibit c))))
+ (electric-pair-mode t)
+ ;; The ‘<’ and ‘>’ are not ‘parenthesis’, so give them no compleition.
+ (setq electric-pair-inhibit-predicate
+       (lambda (c)
+         (or (member c '(?< ?> ?~))
+             (electric-pair-default-inhibit c)))))
+
 (setq show-paren-context-when-offscreen t)
 (setq show-paren-style 'mixed)
-
-
-;; (straight-use-package '(siege-mode :type git
-;;                                         :host github
-;;                                         :repo "tslilc/siege-mode"))
-;; (use-package siege-mode)
-
-
-;; (use-package smartparens
-;;   :straight t
-;;   :init
-;;   (smartparens-global-mode t)
-;;   :config (progn
-;;             (require 'smartparens-config)
-;;             (show-smartparens-global-mode t)
-;;             (setq smartparens-wrap-respect-direction 't)
-;;             ;; (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
-;;             ;; (add-hook 'markdown-mode-hook 'turn-on-smartparens-strict-mode)
-;;             )
-;;   :bind (:map smartparens-mode-map
-;;               ("C-M-a" . sp-beginning-of-sexp)
-;;               ("C-M-e" . sp-end-of-sexp)
-;;               ("C-<down>" . sp-down-sexp)
-;;               ;; ("C-<up>" . sp-up-sexp)
-;;               ;; ("M-<down>" . sp-backward-down-sexp)
-;;               ("M-<up>" . sp-backward-up-sexp)
-;;               ("C-M-f" . sp-forward-sexp)
-;;               ("C-M-b" . sp-backward-sexp)
-;;               ("C-M-n" . sp-next-sexp)
-;;               ("C-M-p" . sp-previous-sexp)
-;;               ("C-S-f" . sp-forward-symbol)
-;;               ("C-S-b" . sp-backward-symbol)
-;;               ;; ("C-<right>" . sp-forward-slurp-sexp)
-;;               ;; ("M-<right>" . sp-forward-barf-sexp)
-;;               ;; ("C-<left>" . sp-backward-slurp-sexp)
-;;               ;; ("M-<left>" . sp-backward-barf-sexp)
-;;               ;; ("C-M-t" . sp-transpose-sexp)
-;;               ("C-M-k" . sp-kill-sexp)
-;;               ("C-k" . sp-kill-hybrid-sexp)
-;;               ;; ("M-k" . sp-backward-kill-sexp)
-;;               ;; ("C-M-w" . sp-copy-sexp)
-;;               ;; ("C-M-d" . sp-delete-sexp)
-;;               ("M-<backspace>" . backward-kill-word)
-;;               ("C-<backspace>" . sp-backward-kill-word)
-;;               ([remap sp-backward-kill-word] . backward-kill-word)
-;;               ("M-[" . sp-backward-unwrap-sexp)
-;;               ("M-]" . sp-unwrap-sexp)
-;;               ("C-x C-t" . sp-transpose-hybrid-sexp)
-;;               ("C-c (" . wrap-with-parens)
-;;               ("C-c [" . wrap-with-brackets)
-;;               ("C-c {" . wrap-with-braces)
-;;               ("C-c '" . wrap-with-single-quotes)
-;;               ("C-c \"" . wrap-with-double-quotes)
-;;               ("C-c _" . wrap-with-underscores)
-;;               ("C-c `" . wrap-with-back-quotes)))
-
-;; (use-package smartparens :straight t
-;;   :hook (python-base-mode . smartparens-mode)
-;;   ;; :hook (org-mode . smartparens-mode)
-;;   :hook (elisp-mode . smartparens-mode)
-
-;;   :config
-;;   (require 'smartparens-config)
-;;   (smartparens-strict-mode)
-;;   
-
-;;   )
-
-
-;; (setq dumbparens-mode-bindings '(([remap delete-char] . delete-forward-char)
-;;                                  ("C-M-f" . dumbparens-forward)
-;;                                  ("C-M-b" . dumbparens-backward)
-;;                                  ("C-M-n" . dumbparens-up-forward)
-;;                                  ("C-M-u" . dumbparens-up-backward)
-;;                                  ("C-(" . dumbparens-wrap-forward)
-;;                                  ("C-)" . dumbparens-wrap-backward)
-;;                                  ("M-(" . dumbparens-wrap-round-forward)
-;;                                  ("M-)" . dumbparens-wrap-round-backward)
-;;                                  ("M-[" . dumbparens-wrap-square-forward)
-;;                                  ("M-]" . dumbparens-wrap-square-backward)
-;;                                  ("C-{" . dumbparens-wrap-curly-forward)
-;;                                  ("C-}" . dumbparens-wrap-curly-backward)
-;;                                  ("M-\"" . dumbparens-wrap-double-quote)
-;;                                  ("M-'" . dumbparens-wrap-single-quote)
-;;                                  ;; ("M-s" . dumbparens-splice)
-;;                                  ("M-<down>" . dumbparens-splice-killing-forward)
-;;                                  ("M-<up>" . dumbparens-splice-killing-backward)
-;;                                  ("M-r" . dumbparens-raise)
-;;                                  ("M-?" . dumbparens-convolute)
-;;                                  ("C-<right>" . dumbparens-slurp-forward)
-;;                                  ("C-<left>" . dumbparens-barf-forward)
-;;                                  ;; ("M-S" . dumbparens-split)
-;;                                  ("M-j" . dumbparens-join)))
-;; (straight-use-package '(dumbparens :host github
-;;                                    :repo "raxod502/dumbparens"))
-;; (dumbparens-global-mode 't)
 
 
 ;; Treat ‘<’ and ‘>’ as if they were words, instead of ‘parenthesis’.
@@ -131,12 +33,4 @@
 ;; Show matching parens
 (setq show-paren-delay 0)
 (show-paren-mode t)
-
-;; (straight-use-package 'rainbow-delimiters)
-;; (use-package rainbow-delimiters
-;;   :disabled :hook
-;;   ((org-mode prog-mode text-mode python-base-mode
-;;              LaTeX-mode) . rainbow-delimiters-mode))
-
-(provide 'parens-settings)
 #+END_SRC

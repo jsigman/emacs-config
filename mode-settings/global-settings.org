@@ -24,6 +24,56 @@
 (setq column-number-mode t)
 (setq blink-paren-function nil)
 (setq inhibit-startup-screen t)
+
+
+(use-package direnv :straight t :config (direnv-mode 't))
+
+
+(use-package
+ ctrlf
+ :straight t
+ :config
+ (add-to-list
+  'ctrlf-minibuffer-bindings '("C-r" . ctrlf-backward-default))
+ (setq ctrlf-default-search-style 'fuzzy-regexp)
+ (setq ctrlf-default-search-style 'literal)
+ (ctrlf-mode t))
+
+(use-package
+ whole-line-or-region
+ :straight t
+ :config (whole-line-or-region-global-mode t))
+
+#+begin_src emacs-lisp :tangle yes
+(use-package
+ popper
+ :straight t
+ :bind
+ (("C-`" . popper-toggle-latest)
+  ("M-`" . popper-cycle)
+  ("C-M-`" . popper-toggle-type))
+ :init
+ (setq popper-reference-buffers
+       '("\\*Messages\\*"
+         "Output\\*$"
+         "\\*Async Shell Command\\*"
+         help-mode
+         compilation-mode))
+ (popper-mode +1) (popper-echo-mode +1))
+
+(literate-elisp-load "colors-settings.org")
+(use-package
+ combobulate
+ ;; Optional, but recommended.
+ ;;
+ ;; You can manually enable Combobulate with `M-x
+ ;; combobulate-mode'.
+ :hook ((python-mode . combobulate-mode) (yaml-mode . combobulate-mode))
+ ;; Amend this to the directory where you keep Combobulate's source
+ ;; code.
+ :straight '(combobulate :type git :host github :repo "mickeynp/combobulate"))
+#+END_SRC
+
 #+end_src
 
 #+begin_src emacs-lisp :tangle yes
@@ -90,45 +140,56 @@
 ;; (straight-use-package 'info-colors)
 ;; (add-hook 'Info-selection-hook 'info-colors-fontify-node)
 
-                                        ; -----STARTUP SCREEN------- ;
-(straight-use-package
+(use-package
+ page-break-lines
+ :straight t
+ :config (global-page-break-lines-mode))
+
+(use-package eldoc :straight t :hook (prog-mode . eldoc-mode))
+
+#+end_src
+** Dashboard
+#+begin_src emacs-lisp :tangle yes
+(use-package
+ dashboard
+ :straight
  '(emacs-dashboard
    :type git
    :host github
    :repo "emacs-dashboard/emacs-dashboard"
-   :files ("banners" :defaults)))
+   :files ("banners" :defaults))
 
-;; Set the title
-(setq dashboard-banner-logo-title "Welcome to Emacs!")
-;; Set the banner
-(setq dashboard-startup-banner 'official)
-(setq dashboard-items
-      '((projects . 5)
-        (recents . 5) (bookmarks . 5)
-        ;; (agenda . 5)
-        (registers . 5)))
-;; ;; Value can be
-;; ;; 'official which displays the official emacs logo
-;; ;; 'logo which displays an alternative emacs logo
-;; ;; 1, 2 or 3 which displays one of the text banners
-;; ;; "path/to/your/image.png" which displays whatever image you would prefer
+ :config
+ ;; Set the title
+ (setq dashboard-banner-logo-title "Welcome to Emacs!")
+ ;; Set the banner
+ (setq dashboard-startup-banner 'official)
+ (setq dashboard-items
+       '((projects . 5)
+         (recents . 5) (bookmarks . 5)
+         ;; (agenda . 5)
+         (registers . 5)))
+ ;; ;; Value can be
+ ;; ;; 'official which displays the official emacs logo
+ ;; ;; 'logo which displays an alternative emacs logo
+ ;; ;; 1, 2 or 3 which displays one of the text banners
+ ;; ;; "path/to/your/image.png" which displays whatever image you would prefer
 
-;; ;; Content is not centered by default. To center, set
-(setq dashboard-center-content t)
-(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+ ;; ;; Content is not centered by default. To center, set
+ (setq dashboard-center-content t)
+ (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 
-;; ;; To disable shortcut "jump" indicators for each section, set
-;; (setq dashboard-show-shortcuts nil)
-(require 'dashboard)
+ ;; ;; To disable shortcut "jump" indicators for each section, set
+ ;; (setq dashboard-show-shortcuts nil)
 
-;; Override this function so that we can filter remote projects
-(defun dashboard-projects-backend-load-projects ()
-  "Depending on `dashboard-projects-backend' load corresponding backend.
+ ;; Override this function so that we can filter remote projects
+ (defun dashboard-projects-backend-load-projects ()
+   "Depending on `dashboard-projects-backend' load corresponding backend.
   Return function that returns a list of projects."
-  (cl-remove-if
-   (lambda (x) (string-search "/ssh" x))
-   (cl-case
-       dashboard-projects-backend
+   (cl-remove-if
+    (lambda (x) (string-search "/ssh" x))
+    (cl-case
+     dashboard-projects-backend
      (`projectile
       (require 'projectile)
       (dashboard-mute-apply (projectile-cleanup-known-projects))
@@ -136,252 +197,202 @@
      (`project-el
       (require 'project)
       (dashboard-mute-apply
-        (dashboard-funcall-fboundp #'project-forget-zombie-projects))
+       (dashboard-funcall-fboundp #'project-forget-zombie-projects))
       (project-known-project-roots))
      (t
       (display-warning
        '(dashboard) "Invalid value for `dashboard-projects-backend'"
        :error)))))
 
+ (dashboard-setup-startup-hook))
+#+end_src
 
-(dashboard-setup-startup-hook)
-
-
-(use-package
-  page-break-lines
-  :straight t
-  :config (global-page-break-lines-mode))
-
+** Icons
+#+begin_src emacs-lisp :tangle yes
 (use-package all-the-icons :straight t)
 (use-package
-  all-the-icons-ibuffer
-  :straight t
-  :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
+ all-the-icons-ibuffer
+ :straight t
+ :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
 
 ;; I don't think I like buffer expose after all
 ;; (straight-use-package 'buffer-expose)
 ;; (require 'buffer-expose)
 ;; (buffer-expose-mode 'nil)
 (use-package
-  all-the-icons-completion
-  :straight t
-  :config (all-the-icons-completion-mode)
-  :hook
-  (marginalia-mode . all-the-icons-completion-marginalia-setup))
+ all-the-icons-completion
+ :straight t
+ :config (all-the-icons-completion-mode)
+ :hook
+ (marginalia-mode . all-the-icons-completion-marginalia-setup))
 
 
 (literate-elisp-load "projectile-settings.org")
 
-  (use-package eldoc :straight t :hook (prog-mode . eldoc-mode))
+; Re-enable with SVG support
+(use-package
+ :straight '(svg-lib :host github :repo "emacs-straight/svg-lib"))
+(use-package '(kind-icon :host github :repo "jdtsmith/kind-icon"))
+(use-package
+ kind-icon
+ :ensure t
+ :after corfu
+ :custom
+ (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
+ :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+#+end_src
+** Fonts
+#+begin_src emacs-lisp :tangle yes
+;; Font settings
+(if (eq system-type 'darwin)
+    (if (> (x-display-pixel-width) 1440)
+        ;; Set default font larger if on a big screen
+        (set-face-font 'default "roboto mono-15")
+      ;; (set-face-font 'default "arial-15")
 
-  ;; Font settings
-
-  (if (eq system-type 'darwin)
+      ;; else
+      (set-face-font 'default "roboto mono-14")
+      ;; (set-fontset-font "fontset-default" "Menlo 12")
+      )
+  ;; else
+  (if (not (eq window-system nil))
       (if (> (x-display-pixel-width) 1440)
           ;; Set default font larger if on a big screen
           (set-face-font 'default "roboto mono-15")
-        ;; (set-face-font 'default "arial-15")
-
         ;; else
         (set-face-font 'default "roboto mono-14")
         ;; (set-fontset-font "fontset-default" "Menlo 12")
         )
     ;; else
-    (if (not (eq window-system nil))
-        (if (> (x-display-pixel-width) 1440)
-            ;; Set default font larger if on a big screen
-            (set-face-font 'default "roboto mono-15")
-          ;; else
-          (set-face-font 'default "roboto mono-14")
-          ;; (set-fontset-font "fontset-default" "Menlo 12")
-          )
-      ;; else
-      ))
+    ))
 
-  ;; Use ace-popup-menu for completions
-  (straight-use-package 'ace-popup-menu)
-  (ace-popup-menu-mode 1)
-  (setq ace-popup-menu-show-pane-header t)
+;; Use ace-popup-menu for completions
+(straight-use-package 'ace-popup-menu)
+(ace-popup-menu-mode 1)
+(setq ace-popup-menu-show-pane-header t)
 
-  ;; Start-up profiler
-  (use-package esup :straight t)
+;; Start-up profiler
+(use-package esup :straight t)
 
-  ;; Scratch.el
-  (straight-use-package
-   '(scratch
-     :host nil
-     :type git
-     :repo "https://codeberg.org/emacs-weirdware/scratch.git"))
+;; Scratch.el
+(use-package
+ scratch
+ :straight
+ '(scratch
+   :host nil
+   :type git
+   :repo "https://codeberg.org/emacs-weirdware/scratch.git")
+ :config (scratch--create 'lisp-interaction-mode "*scratch*"))
 
 
-  (straight-use-package 'scratch)
-  (require 'scratch)
-  (scratch--create 'lisp-interaction-mode "*scratch*")
+(use-package fuzzy :straight t)
+(use-package fuzzy-match :straight t)
 
+(use-package free-keys :straight t)
+(use-package restart-emacs :straight t)
 
-  (straight-use-package 'fuzzy)
-  (straight-use-package 'fuzzy-match)
+; ---- Auto Revert Modes ----- ;
+(autoload 'eimp-mode "eimp" "Emacs Image Manipulation Package." t)
+(add-hook 'image-mode-hook 'auto-revert-mode)
 
-  (straight-use-package 'free-keys)
-  (straight-use-package 'restart-emacs)
+; --- CSV --- ;
+(use-package
+ csv-mode
+ :straight
+ '(csv-mode :type git :host github :repo "emacsmirror/csv-mode"))
 
-  ; ---- Auto Revert Modes ----- ;
-  (autoload 'eimp-mode "eimp" "Emacs Image Manipulation Package." t)
-  (add-hook 'image-mode-hook 'auto-revert-mode)
+(use-package
+ :straight
+ '(explain-pause-mode
+   :type git
+   :host github
+   :repo "lastquestion/explain-pause-mode")
+ :config explain-pause-mode)
 
-  ; --- CSV --- ;
-  (straight-use-package
-   '(csv-mode :type git :host github :repo "emacsmirror/csv-mode"))
-  (require 'csv-mode)
+;; use helpful instead of the normal help buffers
+;; Note that the built-in `describe-function' includes both functions
+;; and macros. `helpful-function' is functions only, so we provide
+;; `helpful-callable' as a drop-in replacement.
+(use-package
+ helpful
+ :straight t
+ :config (global-set-key (kbd "C-h f") #'helpful-callable)
 
-  (straight-use-package
-   '(explain-pause-mode
-     :type git
-     :host github
-     :repo "lastquestion/explain-pause-mode"))
-  ;; (explain-pause-mode)
+ (global-set-key (kbd "C-h v") #'helpful-variable)
+ (global-set-key (kbd "C-h k") #'helpful-key))
 
-  ;; use helpful instead of the normal help buffers
-  ;; Note that the built-in `describe-function' includes both functions
-  ;; and macros. `helpful-function' is functions only, so we provide
-  ;; `helpful-callable' as a drop-in replacement.
-  (straight-use-package 'helpful)
-  (require 'helpful)
-  (global-set-key (kbd "C-h f") #'helpful-callable)
+(use-package
+ dimmer
+ :straight t
+ :config
+ (dimmer-configure-which-key)
+ (dimmer-configure-org)
+ (dimmer-configure-posframe)
+ (dimmer-configure-magit)
+ (dimmer-configure-hydra)
 
-  (global-set-key (kbd "C-h v") #'helpful-variable)
-  (global-set-key (kbd "C-h k") #'helpful-key)
+ (setq dimmer-fraction 0.15)
+ (dimmer-mode t))
 
-  (straight-use-package 'dimmer)
-  (require 'dimmer)
-  (dimmer-configure-which-key)
-  (dimmer-configure-org)
-  (dimmer-configure-posframe)
-  (dimmer-configure-magit)
-  (dimmer-configure-hydra)
+(use-package
+ volatile-highlights
+ :straight t
+ :config (volatile-highlights-mode t))
 
-  (setq dimmer-fraction 0.15)
-  (dimmer-mode t)
+;; (use-package hl-todo :straight t :init (global-hl-todo-mode))
 
-  (straight-use-package 'volatile-highlights)
-  (require 'volatile-highlights)
-  (volatile-highlights-mode t)
+#+end_src
 
-  ;; (use-package hl-todo :straight t :init (global-hl-todo-mode))
+** Indentation
+#+begin_src emacs-lisp :tangle yes
+; disable electric indent
+(electric-indent-mode 0)
+(use-package
+ aggressive-indent
+ :straight t
+ :config (aggressive-indent-global-mode t))
 
-  ; disable electric indent
-  (electric-indent-mode 0)
-  (use-package
-   aggressive-indent
-   :straight t
-   :config (aggressive-indent-global-mode t))
+#+end_src
 
+** Autoformatting
+#+begin_src emacs-lisp :tangle yes
+(use-package
+ apheleia
+ :config
+ (setf (alist-get 'isort apheleia-formatters)
+       '("isort" "--stdout" "-"))
+ (setf (alist-get 'python-base-mode apheleia-mode-alist)
+       '(isort black))
+ (add-to-list
+  'apheleia-formatters
+  '(prettier-toml
+    npx "prettier" "--stdin-filepath" filepath "--parser=toml"))
+ (add-to-list 'apheleia-mode-alist '(conf-toml-mode . prettier-toml))
+ (defun apheleia-indent-region+ (orig scratch callback)
+   (with-current-buffer scratch
+     (setq-local indent-line-function
+                 (buffer-local-value 'indent-line-function orig))
+     (indent-region (point-min) (point-max))
+     (funcall callback scratch)))
 
-  (straight-use-package 'grip-mode)
-  (require 'grip-mode)
+ (push '(indent-region . apheleia-indent-region+) apheleia-formatters)
+ (push '(elisp-mode . indent-region) apheleia-mode-alist)
+ (push '(lisp-interaction-mode . indent-region) apheleia-mode-alist)
 
-  ;; (straight-use-package 'markdownfmt)
-  ;; (require 'markdownfmt)
+ (apheleia-global-mode t))
 
-  (use-package
-   apheleia
-   :config
-   (setf (alist-get 'isort apheleia-formatters)
-         '("isort" "--stdout" "-"))
-   (setf (alist-get 'python-base-mode apheleia-mode-alist)
-         '(isort black))
-   (add-to-list
-    'apheleia-formatters
-    '(prettier-toml
-      npx "prettier" "--stdin-filepath" filepath "--parser=toml"))
-   (add-to-list 'apheleia-mode-alist '(conf-toml-mode . prettier-toml))
-   (defun apheleia-indent-region+ (orig scratch callback)
-     (with-current-buffer scratch
-       (setq-local indent-line-function
-                   (buffer-local-value 'indent-line-function orig))
-       (indent-region (point-min) (point-max))
-       (funcall callback scratch)))
+(literate-elisp-load "elisp-settings.org")
+(use-package
+ elisp-autofmt
+ :commands (elisp-autofmt-mode)
+ :hook (emacs-lisp-mode . elisp-autofmt-mode)
+ :straight
+ (elisp-autofmt
+  ;; :files (:defaults "elisp-autofmt")
+  :host nil
+  :type git
+  :repo "https://codeberg.org/ideasman42/emacs-elisp-autofmt.git")
+ :config (setq elisp-autofmt-on-save-p 'always))
 
-   (push '(indent-region . apheleia-indent-region+) apheleia-formatters)
-   (push '(elisp-mode . indent-region) apheleia-mode-alist)
-   (push '(lisp-interaction-mode . indent-region) apheleia-mode-alist))
+#+end_src
 
-
-  (literate-elisp-load "elisp-settings.org")
-
-
-  ;; (defun apheleia-indent-region+ (orig scratch callback)
-  ;;   (with-current-buffer scratch
-  ;;     (setq-local indent-line-function
-  ;;                 (buffer-local-value 'indent-line-function orig))
-  ;;     (indent-region (point-min)
-  ;;                    (point-max))
-  ;;     (funcall callback scratch)))
-
-  ;; (push '(indent-region . apheleia-indent-region+) apheleia-formatters)
-  ;; (push '(elisp-mode . indent-region) apheleia-mode-alist)
-  ;; (push '(lisp-interaction-mode . indent-region) apheleia-mode-alist)
-
-  ;; (add-to-list 'apheleia-mode-alist '(python-base-mode . isort))
-  ;; (add-to-list 'apheleia-formatters '(isort . ("isort" "-" "--stdout")))
-  (apheleia-global-mode t)
-
-
-  (use-package direnv :straight t :config (direnv-mode 't))
-
-
-  (straight-use-package 'ctrlf)
-  (require 'ctrlf)
-  ;; (add-to-list 'ctrlf-minibuffer-bindings '("C-r" . nil))
-
-  (add-to-list
-   'ctrlf-minibuffer-bindings '("C-r" . ctrlf-backward-default))
-  (setq ctrlf-default-search-style 'fuzzy-regexp)
-  (setq ctrlf-default-search-style 'literal)
-
-  (ctrlf-mode t)
-  ;; (add-to-list 'ctrlf-minibuffer-bindings '("C-r" . nil))
-
-  (straight-use-package 'whole-line-or-region)
-  (require 'whole-line-or-region)
-  (whole-line-or-region-global-mode t)
-
-  ;; (straight-use-package 'svg-tag-mode)
-  ;; (require 'svg-tag-mode)
-  ;; (global-svg-tag-mode +1)
-
-  (use-package
-   popper
-   :straight t
-   :bind
-   (("C-`" . popper-toggle-latest)
-    ("M-`" . popper-cycle)
-    ("C-M-`" . popper-toggle-type))
-   :init
-   (setq popper-reference-buffers
-         '("\\*Messages\\*"
-           "Output\\*$"
-           "\\*Async Shell Command\\*"
-           help-mode
-           compilation-mode))
-   (popper-mode +1) (popper-echo-mode +1))
-
-  ;; (use-package topsy
-  ;;   :straight t
-  ;;   :hook (prog-mode . topsy-mode))
-
-  (require 'colors-settings)
-  (use-package
-   combobulate
-   ;; Optional, but recommended.
-   ;;
-   ;; You can manually enable Combobulate with `M-x
-   ;; combobulate-mode'.
-   :hook ((python-mode . combobulate-mode) (yaml-mode . combobulate-mode))
-   ;; Amend this to the directory where you keep Combobulate's source
-   ;; code.
-   :straight '(combobulate :type git :host github :repo "mickeynp/combobulate"))
-
-
-  (provide 'global-settings)
-#+END_SRC

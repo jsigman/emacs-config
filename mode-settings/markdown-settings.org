@@ -13,5 +13,7 @@
  ;; (require 'lsp-marksman)
 )
 
-(provide 'markdown-settings)
+;; (straight-use-package 'markdownfmt)
+;; (require 'markdownfmt)
+
 #+END_SRC
