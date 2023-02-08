@@ -2,7 +2,6 @@
 #+PROPERTY: header-args:emacs-lisp :load yes
 
 #+begin_src emacs-lisp
-
 (setq native-comp-async-report-warnings-errors nil)
 ;; Show the line number of the cursor in the mode bar at the bottom of each buffer
 (setq line-number-mode t)
@@ -24,11 +23,7 @@
 (setq column-number-mode t)
 (setq blink-paren-function nil)
 (setq inhibit-startup-screen t)
-
-
 (use-package direnv :straight t :config (direnv-mode 't))
-
-
 (use-package
  ctrlf
  :straight t
@@ -44,10 +39,6 @@
  :straight t
  :config (whole-line-or-region-global-mode t))
 
-,#+begin_src
-emacs-lisp
-:tangle
-yes
 (use-package
  popper
  :straight t
@@ -90,8 +81,6 @@ yes
  (global-set-key (kbd "C-x C-b") 'ibuffer)
  (define-key ibuffer-mode-map (kbd "M-o") nil))
 #+END_SRC
-
-#+end_src
 
 #+begin_src emacs-lisp :load yes
 (literate-elisp-load "term-settings.org")
@@ -259,104 +248,102 @@ yes
 #+end_src
 ** Fonts
 #+begin_src emacs-lisp :load yes
-;; Font settings
-(if (eq system-type 'darwin)
-    (if (> (x-display-pixel-width) 1440)
-        ;; Set default font larger if on a big screen
-        (set-face-font 'default "roboto mono-15")
-      ;; (set-face-font 'default "arial-15")
-
-      ;; else
-      (set-face-font 'default "roboto mono-14")
-      ;; (set-fontset-font "fontset-default" "Menlo 12")
-      )
-  ;; else
-  (if (not (eq window-system nil))
+  ;; Font settings
+  (if (eq system-type 'darwin)
       (if (> (x-display-pixel-width) 1440)
-          ;; Set default font larger if on a big screen
-          (set-face-font 'default "roboto mono-15")
-        ;; else
-        (set-face-font 'default "roboto mono-14")
-        ;; (set-fontset-font "fontset-default" "Menlo 12")
-        )
+	  ;; Set default font larger if on a big screen
+	  (set-face-font 'default "roboto mono-15")
+	;; (set-face-font 'default "arial-15")
+
+	;; else
+	(set-face-font 'default "roboto mono-14")
+	;; (set-fontset-font "fontset-default" "Menlo 12")
+	)
     ;; else
-    ))
+    (if (not (eq window-system nil))
+	(if (> (x-display-pixel-width) 1440)
+	    ;; Set default font larger if on a big screen
+	    (set-face-font 'default "roboto mono-15")
+	  ;; else
+	  (set-face-font 'default "roboto mono-14")
+	  ;; (set-fontset-font "fontset-default" "Menlo 12")
+	  )
+      ;; else
+      ))
 
-;; Use ace-popup-menu for completions
-(straight-use-package 'ace-popup-menu)
-(ace-popup-menu-mode 1)
-(setq ace-popup-menu-show-pane-header t)
+  ;; Use ace-popup-menu for completions
+  (straight-use-package 'ace-popup-menu)
+  (ace-popup-menu-mode 1)
+  (setq ace-popup-menu-show-pane-header t)
 
-;; Start-up profiler
-(use-package esup :straight t)
+  ;; Start-up profiler
+  (use-package esup :straight t)
 
-;; Scratch.el
-(use-package
- scratch
- :straight
- '(scratch
-   :host nil
-   :type git
-   :repo "https://codeberg.org/emacs-weirdware/scratch.git")
- :config (scratch--create 'lisp-interaction-mode "*scratch*"))
+  ;; Scratch.el
+  (use-package
+   scratch
+   :straight
+   '(scratch
+     :host nil
+     :type git
+     :repo "https://codeberg.org/emacs-weirdware/scratch.git")
+   :config (scratch--create 'lisp-interaction-mode "*scratch*"))
 
+  (use-package fuzzy :straight t)
+  (use-package fuzzy-match :straight t)
 
-(use-package fuzzy :straight t)
-(use-package fuzzy-match :straight t)
+  (use-package free-keys :straight t)
+  (use-package restart-emacs :straight t)
 
-(use-package free-keys :straight t)
-(use-package restart-emacs :straight t)
+  ; ---- Auto Revert Modes ----- ;
+  (autoload 'eimp-mode "eimp" "Emacs Image Manipulation Package." t)
+  (add-hook 'image-mode-hook 'auto-revert-mode)
 
-; ---- Auto Revert Modes ----- ;
-(autoload 'eimp-mode "eimp" "Emacs Image Manipulation Package." t)
-(add-hook 'image-mode-hook 'auto-revert-mode)
+  ; --- CSV --- ;
+  (use-package
+   csv-mode
+   :straight
+   '(csv-mode :type git :host github :repo "emacsmirror/csv-mode"))
 
-; --- CSV --- ;
-(use-package
- csv-mode
- :straight
- '(csv-mode :type git :host github :repo "emacsmirror/csv-mode"))
+  (use-package
+   :straight
+   '(explain-pause-mode
+     :type git
+     :host github
+     :repo "lastquestion/explain-pause-mode")
+   :config explain-pause-mode)
 
-(use-package
- :straight
- '(explain-pause-mode
-   :type git
-   :host github
-   :repo "lastquestion/explain-pause-mode")
- :config explain-pause-mode)
+  ;; use helpful instead of the normal help buffers
+  ;; Note that the built-in `describe-function' includes both functions
+  ;; and macros. `helpful-function' is functions only, so we provide
+  ;; `helpful-callable' as a drop-in replacement.
+  (use-package
+   helpful
+   :straight t
+   :config (global-set-key (kbd "C-h f") #'helpful-callable)
 
-;; use helpful instead of the normal help buffers
-;; Note that the built-in `describe-function' includes both functions
-;; and macros. `helpful-function' is functions only, so we provide
-;; `helpful-callable' as a drop-in replacement.
-(use-package
- helpful
- :straight t
- :config (global-set-key (kbd "C-h f") #'helpful-callable)
+   (global-set-key (kbd "C-h v") #'helpful-variable)
+   (global-set-key (kbd "C-h k") #'helpful-key))
 
- (global-set-key (kbd "C-h v") #'helpful-variable)
- (global-set-key (kbd "C-h k") #'helpful-key))
+  (use-package
+   dimmer
+   :straight t
+   :config
+   (dimmer-configure-which-key)
+   (dimmer-configure-org)
+   (dimmer-configure-posframe)
+   (dimmer-configure-magit)
+   (dimmer-configure-hydra)
 
-(use-package
- dimmer
- :straight t
- :config
- (dimmer-configure-which-key)
- (dimmer-configure-org)
- (dimmer-configure-posframe)
- (dimmer-configure-magit)
- (dimmer-configure-hydra)
+   (setq dimmer-fraction 0.15)
+   (dimmer-mode t))
 
- (setq dimmer-fraction 0.15)
- (dimmer-mode t))
+  (use-package
+   volatile-highlights
+   :straight t
+   :config (volatile-highlights-mode t))
 
-(use-package
- volatile-highlights
- :straight t
- :config (volatile-highlights-mode t))
-
-;; (use-package hl-todo :straight t :init (global-hl-todo-mode))
-
+  (use-package hl-todo :straight t :init (global-hl-todo-mode))
 #+end_src
 
 ** Indentation
@@ -367,7 +354,6 @@ yes
  aggressive-indent
  :straight t
  :config (aggressive-indent-global-mode t))
-
 #+end_src
 
 ** Autoformatting
