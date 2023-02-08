@@ -236,10 +236,7 @@
 ; Re-enable with SVG support
 (use-package svg-lib
  :straight '(svg-lib :host github :repo "emacs-straight/svg-lib"))
-(use-package '(kind-icon :host github :repo "jdtsmith/kind-icon"))
-(use-package
- kind-icon
- :ensure t
+(use-package kind-icon :straight '(kind-icon :host github :repo "jdtsmith/kind-icon")  :ensure t
  :after corfu
  :custom
  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
