@@ -301,7 +301,7 @@
    :straight
    '(csv-mode :type git :host github :repo "emacsmirror/csv-mode"))
 
-  (use-package
+  (use-package explain-pause-mode
    :straight
    '(explain-pause-mode
      :type git
@@ -354,43 +354,44 @@
 
 ** Autoformatting
 #+begin_src emacs-lisp :load yes
-(use-package
- apheleia
- :config
- (setf (alist-get 'isort apheleia-formatters)
-       '("isort" "--stdout" "-"))
- (setf (alist-get 'python-base-mode apheleia-mode-alist)
-       '(isort black))
- (add-to-list
-  'apheleia-formatters
-  '(prettier-toml
-    npx "prettier" "--stdin-filepath" filepath "--parser=toml"))
- (add-to-list 'apheleia-mode-alist '(conf-toml-mode . prettier-toml))
- (defun apheleia-indent-region+ (orig scratch callback)
-   (with-current-buffer scratch
-     (setq-local indent-line-function
-                 (buffer-local-value 'indent-line-function orig))
-     (indent-region (point-min) (point-max))
-     (funcall callback scratch)))
+  (use-package
+   apheleia
+ :straight 
+   :config
+   (setf (alist-get 'isort apheleia-formatters)
+         '("isort" "--stdout" "-"))
+   (setf (alist-get 'python-base-mode apheleia-mode-alist)
+         '(isort black))
+   (add-to-list
+    'apheleia-formatters
+    '(prettier-toml
+      npx "prettier" "--stdin-filepath" filepath "--parser=toml"))
+   (add-to-list 'apheleia-mode-alist '(conf-toml-mode . prettier-toml))
+   (defun apheleia-indent-region+ (orig scratch callback)
+     (with-current-buffer scratch
+       (setq-local indent-line-function
+                   (buffer-local-value 'indent-line-function orig))
+       (indent-region (point-min) (point-max))
+       (funcall callback scratch)))
 
- (push '(indent-region . apheleia-indent-region+) apheleia-formatters)
- (push '(elisp-mode . indent-region) apheleia-mode-alist)
- (push '(lisp-interaction-mode . indent-region) apheleia-mode-alist)
+   (push '(indent-region . apheleia-indent-region+) apheleia-formatters)
+   (push '(elisp-mode . indent-region) apheleia-mode-alist)
+   (push '(lisp-interaction-mode . indent-region) apheleia-mode-alist)
 
- (apheleia-global-mode t))
+   (apheleia-global-mode t))
 
-(literate-elisp-load "elisp-settings.org")
-(use-package
- elisp-autofmt
- :commands (elisp-autofmt-mode)
- :hook (emacs-lisp-mode . elisp-autofmt-mode)
- :straight
- (elisp-autofmt
-  ;; :files (:defaults "elisp-autofmt")
-  :host nil
-  :type git
-  :repo "https://codeberg.org/ideasman42/emacs-elisp-autofmt.git")
- :config (setq elisp-autofmt-on-save-p 'always))
+  (literate-elisp-load "elisp-settings.org")
+  (use-package
+   elisp-autofmt
+   :commands (elisp-autofmt-mode)
+   :hook (emacs-lisp-mode . elisp-autofmt-mode)
+   :straight
+   (elisp-autofmt
+    ;; :files (:defaults "elisp-autofmt")
+    :host nil
+    :type git
+    :repo "https://codeberg.org/ideasman42/emacs-elisp-autofmt.git")
+   :config (setq elisp-autofmt-on-save-p 'always))
 
 #+end_src
 
