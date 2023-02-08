@@ -1,5 +1,5 @@
 * Magit
-#+author: Johnny Sigman
+#+PROPERTY: header-args:elisp :load yes
 
 #+BEGIN_SRC elisp :load yes
 (literate-elisp-load "projectile-settings.org")

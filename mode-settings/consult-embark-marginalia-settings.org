@@ -1,5 +1,5 @@
 * Consult/Embark/Marginalia
-
+#+PROPERTY: header-args:elisp :load yes
 #+BEGIN_SRC elisp :load yes
 (straight-use-package 'marginalia)
 (use-package marginalia :ensure t :config (marginalia-mode))

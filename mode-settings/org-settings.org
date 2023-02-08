@@ -1,31 +1,16 @@
 * Org Mode
+#+PROPERTY: header-args:elisp :load yes
 
 #+BEGIN_SRC elisp :load yes
-;; (require 'lsp-settings)
-
-
-; Below for OB-ipython
-;; (straight-use-package 'ob-ipython)
-;; (require 'ob-ipython)
-;; (setq ob-ipython-resources-dir "~/.obipy-resources/")
-;; (define-key org-mode-map (kbd "C-c C-v C-k") 'ob-ipython-kill-kernel)
-
-(require 'python-settings)
-(require 'jupyter-settings)
-
 (setq ob-ipython-command "jupyter")
-
-;; USE ASYNC IN JUPYTER?
-;; (setq ob-async-no-async-languages-alist '("jupyter-python" "jupyter-julia"))
-
-;; (add-to-list 'org-latex-minted-langs '(ipython "python"))
-
 
 (defun org-src-format-and-save ()
   (interactive)
   (when (eq major-mode 'python-base-mode)
     (apheleia-format-buffer 'black))
-  (sit-for 0.500)
+  (when (eq major-mode 'emacs-lisp-mode)
+    (elisp-autofmt-buffer))
+  (sit-for 0.100)
   (org-edit-src-save))
 
 (use-package
@@ -66,8 +51,25 @@
    (org-babel-do-load-languages
     'org-babel-load-languages '((jupyter . t)))
    (org-babel-jupyter-aliases-from-kernelspecs 'refresh))
- (visual-line-mode t))
+ (visual-line-mode t)
 
+(setq org-log-done t)
+
+;; adding this does some weird stuff in colors
+(setq org-startup-indented nil)
+
+;; fontify code in code blocks
+(setq org-src-fontify-natively t)
+(setq org-confirm-babel-evaluate nil) ;don't prompt me to confirm everytime I want to evaluate a block
+(setq org-src-preserve-indentation t)
+
+)
+
+
+#+end_src
+** Org Babel
+
+#+begin_src emacs-lisp :tangle yes
 (use-package
  plantuml-mode
  :straight t
@@ -85,29 +87,11 @@
   (org-babel-execute-src-block)
   (org-babel-next-src-block))
 
-
-(setq org-log-done t)
-
-;; adding this does some weird stuff in colors
-(setq org-startup-indented nil)
+#+end_src
 
 
-;; (straight-use-package 'citeproc)
-;; (straight-use-package 'org-ref)
-;; (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
-;; (require 'org-ref)
 
-
-;; (defun my-org-mode-hook ()
-;;   (add-hook 'completion-at-point-functions 'pcomplete-completions-at-tpoint
-;;             nil t))
-;; (add-hook 'org-mode-hook #'my-org-mode-hook)
-
-
-;; fontify code in code blocks
-(setq org-src-fontify-natively t)
-(setq org-confirm-babel-evaluate nil) ;don't prompt me to confirm everytime I want to evaluate a block
-(setq org-src-preserve-indentation t)
+#+begin_src emacs-lisp :tangle yes
 
 (require 'colors-settings)
 (with-eval-after-load 'org

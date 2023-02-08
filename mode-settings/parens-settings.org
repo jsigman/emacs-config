@@ -1,5 +1,5 @@
 * Parens
-#+author: Johnny Sigman
+#+PROPERTY: header-args:elisp :load yes
 
 #+BEGIN_SRC elisp :load yes
 ;;                                    :repo "raxod502/dumbparens"))

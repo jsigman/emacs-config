@@ -1,4 +1,5 @@
 * Avy
+#+PROPERTY: header-args:elisp :load yes
 #+begin_src elisp :load t
 (straight-use-package 'avy)
 (require 'avy)

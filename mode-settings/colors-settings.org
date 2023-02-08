@@ -1,4 +1,5 @@
 * Colors and Theme
+#+PROPERTY: header-args:elisp :load yes
 ** Emacs Theme
 #+begin_src elisp :load yes
 ;-------------COLOR THEME----------------;
@@ -33,6 +34,11 @@
 ;; (set-frame-font "")
 ;; (add-to-list 'default-frame-alist '(font . "FantasqueSansMono:"))
 
+#+end_src
+
+** Tree Sitter
+
+#+begin_src emacs-lisp :tangle yes
 (use-package
  tree-sitter
  :straight t
@@ -56,9 +62,5 @@
 ;; (while (rassoc 'python-mode auto-mode-alist)
 ;;   (setf (cdr (rassoc 'python-mode auto-mode-alist)) 'python-ts-mode))
 
-
 ;; (use-package treesit-auto :straight t)
-
-
-(provide 'colors-settings)
 #+END_SRC

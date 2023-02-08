@@ -1,196 +1,173 @@
 * Global Settings for Editing
-
+#+PROPERTY: header-args:elisp :load yes
 
 #+BEGIN_SRC elisp :load yes
-  ;--------------GLOBAL SETTINGS-------------;
-  (setq native-comp-async-report-warnings-errors nil)
-  ;; Show the line number of the cursor in the mode bar at the bottom of each buffer
-  (setq line-number-mode t)
 
-  ;; Make sure all backup files only live in one place
-  (setq backup-directory-alist `((".*" . ,temporary-file-directory)))
-  (setq auto-save-file-name-transforms
-        `((".*" ,temporary-file-directory t)))
-  ;; Don't truncate lines
-  (setq truncate-lines t)
-  (setq-default indent-tabs-mode nil)
+(setq native-comp-async-report-warnings-errors nil)
+;; Show the line number of the cursor in the mode bar at the bottom of each buffer
+(setq line-number-mode t)
 
-  ;; Don't show the scroll bar on the side of buffers
-  (scroll-bar-mode -1)
-  ;; Don't show the toolbar, it just takes up space
-  (tool-bar-mode -1)
+;; Make sure all backup files only live in one place
+(setq backup-directory-alist `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
+;; Don't truncate lines
+(setq truncate-lines t)
+(setq-default indent-tabs-mode nil)
 
-  ;; Show column number in the modeline
-  (setq column-number-mode t)
-  (setq blink-paren-function nil)
+;; Don't show the scroll bar on the side of buffers
+(scroll-bar-mode -1)
+;; Don't show the toolbar, it just takes up space
+(tool-bar-mode -1)
 
-  ; ------------- Buffer management settings ----------------;
-  (setq inhibit-startup-screen t)
-  ;; make buffer switch command auto suggestions, also for find-file command
-  ;; (ido-mode t)
-  ;; (setq ido-separator ";")
-  ;; ;; Display Any Item That contains the chars you typed
-  ;; (setq ido-enable-flex-matching t)
-  ;; (setq ido-auto-merge-work-directories-length
-  ;;       -1)
+;; Show column number in the modeline
+(setq column-number-mode t)
+(setq blink-paren-function nil)
+(setq inhibit-startup-screen t)
+#+end_src
 
-  (use-package yaml-mode :straight t)
+#+begin_src emacs-lisp :tangle yes
+(literate-elisp-load "term-settings.org")
 
-  ;Ace window
-  (literate-elisp-load "term-settings.org")
+(define-key term-raw-map (kbd "M-o") 'next-multiframe-window)
+(define-key term-raw-map (kbd "M-i") 'previous-multiframe-window)
+(define-key global-map (kbd "M-o") 'next-multiframe-window)
+(define-key global-map (kbd "M-i") 'previous-multiframe-window)
 
-  (define-key term-raw-map (kbd "M-o") 'next-multiframe-window)
-  (define-key term-raw-map (kbd "M-i") 'previous-multiframe-window)
-  (define-key global-map (kbd "M-o") 'next-multiframe-window)
-  (define-key global-map (kbd "M-i") 'previous-multiframe-window)
+(setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
 
+(use-package
+  anzu
+  :straight t
+  :bind
+  (([remap query-replace] . #'anzu-query-replace)
+   ([remap query-replace-regexp] . #'anzu-query-replace-regexp))
+  :config (global-anzu-mode +1))
+
+;; Disable the loud bell
+(setq ring-bell-function
+      (lambda ()
+        (let ((orig-fg (face-foreground 'mode-line)))
+          (set-face-foreground 'mode-line "#F2804F")
+          (run-with-idle-timer 0.1 nil
+                               (lambda (fg)
+                                 (set-face-foreground 'mode-line fg))
+                               orig-fg))))
+
+(use-package lin :straight t)
+(lin-global-mode t)
+
+(use-package hl-line :straight t
   :config
-  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+(add-hook
+ 'eshell-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
+(add-hook
+ 'term-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
+(add-hook
+ 'vterm-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
+(global-hl-line-mode t)
+)
 
-  ;; don't use these with ace window on?
-  ;; (global-set-key (kbd "M-o")
-  ;;                 'next-multiframe-window)
-  ;; (global-set-key (kbd "M-i")
-  ;;                 'previous-multiframe-window)
+(literate-elisp-load "term-settings.org")
 
-  (use-package
-   anzu
-   :straight t
-   :bind
-   (([remap query-replace] . #'anzu-query-replace)
-    ([remap query-replace-regexp] . #'anzu-query-replace-regexp))
-   :config (global-anzu-mode +1))
+(use-package dash :straight t)
+(use-package ht :straight t)
 
-  ;; Disable the loud bell
-  (setq ring-bell-function
-        (lambda ()
-          (let ((orig-fg (face-foreground 'mode-line)))
-            (set-face-foreground 'mode-line "#F2804F")
-            (run-with-idle-timer 0.1 nil
-                                 (lambda (fg)
-                                   (set-face-foreground 'mode-line fg))
-                                 orig-fg))))
+;; Replace the text of selections
+(pending-delete-mode t)
 
-  (use-package lin :straight t)
-  (lin-global-mode t)
+;; UndoTree
+;; (straight-use-package 'undo-tree)
+;; (straight-use-package 'undo-tree)
+;; (require 'undo-tree)
+;; (global-undo-tree-mode)
 
+;; Long lines
+(global-so-long-mode t)
 
-  (global-hl-line-mode t)
+;; Info modes
+;; (straight-use-package 'info-plus)
+;; (straight-use-package 'info-colors)
+;; (add-hook 'Info-selection-hook 'info-colors-fontify-node)
 
-  (require 'term-settings)
-  (add-hook
-   'eshell-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
-  (add-hook
-   'term-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
-  (add-hook
-   'vterm-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
+                                        ; -----STARTUP SCREEN------- ;
+(straight-use-package
+ '(emacs-dashboard
+   :type git
+   :host github
+   :repo "emacs-dashboard/emacs-dashboard"
+   :files ("banners" :defaults)))
 
-  (use-package dash :straight t)
-  (use-package ht :straight t)
+;; Set the title
+(setq dashboard-banner-logo-title "Welcome to Emacs!")
+;; Set the banner
+(setq dashboard-startup-banner 'official)
+(setq dashboard-items
+      '((projects . 5)
+        (recents . 5) (bookmarks . 5)
+        ;; (agenda . 5)
+        (registers . 5)))
+;; ;; Value can be
+;; ;; 'official which displays the official emacs logo
+;; ;; 'logo which displays an alternative emacs logo
+;; ;; 1, 2 or 3 which displays one of the text banners
+;; ;; "path/to/your/image.png" which displays whatever image you would prefer
 
-  ;; (straight-use-package 'beacon)
-  ;; (use-package beacon
-  ;;   :config
-  ;;   (setq beacon-color "#666600"))
-  ;; (beacon-mode 1)
-  ;; (add-to-list 'beacon-dont-blink-major-modes 'yaml-mode)
-  ;; (add-to-list 'beacon-dont-blink-major-modes 'python-base-mode)
+;; ;; Content is not centered by default. To center, set
+(setq dashboard-center-content t)
+(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 
-  ;; Replace the text of selections
-  (pending-delete-mode t)
+;; ;; To disable shortcut "jump" indicators for each section, set
+;; (setq dashboard-show-shortcuts nil)
+(require 'dashboard)
 
-  ;; UndoTree
-  ;; (straight-use-package 'undo-tree)
-  ;; (straight-use-package 'undo-tree)
-  ;; (require 'undo-tree)
-  ;; (global-undo-tree-mode)
-
-  ;; Long lines
-  (global-so-long-mode t)
-
-  ;; Info modes
-  ;; (straight-use-package 'info-plus)
-  ;; (straight-use-package 'info-colors)
-  ;; (add-hook 'Info-selection-hook 'info-colors-fontify-node)
-
-  ; -----STARTUP SCREEN------- ;
-  (straight-use-package
-   '(emacs-dashboard
-     :type git
-     :host github
-     :repo "emacs-dashboard/emacs-dashboard"
-     :files ("banners" :defaults)))
-
-  ;; Set the title
-  (setq dashboard-banner-logo-title "Welcome to Emacs!")
-  ;; Set the banner
-  (setq dashboard-startup-banner 'official)
-  (setq dashboard-items
-        '((projects . 5)
-          (recents . 5) (bookmarks . 5)
-          ;; (agenda . 5)
-          (registers . 5)))
-  ;; ;; Value can be
-  ;; ;; 'official which displays the official emacs logo
-  ;; ;; 'logo which displays an alternative emacs logo
-  ;; ;; 1, 2 or 3 which displays one of the text banners
-  ;; ;; "path/to/your/image.png" which displays whatever image you would prefer
-
-  ;; ;; Content is not centered by default. To center, set
-  (setq dashboard-center-content t)
-  (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
-
-  ;; ;; To disable shortcut "jump" indicators for each section, set
-  ;; (setq dashboard-show-shortcuts nil)
-  (require 'dashboard)
-
-  ;; Override this function so that we can filter remote projects
-  (defun dashboard-projects-backend-load-projects ()
-    "Depending on `dashboard-projects-backend' load corresponding backend.
+;; Override this function so that we can filter remote projects
+(defun dashboard-projects-backend-load-projects ()
+  "Depending on `dashboard-projects-backend' load corresponding backend.
   Return function that returns a list of projects."
-    (cl-remove-if
-     (lambda (x) (string-search "/ssh" x))
-     (cl-case
-      dashboard-projects-backend
-      (`projectile
-       (require 'projectile)
-       (dashboard-mute-apply (projectile-cleanup-known-projects))
-       (projectile-load-known-projects))
-      (`project-el
-       (require 'project)
-       (dashboard-mute-apply
+  (cl-remove-if
+   (lambda (x) (string-search "/ssh" x))
+   (cl-case
+       dashboard-projects-backend
+     (`projectile
+      (require 'projectile)
+      (dashboard-mute-apply (projectile-cleanup-known-projects))
+      (projectile-load-known-projects))
+     (`project-el
+      (require 'project)
+      (dashboard-mute-apply
         (dashboard-funcall-fboundp #'project-forget-zombie-projects))
-       (project-known-project-roots))
-      (t
-       (display-warning
-        '(dashboard) "Invalid value for `dashboard-projects-backend'"
-        :error)))))
+      (project-known-project-roots))
+     (t
+      (display-warning
+       '(dashboard) "Invalid value for `dashboard-projects-backend'"
+       :error)))))
 
 
-  (dashboard-setup-startup-hook)
+(dashboard-setup-startup-hook)
 
 
-  (use-package
-   page-break-lines
-   :straight t
-   :config (global-page-break-lines-mode))
+(use-package
+  page-break-lines
+  :straight t
+  :config (global-page-break-lines-mode))
 
-  (use-package all-the-icons :straight t)
-  (use-package
-   all-the-icons-ibuffer
-   :straight t
-   :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
+(use-package all-the-icons :straight t)
+(use-package
+  all-the-icons-ibuffer
+  :straight t
+  :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
 
-  ;; I don't think I like buffer expose after all
-  ;; (straight-use-package 'buffer-expose)
-  ;; (require 'buffer-expose)
-  ;; (buffer-expose-mode 'nil)
-  (use-package
-   all-the-icons-completion
-   :straight t
-   :config (all-the-icons-completion-mode)
-   :hook
-   (marginalia-mode . all-the-icons-completion-marginalia-setup))
+;; I don't think I like buffer expose after all
+;; (straight-use-package 'buffer-expose)
+;; (require 'buffer-expose)
+;; (buffer-expose-mode 'nil)
+(use-package
+  all-the-icons-completion
+  :straight t
+  :config (all-the-icons-completion-mode)
+  :hook
+  (marginalia-mode . all-the-icons-completion-marginalia-setup))
 
 
 (literate-elisp-load "projectile-settings.org")

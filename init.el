@@ -7,6 +7,7 @@
 (literate-elisp-load "path-settings.org")
 (literate-elisp-load "colors-settings.org")
 (literate-elisp-load "global-settings.org")
+(literate-elisp-load "config-modes-settings.org")
 (literate-elisp-load "parens-settings.org")
 (literate-elisp-load "elisp-settings.org")
 (literate-elisp-load "dired-settings.org")

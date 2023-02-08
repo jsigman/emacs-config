@@ -1,4 +1,5 @@
 * Debug Adapter Protocal (DAP)
+#+PROPERTY: header-args:elisp :load yes
 
 #+BEGIN_SRC elisp :load yes
 (straight-use-package 'dap-mode)

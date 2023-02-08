@@ -1,4 +1,5 @@
 * Snippets
+#+PROPERTY: header-args:elisp :load yes
 
 #+BEGIN_SRC elisp :load yes
 (use-package yasnippet :straight t :demand t)
