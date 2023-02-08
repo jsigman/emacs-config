@@ -307,7 +307,7 @@
      :type git
      :host github
      :repo "lastquestion/explain-pause-mode")
-   :config explain-pause-mode)
+   :config (explain-pause-mode))
 
   ;; use helpful instead of the normal help buffers
   ;; Note that the built-in `describe-function' includes both functions
@@ -356,7 +356,7 @@
 #+begin_src emacs-lisp :load yes
   (use-package
    apheleia
- :straight 
+   :straight t
    :config
    (setf (alist-get 'isort apheleia-formatters)
          '("isort" "--stdout" "-"))
@@ -386,7 +386,7 @@
    :commands (elisp-autofmt-mode)
    :hook (emacs-lisp-mode . elisp-autofmt-mode)
    :straight
-   (elisp-autofmt
+   '(elisp-autofmt
     ;; :files (:defaults "elisp-autofmt")
     :host nil
     :type git
