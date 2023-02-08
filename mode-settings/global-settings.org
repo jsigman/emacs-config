@@ -1,7 +1,6 @@
 * Global Settings for Editing
 #+PROPERTY: header-args:emacs-lisp :load yes
-
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load yes
 (setq native-comp-async-report-warnings-errors nil)
 ;; Show the line number of the cursor in the mode bar at the bottom of each buffer
 (setq line-number-mode t)
@@ -399,7 +398,6 @@
 #+end_src
 
 **  Global Keybindings
-#+PROPERTY: header-args:emacs-lisp :load yes
 #+begin_src emacs-lisp :load yes
 ;-------------CUSTOM KEYBINDINGS-----------;
 (global-set-key (kbd "M-k") 'kill-this-buffer)
