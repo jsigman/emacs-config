@@ -1,7 +1,7 @@
 * Colors and Theme
 #+PROPERTY: header-args:elisp :load yes
 ** Emacs Theme
-#+begin_src elisp
+#+begin_src elisp :load yes
 ;-------------COLOR THEME----------------;
 (if (eq window-system nil)
     (progn
@@ -19,7 +19,7 @@
 #+end_src
 
 ** Colors in Dired
-#+begin_src elisp
+#+begin_src elisp :load yes
 (use-package
  rainbow-mode
  :straight t
@@ -38,7 +38,7 @@
 
 ** Tree Sitter
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :load yes
 (use-package
  tree-sitter
  :straight t
