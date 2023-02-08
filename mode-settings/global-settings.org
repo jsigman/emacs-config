@@ -412,12 +412,9 @@ yes
 
 #+end_src
 
-** Global Keybindings
-#+begin_src emacs-lisp :load yes
-* Global Keybindings
+**  Global Keybindings
 #+PROPERTY: header-args:emacs-lisp :load yes
-
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load yes
 ;-------------CUSTOM KEYBINDINGS-----------;
 (global-set-key (kbd "M-k") 'kill-this-buffer)
 ;Window management
@@ -437,6 +434,4 @@ yes
 
 (global-set-key (kbd "C-.") 'xref-find-definitions-other-window)
 (define-key global-map (kbd "RET") 'newline-and-indent)
-#+END_SRC
-
 #+end_src
