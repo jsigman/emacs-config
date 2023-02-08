@@ -1,6 +1,6 @@
 * Path
 ;#+PROPERTY: header-args:emacs-lisp :load yes
-#+BEGIN_SRC elisp :load yes
+#+begin_src emacs-lisp :load yes
 (setq default-directory "~/")
 
 (use-package package :straight t)

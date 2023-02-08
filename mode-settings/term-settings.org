@@ -1,7 +1,7 @@
 * Terminal
 #+PROPERTY: header-args:emacs-lisp :load yes
 ** Vterm
-#+BEGIN_SRC elisp
+#+begin_src emacs-lisp
 (use-package
  vterm
  :straight t

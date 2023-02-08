@@ -1,7 +1,7 @@
 * Magit
 #+PROPERTY: header-args:emacs-lisp :load yes
 
-#+BEGIN_SRC elisp
+#+begin_src emacs-lisp
 (literate-elisp-load "projectile-settings.org")
 (use-package
  magit

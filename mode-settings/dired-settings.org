@@ -1,7 +1,7 @@
 * Dired Mode
 #+PROPERTY: header-args:emacs-lisp :load yes
 
-#+BEGIN_SRC elisp
+#+begin_src emacs-lisp
 (setq
  dired-omit-files
  "^\\.?#\\|^\\.\\(DS_Store\\|localized\\|AppleDouble\\)$\\|^\\.\\.$")

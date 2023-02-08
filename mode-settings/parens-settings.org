@@ -1,7 +1,7 @@
 * Parens
 #+PROPERTY: header-args:emacs-lisp :load yes
 
-#+BEGIN_SRC elisp
+#+begin_src emacs-lisp
 (setq show-paren-when-point-inside-paren 't)
 (setq show-paren-style 'mixed)
 (setq show-paren-context-when-offscreen 't)

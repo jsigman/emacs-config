@@ -1,7 +1,7 @@
 * Java/Javascript/JSON
 #+PROPERTY: header-args:emacs-lisp :load yes
 
-#+BEGIN_SRC elisp
+#+begin_src emacs-lisp
 (straight-use-package 'jq-mode)
 (require 'jq-mode)
 
