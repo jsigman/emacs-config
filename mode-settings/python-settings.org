@@ -1,5 +1,5 @@
 * Python
-#+PROPERTY: header-args:elisp :load yes
+#+PROPERTY: header-args:emacs-lisp :load yes
 
 #+BEGIN_SRC elisp
 (require 'python)

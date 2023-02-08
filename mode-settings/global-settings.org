@@ -1,5 +1,5 @@
 * Global Settings for Editing
-#+PROPERTY: header-args:elisp :load yes
+#+PROPERTY: header-args:emacs-lisp :load yes
 
 #+BEGIN_SRC elisp
 
@@ -415,7 +415,7 @@ yes
 ** Global Keybindings
 #+begin_src emacs-lisp :load yes
 * Global Keybindings
-#+PROPERTY: header-args:elisp :load yes
+#+PROPERTY: header-args:emacs-lisp :load yes
 
 #+BEGIN_SRC elisp
 ;-------------CUSTOM KEYBINDINGS-----------;

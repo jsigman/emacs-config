@@ -1,5 +1,5 @@
 * Magit
-#+PROPERTY: header-args:elisp :load yes
+#+PROPERTY: header-args:emacs-lisp :load yes
 
 #+BEGIN_SRC elisp
 (literate-elisp-load "projectile-settings.org")

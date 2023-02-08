@@ -1,5 +1,5 @@
 * Corfu-Vertico-Orderless
-#+PROPERTY: header-args:elisp :load yes
+#+PROPERTY: header-args:emacs-lisp :load yes
 ** Corfu
 #+BEGIN_SRC elisp
 (use-package

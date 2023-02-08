@@ -1,5 +1,5 @@
 * Path
-;#+PROPERTY: header-args:elisp :load yes
+;#+PROPERTY: header-args:emacs-lisp :load yes
 #+BEGIN_SRC elisp :load yes
 (setq default-directory "~/")
 

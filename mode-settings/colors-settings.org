@@ -1,5 +1,5 @@
 * Colors and Theme
-#+PROPERTY: header-args:elisp :load yes
+#+PROPERTY: header-args:emacs-lisp :load yes
 ** Emacs Theme
 #+begin_src elisp :load yes
 ;-------------COLOR THEME----------------;
