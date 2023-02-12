@@ -13,7 +13,6 @@
 #+include: mode-settings/latex-settings.org
 #+include: mode-settings/snippets-settings.org
 #+include: mode-settings/term-settings.org
-#+include: mode-settings/global-keybindings.org
 #+include: mode-settings/rg-settings.org
 #+include: mode-settings/avy-settings.org
 #+include: mode-settings/lsp-settings.org
