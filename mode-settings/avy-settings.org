@@ -1,20 +1,20 @@
 * Avy
 #+PROPERTY: header-args:emacs-lisp :load yes
 #+begin_src emacs-lisp :load yes
-(straight-use-package 'avy)
-(require 'avy)
+(use-package
+ avy
+ :straight t
+ :config
+ (global-set-key
+  (kbd "C-;")
+  'avy-goto-char-timer) ;; I use this most frequently
+ (global-set-key
+  (kbd "C-'")
+  'avy-goto-line) ;; Consistent with ivy-avy
+ (global-set-key
+  (kbd "C-M-'")
+  'avy-goto-end-of-line) ;; Consistent with ivy-avy
 
-(global-set-key
- (kbd "C-;")
- 'avy-goto-char-timer) ;; I use this most frequently
-(global-set-key
- (kbd "C-'")
- 'avy-goto-line) ;; Consistent with ivy-avy
-(global-set-key
- (kbd "C-M-'")
- 'avy-goto-end-of-line) ;; Consistent with ivy-avy
-
-(setq avy-case-fold-search nil) ;; case sensitive makes selection easier
-(setq avy-indent-line-overlay t)
-(provide 'avy-settings)  
+ (setq avy-case-fold-search nil) ;; case sensitive makes selection easier
+ (setq avy-indent-line-overlay t))
 #+end_src

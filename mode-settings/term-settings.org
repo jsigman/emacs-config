@@ -83,30 +83,29 @@ BUFFER may be either a buffer or its name (a string)."
              (vterm buffer-name))
          (vterm-other-window buffer-name)))))
  (defun vterm-toggle--project-root ()
-   (projectile-project-root)))
+   (projectile-project-root))
+ (define-key vterm-mode-map (kbd "<escape>") 'vterm-send-C-c)
+ (define-key vterm-mode-map (kbd "M-T") 'vterm-toggle)
+ (define-key vterm-mode-map (kbd "M-R") 'vterm-toggle-cd)
+ ;Switch to next vterm buffer
+ (global-set-key (kbd "M-T") 'vterm-toggle)
+ (global-set-key (kbd "M-R") 'vterm-toggle-cd)
 
-(define-key vterm-mode-map (kbd "<escape>") 'vterm-send-C-c)
-(define-key vterm-mode-map (kbd "M-T") 'vterm-toggle)
-(define-key vterm-mode-map (kbd "M-R") 'vterm-toggle-cd)
-;Switch to next vterm buffer
-(global-set-key (kbd "M-T") 'vterm-toggle)
-(global-set-key (kbd "M-R") 'vterm-toggle-cd)
+ (setq vterm-toggle-fullscreen-p nil)
+ (add-to-list
+  'display-buffer-alist
+  '((lambda (bufname _)
+      (with-current-buffer bufname
+        (equal major-mode 'vterm-mode)))
+    (display-buffer-reuse-window display-buffer-at-bottom)
+    ;; (display-buffer-reuse-window display-buffer-in-direction)
+    ;;display-buffer-in-direction/direction/dedicated is added in emacs27
+    (direction . bottom)
+    (dedicated . t) ;dedicated is supported in emacs27
+    (reusable-frames . visible) (window-height . 0.3)))
 
-(setq vterm-toggle-fullscreen-p nil)
-(add-to-list
- 'display-buffer-alist
- '((lambda (bufname _)
-     (with-current-buffer bufname
-       (equal major-mode 'vterm-mode)))
-   (display-buffer-reuse-window display-buffer-at-bottom)
-   ;; (display-buffer-reuse-window display-buffer-in-direction)
-   ;;display-buffer-in-direction/direction/dedicated is added in emacs27
-   (direction . bottom)
-   (dedicated . t) ;dedicated is supported in emacs27
-   (reusable-frames . visible) (window-height . 0.3)))
-
-;;Switch to next vterm buffer
-(define-key vterm-mode-map (kbd "M-n") 'vterm-toggle-forward)
-;;Switch to previous vterm buffer
-(define-key vterm-mode-map (kbd "M-p") 'vterm-toggle-backward)
+ ;;Switch to next vterm buffer
+ (define-key vterm-mode-map (kbd "M-n") 'vterm-toggle-forward)
+ ;;Switch to previous vterm buffer
+ (define-key vterm-mode-map (kbd "M-p") 'vterm-toggle-backward))
 #+END_SRC

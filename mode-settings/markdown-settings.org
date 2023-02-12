@@ -11,9 +11,5 @@
  :config
  ;; (setq lsp-markdown-server-command "~/.local/bin")
  ;; (require 'lsp-marksman)
-)
-
-;; (straight-use-package 'markdownfmt)
-;; (require 'markdownfmt)
-
+ )
 #+END_SRC

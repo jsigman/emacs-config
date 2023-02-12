@@ -2,8 +2,6 @@
 #+PROPERTY: header-args:emacs-lisp :load yes
 
 #+begin_src emacs-lisp
-(setq ob-ipython-command "jupyter")
-
 (defun org-src-format-and-save ()
   (interactive)
   (when (eq major-mode 'python-base-mode)
@@ -68,8 +66,9 @@
 
 #+end_src
 ** Org Babel
-
 #+begin_src emacs-lisp :load yes
+(setq ob-ipython-command "jupyter")
+
 (use-package
  plantuml-mode
  :straight t
@@ -87,12 +86,11 @@
   (org-babel-execute-src-block)
   (org-babel-next-src-block))
 
+(require 'jupyter-settings)
+
 #+end_src
-
-
-
+** Colors in Org
 #+begin_src emacs-lisp :load yes
-
 (literate-elisp-load "colors-settings.org")
 (with-eval-after-load 'org
   (dolist (face
@@ -112,46 +110,7 @@
   (dolist (face '(org-level-2))
     (set-face-attribute face nil :height 1.5)))
 
-
-;; (straight-use-package 'org-roam)
-;; (use-package org-roam
-;;   :ensure t
-;;   :custom (org-roam-directory (file-truename "~/Documents/PERSONAL/ORG_ROAM/")):bind
-;;   (("C-c n l" . org-roam-buffer-toggle)
-;;    ("C-c n f" . org-roam-node-find)
-;;    ("C-c n g" . org-roam-graph)
-;;    ("C-c n i" . org-roam-node-insert)
-;;    ("C-c n c" . org-roam-capture)
-;;    ;; Dailies
-;;    ("C-c n j" . org-roam-dailies-capture-today))
-;;   :config (org-roam-setup)(require 'org-roam-protocol))
-
 (use-package org-bullets :defer t :straight t)
-
-;; (straight-use-package 'polymode)
-;; (require 'polymode)
-;; (straight-use-package 'poly-org)
-;; (require 'poly-org)
-;; (add-hook 'org-mode-hook 'poly-org-mode)
-
-
-;; custom-set-faces was added by Custom.
-;; If you edit it by hand, you could mess it up, so be careful.
-;; Your init file should contain only one such instance.
-;; If there is more than one, they won't work right.
-;; (face-remap-add-relative 'org-block-begin-line :box)
-
-;; (defun company-org-setup ()
-;;   (when (boundp 'company-backends)
-;;     (make-local-variable 'company-backends)
-;;     ;; remove
-;;     (setq company-backends (delete 'company-dabbrev company-backends))))
-;; (add-hook 'org-mode-hook 'company-org-setup)
-
-;; Org exporter for github markdown
-;; (use-package ox-gfm
-;;   :straight t
-;;   :defer t)
 
 ;;nil means to wrap lines in org mode
 (setq org-startup-truncated t)
@@ -161,6 +120,21 @@
  :straight t
  :defer t
  :config (global-org-modern-mode))
+#+end_src
 
-(provide 'org-settings)
-#+END_SRC
+** Org Roam
+I'm not currently using Org Roam, but maybe some day I'd like to.
+#+begin_src emacs-lisp :load nil
+(straight-use-package 'org-roam)
+(use-package org-roam
+  :ensure t
+  :custom (org-roam-directory (file-truename "~/Documents/PERSONAL/ORG_ROAM/")):bind
+  (("C-c n l" . org-roam-buffer-toggle)
+   ("C-c n f" . org-roam-node-find)
+   ("C-c n g" . org-roam-graph)
+   ("C-c n i" . org-roam-node-insert)
+   ("C-c n c" . org-roam-capture)
+   ;; Dailies
+   ("C-c n j" . org-roam-dailies-capture-today))
+  :config (org-roam-setup)(require 'org-roam-protocol))
+#+end_src

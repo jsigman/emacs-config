@@ -155,8 +155,5 @@
 ;;                                  :repo "jkitchin/ox-ipynb")
 ;;                       :defer t)
 
-(require 'global-settings)
-
 ;; (add-hook  'ein:ipynb-mode-hook '(tree-sitter-hl-mode nil))
-
 (provide 'jupyter-settings)

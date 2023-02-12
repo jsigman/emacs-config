@@ -1,12 +1,8 @@
 * Docker
 #+PROPERTY: header-args:emacs-lisp :load yes
-
-
 #+begin_src emacs-lisp
-;; (use-package docker :straight t)
-(use-package dockerfile-mode :straight t)
-(setq dockerfile-mode-command "docker")
-
-;; (use-package docker-tramp :straight t)
-(provide 'docker-settings)
+(use-package
+ dockerfile-mode
+ :straight t
+ :config (setq dockerfile-mode-command "docker"))
 #+END_SRC

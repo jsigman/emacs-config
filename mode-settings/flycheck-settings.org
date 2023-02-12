@@ -1,7 +1,5 @@
 * Flycheck
 #+PROPERTY: header-args:emacs-lisp :load yes
-
-
 #+begin_src emacs-lisp
 (use-package
  flycheck
@@ -58,18 +56,13 @@
 (setq flycheck-checkers (remove 'python-pycompile flycheck-checkers))
 (setq flycheck-checkers (remove 'python-pyright flycheck-checkers))
 
-;; (add-to-list 'flycheck-checkers 'python-mypy)
-
 (add-hook 'after-init-hook #'global-flycheck-mode)
 (setq flycheck-global-modes
       '(python-base-mode js-mode python-mode python-ts-mode))
-
-;; (defun my-flycheck-toggle()
-;;   (interactive)
-;;   (let (error-buffer flycheck-error-list-buffer) (when buffer))
-;;   (print "done"))
-
-
+#+end_src
+** Toggling flycheck buffer with "M-C"
+I have my own little hook to open the flycheck buffer with ~M-C~, and close it again with another ~M-C~ keystroke.
+#+begin_src emacs-lisp
 (defvar should-delete-flycheck-list-buffer nil)
 (defun my/flycheck-list-errors ()
   "Open flycheck list if it doesn't exist.  If it does, close it."
@@ -90,13 +83,4 @@
               (> (count-windows) starting-window-count))))))
 
 (define-key flycheck-mode-map (kbd "M-C") 'my/flycheck-list-errors)
-
-
-;; (define-key flycheck-mode-map (kbd "M-C") 'my-flycheck-toggle)
-
-;; (straight-use-package 'flycheck-pycheckers)
-;; (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup)
-;; (setq flycheck-pycheckers-checkers '(flake8))
-
-(provide 'flycheck-settings)
 #+END_SRC

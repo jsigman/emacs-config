@@ -1,6 +1,6 @@
 * Language Server Protocol (LSP)
 #+PROPERTY: header-args:emacs-lisp :load yes
-
+** LSP Mode
 #+begin_src emacs-lisp
 (setq my/lsp-package "lsp")
 ;------------------------LSP---------------------------;
@@ -61,66 +61,80 @@
  ;; (lsp-mode . lsp-ui-mode)
  )
 
-;; (use-package lsp-ui
-;;   :straight t
-;;   :config
-;;   (setq lsp-ui-doc-enable nil)
-;;   (setq lsp-ui-peek-enable nil)
-;;   (setq lsp-ui-peek-fontify "never") ;; never, on-demand, or always
-;;   (setq lsp-ui-peek-list-width 50)
-;;   (setq lsp-ui-peek-peek-height 20)
-;;   (setq lsp-ui-sideline-code-actions-prefix
-;;         "")
-;;   (setq lsp-ui-doc nil)
-;;                                         ;inline right flush docs
-;;   (setq lsp-ui-sideline-enable nil)
-;;   (setq lsp-ui-sideline-ignore-duplicate t)
-;;   (setq lsp-ui-sideline-show-code-actions nil)
-;;   (setq lsp-ui-sideline-show-diagnostics nil)
-;;   (setq lsp-ui-sideline-show-hover nil)
-;;   (setq lsp-ui-sideline-show-symbol nil)
-;;   (setq lsp-ui-sideline-delay 0.01)
-;;   :bind
-;;   (:map lsp-ui-imenu-mode-map
-;;         ("<return" . lsp-ui-imenu--view)
-;;         ("RET" . lsp-ui-imenu--view)))
+
+#+end_src
+** LSP UI
+For right now, I don't really like LSP UI, let's not load this config
+#+begin_src emacs-lisp :load nil
+(use-package
+ lsp-ui
+ :straight t
+ :config
+ (setq lsp-ui-doc-enable nil)
+ (setq lsp-ui-peek-enable nil)
+ (setq lsp-ui-peek-fontify "never") ;; never, on-demand, or always
+ (setq lsp-ui-peek-list-width 50)
+ (setq lsp-ui-peek-peek-height 20)
+ (setq lsp-ui-sideline-code-actions-prefix "")
+ (setq lsp-ui-doc nil)
+ ;inline right flush docs
+ (setq lsp-ui-sideline-enable nil)
+ (setq lsp-ui-sideline-ignore-duplicate t)
+ (setq lsp-ui-sideline-show-code-actions nil)
+ (setq lsp-ui-sideline-show-diagnostics nil)
+ (setq lsp-ui-sideline-show-hover nil)
+ (setq lsp-ui-sideline-show-symbol nil)
+ (setq lsp-ui-sideline-delay 0.01)
+ (add-hook
+  'lsp--managed-mode-hook
+  (lambda nil
+    (interactive)
+    (remove-hook 'post-self-insert-hook 'lsp--on-self-insert t)))
+
+ (define-key
+  lsp-ui-mode-map
+  [remap xref-find-definitions]
+  #'lsp-ui-peek-find-definitions)
+ (define-key
+  lsp-ui-mode-map
+  [remap xref-find-references]
+  #'lsp-ui-peek-find-references)
+ (setq lsp-ui-flycheck-enable nil)
+ (add-hook 'flycheck-mode-hook 'lsp-ui-sideline-mode)
+
+ (literate-elisp-load "flycheck-settings.org")
+ (require 'lsp-ui-flycheck)
+ (define-key
+  lsp-ui-flycheck-list-mode-map
+  (kbd "<M-RET>")
+  'lsp-ui-flycheck-list--visit)
+ (define-key
+  lsp-ui-flycheck-list-mode-map
+  (kbd "RET")
+  'lsp-ui-flycheck-list--view)
 
 
-;; (add-hook 'lsp--managed-mode-hook (lambda nil (interactive) (remove-hook 'post-self-insert-hook 'lsp--on-self-insert t)))
-;;
-;------------------------LSP-UI---------------------------;
-;; (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-;; (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+ (setq lsp-ui-doc-header t)
+ (setq lsp-ui-doc-include-signature t)
+ (setq lsp-ui-doc-max-height 30)
+ (setq lsp-ui-doc-max-width 120)
+ (setq lsp-ui-doc-position (quote at-point))
+ (setq lsp-ui-doc-use-childframe nil)
 
-(literate-elisp-load "flycheck-settings.org")
-(setq lsp-ui-flycheck-enable nil)
-;; (add-hook 'flycheck-mode-hook 'lsp-ui-sideline-mode)
+ (setq lsp-ui-doc-use-webkit nil)
 
-;; (require 'lsp-ui-flycheck)
-;; (define-key lsp-ui-flycheck-list-mode-map (kbd "<M-RET>") 'lsp-ui-flycheck-list--visit)
-;; (define-key lsp-ui-flycheck-list-mode-map (kbd "RET") 'lsp-ui-flycheck-list--view)
+ :bind
+ (:map
+  lsp-ui-imenu-mode-map
+  ("<return" . lsp-ui-imenu--view)
+  ("RET" . lsp-ui-imenu--view)))
+#+end_src
 
-;                                        top right docs
-
-
-;; (setq lsp-ui-doc-header t)
-;; (setq lsp-ui-doc-include-signature t)
-;; (setq lsp-ui-doc-max-height 30)
-;; (setq lsp-ui-doc-max-width 120)
-;; (setq lsp-ui-doc-position (quote at-point))
-;; (setq lsp-ui-doc-use-childframe nil)
-
-;; If this is true then you can't see the docs in terminal
-;; (setq lsp-ui-doc-use-webkit nil)
-
-;--------------------- LSP IVY -----------------;
-;; (straight-use-package 'lsp-ivy)
-;; (require 'lsp-ivy)
-;; (define-key lsp-mode-map (kbd "RET") 'lsp-ivy-workspace-symbol)
-
+** LSP with iedit
+I'm now using iedit instead of my hand-crafted [[https://github.com/jsigman/lsp-mc][lsp-mc]] mode. It is integrated and works slightly better.
+#+begin_src emacs-lisp :load yes
 ;---Multiple cursors------;
 (literate-elisp-load "multiple-cursors-settings.org")
-
 
 (use-package
  iedit
@@ -144,7 +158,10 @@
   ("lsp-mc" (straight-use-package
     '(lsp-mc :type git :host github :repo "jsigman/lsp-mc"))
    (require 'lsp-mc) (add-hook 'lsp-mode-hook 'lsp-mc-mode)))
-
+#+end_src
+** Modes for LSP
+Configure here the modes for which you'd like to run LSP mode.
+#+begin_src emacs-lisp :load yes
 (add-hook 'LaTeX-mode-hook #'lsp-deferred)
 (add-hook 'yaml-base-mode-hook #'lsp-deferred)
 (add-hook 'json-mode-hook #'lsp-deferred)
@@ -155,13 +172,29 @@
 (add-hook 'sh-mode-hook #'lsp-deferred)
 (straight-use-package 'lsp-docker)
 
-(require 'lsp-docker)
-(add-hook 'dockerfile-mode-hook #'lsp-deferred)
+(use-package
+ lsp-docker
+ :straight t
+ :config (add-hook 'dockerfile-mode-hook #'lsp-deferred))
 
 (use-package lsp-mssql :straight t :hook (sql-mode . lsp))
-(require 'lsp-markdown)
-(add-hook 'markdown-mode-hook 'lsp-markdown)
+(use-package
+ lsp-markdown
+ :config (add-hook 'markdown-mode-hook 'lsp-markdown))
+;; Automatically install lsp servers
+(defun my/install-lsp-servers ()
+  (interactive)
+  (lsp-install-server t 'pyright)
+  (lsp-install-server t 'xmlls)
+  (lsp-install-server t 'yamlls)
+  (lsp-install-server t 'html-ls)
+  (lsp-install-server t 'json-ls)
+  (lsp-install-server t 'dockerfile-ls)
+  (lsp-install-server t 'bash-ls))
+#+end_src
 
+** LSP File Watchers
+#+begin_src emacs-lisp :load yes
 (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\venv\\'")
 (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\.dvc\\'")
 (add-to-list
@@ -175,17 +208,4 @@
  'lsp-file-watch-ignored-directories "[/\\\\]\\.mypy_cache\\'")
 (add-to-list
  'lsp-file-watch-ignored-directories "[/\\\\]\\.pytest_cache\\'")
-
-;; Automatically install lsp servers
-(defun my/install-lsp-servers ()
-  (interactive)
-  (lsp-install-server t 'pyright)
-  (lsp-install-server t 'xmlls)
-  (lsp-install-server t 'yamlls)
-  (lsp-install-server t 'html-ls)
-  (lsp-install-server t 'json-ls)
-  (lsp-install-server t 'dockerfile-ls)
-  (lsp-install-server t 'bash-ls))
-
-(provide 'lsp-settings)
 #+END_SRC

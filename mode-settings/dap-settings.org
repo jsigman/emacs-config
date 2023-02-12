@@ -1,26 +1,27 @@
 * Debug Adapter Protocal (DAP)
-#+PROPERTY: header-args:emacs-lisp :load yes
-
+#+property: header-args:emacs-lisp :load yes
+I'm currently not using DAP mode, and prefer to use python from the command line (vterm) with ~pdb~. Some day I'd like to learn this.
 #+begin_src emacs-lisp
-(straight-use-package 'dap-mode)
-(add-hook
- 'dap-stopped-hook (lambda (arg) (call-interactively #'dap-hydra)))
+(use-package
+ dap-mode
+ :straight t
+ :config
+ (add-hook
+  'dap-stopped-hook (lambda (arg) (call-interactively #'dap-hydra)))
 
-;; Enabling only some features
-(setq dap-auto-configure-features '(sessions locals controls tooltip))
-(setq dap-python-debugger 'debugpy)
+ ;; Enabling only some features
+ (setq dap-auto-configure-features
+       '(sessions locals controls tooltip))
+ (setq dap-python-debugger 'debugpy)
 
-(require 'dap-mode)
-(require 'dap-python)
-(require 'dap-ui)
+ (require 'dap-mode)
+ (require 'dap-python)
+ (require 'dap-ui)
 
-(add-hook 'python-base-mode-hook 'dap-mode)
-(add-hook 'python-base-mode-hook 'dap-ui-mode)
-(add-hook 'python-base-mode-hook 'dap-tooltip-mode)
+ (add-hook 'python-base-mode-hook 'dap-mode)
+ (add-hook 'python-base-mode-hook 'dap-ui-mode)
+ (add-hook 'python-base-mode-hook 'dap-tooltip-mode)
 
-;; (define-key python-base-mode-map (kbd "C-r") 'dap-debug)
-(define-key python-base-mode-map (kbd "M-D") #'dap-hydra)
-
-
-(provide 'dap-settings)
-#+END_SRC
+ ;; (define-key python-base-mode-map (kbd "C-r") 'dap-debug)
+ (define-key python-base-mode-map (kbd "M-D") #'dap-hydra))
+#+end_src

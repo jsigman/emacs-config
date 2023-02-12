@@ -3,14 +3,12 @@
 
 #+begin_src emacs-lisp
 (literate-elisp-load "projectile-settings.org")
-
 (use-package
  treemacs
  :straight t
  :bind (("M-P" . treemacs))
  :config (setq treemacs-persist-file "treemacs-persist"))
 (use-package treemacs-projectile :straight t)
-
 
 (use-package
  treemacs-icons-dired
@@ -19,7 +17,4 @@
  dired
  :straight t
  :config (treemacs-icons-dired-mode))
-
-
-(provide 'treemacs-settings)
 #+END_SRC
