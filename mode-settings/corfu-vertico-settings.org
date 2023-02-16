@@ -123,6 +123,7 @@
 (use-package
  vertico
  :init (vertico-mode)
+ :bind (:map vertico-map ("C-j" . vertico-exit-input))
 
  ;; Different scroll margin
  ;; (setq vertico-scroll-margin 0)

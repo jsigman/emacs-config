@@ -10,11 +10,10 @@
 
 (setq lsp-pyright-disable-organize-imports t)
 
-(straight-use-package
- '(lsp-pyright :type git :host github :repo "emacs-lsp/lsp-pyright"))
+(use-package
+ lsp-pyright
+ :straight
+ '(lsp-pyright :type git :host github :repo "emacs-lsp/lsp-pyright")
+ :config (setq lsp-pyright-log-level "trace"))
 
-(setq lsp-pyright-log-level "trace")
-
-(require 'lsp-pyright)
-(require 'lsp-settings)
 (provide 'pyright-lsp-settings)

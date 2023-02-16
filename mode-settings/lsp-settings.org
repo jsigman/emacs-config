@@ -162,35 +162,36 @@ I'm now using iedit instead of my hand-crafted [[https://github.com/jsigman/lsp-
 ** Modes for LSP
 Configure here the modes for which you'd like to run LSP mode.
 #+begin_src emacs-lisp :load yes
-(add-hook 'LaTeX-mode-hook #'lsp-deferred)
-(add-hook 'yaml-base-mode-hook #'lsp-deferred)
-(add-hook 'json-mode-hook #'lsp-deferred)
+  (add-hook 'LaTeX-mode-hook #'lsp-deferred)
+  (add-hook 'yaml-base-mode-hook #'lsp-deferred)
+  (add-hook 'json-mode-hook #'lsp-deferred)
 
-(setq lsp-enable-on-type-formatting t)
-(setq lsp-enable-indentation t)
+  (setq lsp-enable-on-type-formatting t)
+  (setq lsp-enable-indentation t)
 
-(add-hook 'sh-mode-hook #'lsp-deferred)
-(straight-use-package 'lsp-docker)
+  (add-hook 'sh-mode-hook #'lsp-deferred)
+  (straight-use-package 'lsp-docker)
 
-(use-package
- lsp-docker
- :straight t
- :config (add-hook 'dockerfile-mode-hook #'lsp-deferred))
+  (use-package
+   lsp-docker
+   :straight t
+   :config (add-hook 'dockerfile-mode-hook #'lsp-deferred))
 
-(use-package lsp-mssql :straight t :hook (sql-mode . lsp))
-(use-package
- lsp-markdown
- :config (add-hook 'markdown-mode-hook 'lsp-markdown))
-;; Automatically install lsp servers
-(defun my/install-lsp-servers ()
-  (interactive)
-  (lsp-install-server t 'pyright)
-  (lsp-install-server t 'xmlls)
-  (lsp-install-server t 'yamlls)
-  (lsp-install-server t 'html-ls)
-  (lsp-install-server t 'json-ls)
-  (lsp-install-server t 'dockerfile-ls)
-  (lsp-install-server t 'bash-ls))
+  (use-package lsp-mssql :straight t :hook (sql-mode . lsp))
+  ;; (use-package
+  ;;  lsp-markdown :straight t
+  ;;  :config (add-hook 'markdown-mode-hook 'lsp-markdown))
+
+  ;; ;; Automatically install lsp servers
+  (defun my/install-lsp-servers ()
+    (interactive)
+    (lsp-install-server t 'pyright)
+    (lsp-install-server t 'xmlls)
+    (lsp-install-server t 'yamlls)
+    (lsp-install-server t 'html-ls)
+    (lsp-install-server t 'json-ls)
+    (lsp-install-server t 'dockerfile-ls)
+    (lsp-install-server t 'bash-ls))
 #+end_src
 
 ** LSP File Watchers
