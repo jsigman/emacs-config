@@ -16,7 +16,8 @@
 (use-package
  highlight-indent-guides
  :straight t
- :hook (python-base-mode . 'highlight-indent-guides-mode))
+ :hook (python-mode . highlight-indent-guides-mode)
+)
 
 (add-hook
  'python-base-mode-hook

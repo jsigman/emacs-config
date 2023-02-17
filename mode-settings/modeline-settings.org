@@ -36,6 +36,7 @@
 (diminish 'auto-revert-mode)
 (diminish 'beacon-mode)
 (diminish 'all-the-icons-dired-mode)
+(diminish 'tree-sitter-hl-mode)
 
 (use-package blackout :straight t)
 (blackout 'ivy-mode)
@@ -65,6 +66,8 @@
 (blackout 'org-src-mode)
 (blackout 'whole-line-or-region-local-mode)
 (blackout 'smartparens-mode)
+(blackout 'tree-sitter-hl-mode)
+(blackout 'tree-sitter-mode)
 
 
 (diminish 'jupyter-repl-interaction-mode)

@@ -2,8 +2,10 @@
 
 ; Below for emacs-jupyter;
 ;; (setq comp-deferred-compilation-deny-list (list "jupyter"))
+
 (use-package
  zmq
+ ;; :straight '(zmq :host github :repo "jsigman/emacs-zmq")
  :straight '(zmq :host github :repo "nnicandro/emacs-zmq")
  :init
  ; macro to wrap loading

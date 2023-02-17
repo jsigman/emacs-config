@@ -2,14 +2,14 @@
 #+PROPERTY: header-args:emacs-lisp :load yes
 ** Marginalia
 #+begin_src emacs-lisp
-(use-package marginalia :straight t :ensure t :config (marginalia-mode))
+(use-package marginalia :straight t :demand t :config (marginalia-mode))
 #+end_src
 ** Embark
 #+begin_src emacs-lisp
 (use-package
  embark
  :straight t
- :ensure t
+ :demand t
  :bind
  (("C-." . embark-act) ;; pick some comfortable binding
   ("C-;" . embark-dwim) ;; good alternative: M-.
@@ -27,6 +27,14 @@
   '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
     nil
     (window-parameters (mode-line-format . none)))))
+
+;; Consult users will also want the embark-consult package.
+(use-package embark-consult
+  :ensure t ; only need to install it, embark loads it after consult if found
+  :straight t
+  :after consult
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
 #+end_src
 ** Consult
 #+begin_src emacs-lisp :load yes
@@ -35,6 +43,7 @@
 (use-package
  consult
  :straight t
+ :demand t
  ;; Replace bindings. Lazily loaded due by `use-package'.
  :bind
  ( ;; C-c bindings (mode-specific-map)
@@ -92,25 +101,29 @@
 
  ;; The :init configuration is always executed (Not lazy)
  :init
+ (defun consult-ripgrep-project-root (&optional initial)
+   (interactive "P")
+   (let ((dir (funcall consult-project-function)))
+     (consult--grep
+      "Ripgrep" (consult--ripgrep-make-builder) dir initial)))
+
  ;; (setq consult-ripgrep-args "rg --null --line-buffered --color=never --max-columns=1000 --path-separator /\ --smart-case --no-heading --line-number .")
  (setq consult-project-function 'projectile-project-root)
-
 
  ;; Optionally configure the register formatting. This improves the register
  ;; preview for `consult-register', `consult-register-load',
  ;; `consult-register-store' and the Emacs built-ins.
  (setq
-  register-preview-delay 0
+  register-preview-delay 0.1
   register-preview-function #'consult-register-format)
 
  ;; Optionally tweak the register preview window.
  ;; This adds thin lines, sorting and hides the mode line of the window.
  (advice-add #'register-preview :override #'consult-register-window)
 
- ;; Optionally replace `completing-read-multiple' with an enhanced version.
- (advice-add
-  #'completing-read-multiple
-  :override #'consult-completing-read-multiple)
+;; Optionally tweak the register preview window.
+  ;; This adds thin lines, sorting and hides the mode line of the window.
+  (advice-add #'register-preview :override #'consult-register-window)
 
  ;; Use Consult to select xref locations with preview
  (setq
@@ -121,32 +134,19 @@
  ;; after lazily loading the package.
  :config
 
- (defun consult-ripgrep-project-root (&optional initial)
-   (interactive "P")
-   (let ((dir (funcall consult-project-function)))
-     (consult--grep
-      "Ripgrep" (consult--ripgrep-make-builder) dir initial)))
-
  ;; Optionally configure preview. The default value
  ;; is 'any, such that any key triggers the preview.
  (setq consult-preview-key nil)
  ;; For some commands and buffer sources it is useful to configure the
  ;; :preview-key on a per-command basis using the `consult-customize' macro.
- (consult-customize
-  consult-theme
-  :preview-key
-  '(:debounce 0.2 any)
-  consult-ripgrep-project-root
-  consult-ripgrep
-  consult-git-grep
-  consult-grep
-  consult-bookmark
-  consult-recent-file
-  consult-xref
-  consult--source-recent-file
-  consult--source-project-recent-file
-  consult--source-bookmark
-  :preview-key (kbd "M-."))
+(consult-customize
+   consult-theme :preview-key '(:debounce 0.2 any)
+   consult-ripgrep consult-git-grep consult-grep
+   consult-bookmark consult-recent-file consult-xref
+   consult--source-bookmark consult--source-file-register
+   consult--source-recent-file consult--source-project-recent-file
+   ;; :preview-key "M-."
+   :preview-key '(:debounce 0.4 any))
 
  ;; Optionally configure the narrowing key.
  ;; Both < and C-+ work reasonably well.
@@ -179,11 +179,4 @@
  :bind (:map flycheck-command-map ("!" . consult-flycheck)))
 ;; Enable Consult-Selectrum integration.
 ;; This package should be installed if Selectrum is used.
-
-;; ;; Optionally add the `consult-flycheck' command.
-(use-package
- consult-flycheck
- :straight t
- :after (consult flycheck)
- :bind (:map flycheck-command-map ("!" . consult-flycheck)))
-#+END_SRC
+#+end_src
