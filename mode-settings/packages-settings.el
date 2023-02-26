@@ -1,5 +1,6 @@
 ;------------PACKAGES------------------;
 ;; Bootstrap straight.el here
+(setq straight-repository-branch "rr-fix-renamed-variable") ;; TODO: remove this once fixed upstream
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el"
@@ -20,7 +21,6 @@
 (require 'use-package)
 
 (use-package general :straight t)
-
 (use-package literate-elisp :straight t)
 
 

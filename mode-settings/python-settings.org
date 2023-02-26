@@ -16,8 +16,7 @@
 (use-package
  highlight-indent-guides
  :straight t
- :hook (python-mode . highlight-indent-guides-mode)
-)
+ :hook (python-mode . highlight-indent-guides-mode))
 
 (add-hook
  'python-base-mode-hook
@@ -64,7 +63,6 @@
   'auto-mode-alist
   `(,(rx "requirements" (zero-or-more anything) ".in" string-end)
     . pip-requirements-mode)))
-
 #+end_src
 
 ** Python Docstrings

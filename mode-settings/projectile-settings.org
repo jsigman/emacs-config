@@ -33,5 +33,6 @@
  (add-to-list 'projectile-globally-ignored-directories "/.cache")
  (add-to-list 'projectile-globally-ignored-directories "/.dvc/cache")
  (add-to-list 'projectile-globally-ignored-directories "/.dvc/tmp")
+ (add-to-list 'projectile-globally-ignored-directories "/.jekyll-cache")
  (projectile-mode +1))
 #+END_SRC

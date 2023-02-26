@@ -21,6 +21,7 @@
 (literate-elisp-load "avy-settings.org")
 (literate-elisp-load "lsp-settings.org")
 (literate-elisp-load "python-settings.org")
+(literate-elisp-load "copilot-settings.org")
 (literate-elisp-load "flycheck-settings.org")
 (literate-elisp-load "tramp-settings.org")
 (literate-elisp-load "java-settings.org")
