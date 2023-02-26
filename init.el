@@ -2,8 +2,7 @@
 (setq comp-speed 2)
 
 (require 'packages-settings)
-(if (eq system-type 'darwin)
-    (require 'mac-os-settings))
+(literate-elisp-load "macos-settings.org")
 (literate-elisp-load "path-settings.org")
 (literate-elisp-load "colors-settings.org")
 (literate-elisp-load "global-settings.org")

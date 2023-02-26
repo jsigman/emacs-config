@@ -1,4 +1,8 @@
-;----------------KEYS FOR MAC EMACS-------------;
+* MacOS specific settings
+#+property: header-args:emacs-lisp :load yes
+
+#+begin_src emacs-lisp
+(when (eq system-type 'darwin)
 (setq mac-command-modifier 'control)
 (setq mac-right-command-modifier 'meta)
 
@@ -11,5 +15,5 @@
 (straight-use-package
  '(osx-plist :type git :host github :repo "gonewest818/osx-plist"))
 (require 'osx-plist)
-
-(provide 'mac-os-settings)
+)
+#+end_src
