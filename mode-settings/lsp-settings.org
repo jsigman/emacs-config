@@ -65,7 +65,7 @@
 #+end_src
 ** LSP UI
 For right now, I don't really like LSP UI, let's not load this config
-#+begin_src emacs-lisp :load nil
+#+begin_src emacs-lisp :load no
 (use-package
  lsp-ui
  :straight t

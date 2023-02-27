@@ -11,8 +11,6 @@
 
 (define-key python-base-mode-map (kbd "C-c C-c") nil)
 
-(require 'python-lsp-settings)
-
 (use-package
  highlight-indent-guides
  :straight t
@@ -107,7 +105,7 @@ Not using this in favor of Pyright
 #+begin_src emacs-lisp :load yes
 (add-hook 'python-base-mode-hook #'lsp-deferred)
 (setq lsp-diagnostics-disabled-modes
-      '(python-base-mode python-mode python-ts-mode)))
+      '(python-base-mode python-mode python-ts-mode))
 (use-package
   lsp-pyright
   :straight

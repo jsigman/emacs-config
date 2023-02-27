@@ -1,7 +1,8 @@
-* Jupyter
-#+PROPERTY: header-args:emacs-lisp :load yes
+;; (use-package ein :straight t)
 
-#+begin_src emacs-lisp
+; Below for emacs-jupyter;
+;; (setq comp-deferred-compilation-deny-list (list "jupyter"))
+
 (use-package
  zmq
  ;; :straight '(zmq :host github :repo "jsigman/emacs-zmq")
@@ -88,5 +89,4 @@
  :straight t
  :defer t
  :custom (jupyter-repl-echo-eval-p t))
-#+end_src
-
+(provide 'jupyter-settings)

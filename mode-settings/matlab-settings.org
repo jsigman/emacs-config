@@ -1,6 +1,5 @@
 * MATLAB
-#+PROPERTY: header-args:emacs-lisp :load no
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load no
 (use-package
  matlab-mode
  '(matlab-mode

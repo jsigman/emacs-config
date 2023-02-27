@@ -1,7 +1,6 @@
 * Ivy/Counsel/Swiper Settings
-#+PROPERTY: header-args:emacs-lisp :load no
 Currently not using this in favor of Vertico
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp  :load no
 (use-package ivy :straight t)
 (use-package counsel :straight t)
 (use-package swiper :straight t)

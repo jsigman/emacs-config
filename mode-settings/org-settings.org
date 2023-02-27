@@ -122,7 +122,7 @@
 
 ** Org Roam
 I'm not currently using Org Roam, but maybe some day I'd like to.
-#+begin_src emacs-lisp :load nil
+#+begin_src emacs-lisp :load no
 (straight-use-package 'org-roam)
 (use-package org-roam
   :ensure t
@@ -135,4 +135,10 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
    ;; Dailies
    ("C-c n j" . org-roam-dailies-capture-today))
   :config (org-roam-setup)(require 'org-roam-protocol))
+#+end_src
+
+** Jupyter
+#+begin_src emacs-lisp :load yes
+; TODO: unknown reason this can't load in org-babel
+(require 'jupyter-settings)
 #+end_src
