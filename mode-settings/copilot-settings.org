@@ -7,7 +7,7 @@
  :straight
  (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
  :bind
- (:map copilot-completion-map (("C-<return>" . copilot-accept-completion)))
+ (:map copilot-completion-map (("M-<return>" . copilot-accept-completion)))
  :hook (prog-mode . copilot-mode)
  :ensure t)
 #+end_src

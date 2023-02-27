@@ -5,68 +5,65 @@ Company was a great package, but I'm currently not using it. I migrated over to 
 
 #+begin_src emacs-lisp :load no
 ;----------------AUTO COMPLETE MODE--------------;
-(use-package company :straight t
-:config 
-;; Dont wait to show completions
-(setq company-idle-delay 0)
-(setq company-minimum-prefix-length 1)
-(setq company-quickhelp-delay nil)
-(global-company-mode t)
+(use-package
+ company
+ :straight t
+ :config
+ ;; Dont wait to show completions
+ (setq company-idle-delay 0)
+ (setq company-minimum-prefix-length 1)
+ (setq company-quickhelp-delay nil)
+ (global-company-mode t)
 
 
-(use-package company-async-files :straight
- '(company-async-files
-   :type git
-   :host github
-   :repo "CeleritasCelery/company-async-files")
-
-)
-
-
-; I dont want these company backends
-(setq company-backends (remove 'company-bbdb company-backends))
-(setq company-backends (remove 'company-eclim company-backends))
-(setq company-backends (remove 'company-semantic company-backends))
-(setq company-backends (remove 'company-clang company-backends))
-(setq company-backends (remove 'company-xcode company-backends))
-(setq company-backends (remove 'company-cmake company-backends))
-;; (setq company-backends (remove 'company-files company-backends))
-(setq company-backends
-      (remove 'company-dabbrev-code company-backends))
-(setq company-backends (remove 'company-dabbrev company-backends))
-; I dont want these company backends
-(setq company-backends (remove 'company-bbdb company-backends))
-(setq company-backends (remove 'company-eclim company-backends))
-(setq company-backends (remove 'company-semantic company-backends))
-(setq company-backends (remove 'company-clang company-backends))
-(setq company-backends (remove 'company-xcode company-backends))
-(setq company-backends (remove 'company-cmake company-backends))
-;; (setq company-backends (remove 'company-files company-backends))
-(setq company-backends
-      (remove 'company-dabbrev-code company-backends))
-(setq company-backends (remove 'company-dabbrev company-backends))
-
-)
-(use-package company-quickhelp :straight t
-:config ;; Sort by recent use
-(company-quickhelp-mode)
-)
+ (use-package
+  company-async-files
+  :straight
+  '(company-async-files
+    :type git
+    :host github
+    :repo "CeleritasCelery/company-async-files"))
 
 
-
-
-
+ ; I dont want these company backends
+ (setq company-backends (remove 'company-bbdb company-backends))
+ (setq company-backends (remove 'company-eclim company-backends))
+ (setq company-backends (remove 'company-semantic company-backends))
+ (setq company-backends (remove 'company-clang company-backends))
+ (setq company-backends (remove 'company-xcode company-backends))
+ (setq company-backends (remove 'company-cmake company-backends))
+ ;; (setq company-backends (remove 'company-files company-backends))
+ (setq company-backends
+       (remove 'company-dabbrev-code company-backends))
+ (setq company-backends (remove 'company-dabbrev company-backends))
+ ; I dont want these company backends
+ (setq company-backends (remove 'company-bbdb company-backends))
+ (setq company-backends (remove 'company-eclim company-backends))
+ (setq company-backends (remove 'company-semantic company-backends))
+ (setq company-backends (remove 'company-clang company-backends))
+ (setq company-backends (remove 'company-xcode company-backends))
+ (setq company-backends (remove 'company-cmake company-backends))
+ ;; (setq company-backends (remove 'company-files company-backends))
+ (setq company-backends
+       (remove 'company-dabbrev-code company-backends))
+ (setq company-backends (remove 'company-dabbrev company-backends)))
+(use-package
+ company-quickhelp
+ :straight t
+ :config ;; Sort by recent use
+ (company-quickhelp-mode))
 
 (setq company-dabbrev-downcase nil)
 
+(use-package
+ company-box
+ :straight t
+ :hook (company-mode . company-box-mode))
 
-(straight-use-package 'company-box)
-(require 'company-box)
-(add-hook 'company-mode 'company-box-mode)
-
-(straight-use-package 'company-prescient)
-(require 'company-prescient)
-(company-prescient-mode t)
+(use-package
+ company-prescient
+ :straight t
+ :config (company-prescient-mode t))
 
 ;; Add yasnippet support for all company backends
 ;; https://github.com/syl20bnr/spacemacs/pull/179
@@ -85,9 +82,8 @@ Company was a great package, but I'm currently not using it. I migrated over to 
       (mapcar #'company-mode/backend-with-yas company-backends))
 
 
-(straight-use-package 'company-posframe)
-(require 'company-posframe)
-(company-posframe-mode t)
-
-(provide 'company-settings)
+(use-package
+ company-posframe
+ :straight t
+ :config (company-posframe-mode t))
 #+end_src
