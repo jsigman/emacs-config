@@ -12,6 +12,7 @@
 (literate-elisp-load "dired-settings.org")
 (literate-elisp-load "projectile-settings.org")
 (literate-elisp-load "corfu-vertico-settings.org")
+(literate-elisp-load "company-settings.org")
 (literate-elisp-load "consult-embark-marginalia-settings.org")
 (literate-elisp-load "latex-settings.org")
 (literate-elisp-load "snippets-settings.org")
