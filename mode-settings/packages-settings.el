@@ -1,6 +1,6 @@
 ;------------PACKAGES------------------;
 ;; Bootstrap straight.el here
-(setq straight-repository-branch "rr-fix-renamed-variable") ;; TODO: remove this once fixed upstream
+(setq straight-repository-branch "develop") ;; TODO: remove this once fixed upstream
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el"
@@ -22,6 +22,7 @@
 
 (use-package general :straight t)
 (use-package literate-elisp :straight t)
+(require 'org-element) ; TODO: until org-element--cache-active-p autoload fixed in literate-elisp upstream
 
 
 (provide 'packages-settings)
