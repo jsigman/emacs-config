@@ -1,3 +1,8 @@
+* Eglot
+#+PROPERTY: header-args:emacs-lisp :load no
+Currently not using this in favor of LSP-mode
+
+#+begin_src emacs-lisp
 (use-package eglot :straight t)
 (setq my/lsp-package 'eglot)
 
@@ -12,3 +17,4 @@
 ; Disable flymake in eglot buffers
 (add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1)))
 (provide 'eglot-settings)
+#+END_SRC

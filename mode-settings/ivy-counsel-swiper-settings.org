@@ -1,9 +1,10 @@
-(straight-use-package 'ivy)
-(straight-use-package 'counsel)
-(straight-use-package 'swiper)
-(require 'ivy)
-(require 'swiper)
-(require 'counsel)
+* Ivy/Counsel/Swiper Settings
+#+PROPERTY: header-args:emacs-lisp :load no
+Currently not using this in favor of Vertico
+#+begin_src emacs-lisp
+(use-package ivy :straight t)
+(use-package counsel :straight t)
+(use-package swiper :straight t)
 
 ;; Case insensitive searchs
 (setq completion-ignore-case t)
@@ -77,42 +78,21 @@
 (setq ivy-extra-directories ())
 
 ;; Persist histories across startups
-(straight-use-package 'prescient)
-(straight-use-package 'ivy-prescient)
-(require 'prescient)
-(require 'ivy-prescient)
+(use-package prescient :straight t)
+(use-package ivy-prescient :straight t)
 ;; Use prescient to store history of search results and preference based on these
 (ivy-prescient-mode)
 
 (prescient-persist-mode t)
 
-;; ------------------IVY POSFRAME-----------------;;
-;; (require 'ivy-posframe)
-;; ;; Different command can use different display function.
-;; ;; (setq ivy-posframe-height-alist '((swiper . 20)
-;; ;;                                   (t      . 40)))
 
-;; (setq ivy-posframe-display-functions-alist
-;;       '((swiper          . nil)
-;;         (complete-symbol . ivy-posframe-display-at-point)
-;;         ;; (counsel-M-x     . ivy-posframe-display-at-point)
-;;         ;; (counsel-find-file   . ivy-posframe-display-at-point)
-;;         (t               . nil)))
-;; (ivy-posframe-mode t)
-
-
-(require 'projectile-settings)
-(straight-use-package 'counsel-projectile)
-(require 'counsel-projectile)
-;; (add-hook 'projectile-mode-hook 'counsel-projectile-mode)
+(use-package counsel-projectile :straight t)
 (counsel-projectile-mode)
 (setq projectile-completion-system 'ivy)
 
-(straight-use-package 'all-the-icons-ivy-rich)
-(require 'all-the-icons-ivy-rich)
-(straight-use-package 'ivy-rich)
-(require 'ivy-rich)
-(all-the-icons-ivy-rich-mode t)
-(ivy-rich-mode t)
-
-(provide 'ivy-counsel-swiper-settings)
+(use-package
+ all-the-icons-ivy-rich
+ :straight t
+ :config (all-the-icons-ivy-rich-mode t))
+(use-package ivy-rich :straight t :config (ivy-rich-mode t))
+#+END_SRC
