@@ -1,14 +1,20 @@
 #+title: Emacs Lisp Configuration
 #+author: Johnny Sigman
 
+#+include: mode-settings/macos-settings.org
 #+include: mode-settings/path-settings.org
 #+include: mode-settings/colors-settings.org
 #+include: mode-settings/global-settings.org
+#+include: mode-settings/config-modes-settings.org
 #+include: mode-settings/parens-settings.org
 #+include: mode-settings/elisp-settings.org
 #+include: mode-settings/dired-settings.org
 #+include: mode-settings/projectile-settings.org
 #+include: mode-settings/corfu-vertico-settings.org
+#+include: mode-settings/selectrum-settings.org
+#+include: mode-settings/ivy-counsel-swiper-settings.org
+#+include: mode-settings/company-settings.org
+#+include: mode-settings/matlab-settings.org
 #+include: mode-settings/consult-embark-marginalia-settings.org
 #+include: mode-settings/latex-settings.org
 #+include: mode-settings/snippets-settings.org
@@ -16,7 +22,9 @@
 #+include: mode-settings/rg-settings.org
 #+include: mode-settings/avy-settings.org
 #+include: mode-settings/lsp-settings.org
+#+include: mode-settings/eglot-settings.org
 #+include: mode-settings/python-settings.org
+#+include: mode-settings/copilot-settings.org
 #+include: mode-settings/flycheck-settings.org
 #+include: mode-settings/tramp-settings.org
 #+include: mode-settings/java-settings.org
@@ -28,6 +36,4 @@
 #+include: mode-settings/dap-settings.org
 #+include: mode-settings/treemacs-settings.org
 #+include: mode-settings/markdown-settings.org
-
-
 
