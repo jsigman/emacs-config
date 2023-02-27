@@ -140,5 +140,4 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
 ** Jupyter
 #+begin_src emacs-lisp :load yes
 ; TODO: unknown reason this can't load in org-babel
-(require 'jupyter-settings)
 #+end_src
