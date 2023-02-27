@@ -86,8 +86,6 @@
   (org-babel-execute-src-block)
   (org-babel-next-src-block))
 
-(require 'jupyter-settings)
-
 #+end_src
 ** Colors in Org
 #+begin_src emacs-lisp :load yes

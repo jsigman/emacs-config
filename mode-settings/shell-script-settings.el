@@ -1,1 +1,0 @@
-(provide 'shell-script-settings)

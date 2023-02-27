@@ -82,3 +82,40 @@
  :after python
  :config (setq py-pyment-options '("--output=google")))
 #+end_src
+
+** MsPyls LSP
+Not using this in favor of Pyright
+#+begin_src emacs-lisp :load no
+(use-package
+ lsp-python-ms
+ :straight t
+ :config
+ (setq lsp-python-ms-cache "System")
+ (setq lsp-python-ms-completion-add-brackets t)
+ (setq lsp-python-ms-nupkg-channel "beta")
+ (setq lsp-python-ms-log-level "Warning")
+ (setq lsp-document-sync-method nil)
+ (setq lsp-auto-execute-action nil)
+
+ (setq lsp-python-ms-auto-install-server t)
+
+ (add-to-list 'company-lsp-filter-candidates '(mspyls . t)))
+#+end_src
+
+** Pyright LSP
+Not using this in favor of Pyright
+#+begin_src emacs-lisp :load yes
+(add-hook 'python-base-mode-hook #'lsp-deferred)
+(setq lsp-diagnostics-disabled-modes
+      '(python-base-mode python-mode python-ts-mode)))
+(use-package
+  lsp-pyright
+  :straight
+  '(lsp-pyright :type git :host github :repo "emacs-lsp/lsp-pyright")
+  :init (setq lsp-pyright-multi-root nil)
+  (setq lsp-pyright-auto-import-completions nil)
+  (setq lsp-pyright-diagnostic-mode "workspace")
+  (setq lsp-pyright-typechecking-mode "basic")
+  (setq lsp-pyright-disable-organize-imports t)
+  :config (setq lsp-pyright-log-level "trace"))
+#+end_src

@@ -1,8 +1,7 @@
-;; (use-package ein :straight t)
+* Jupyter
+#+PROPERTY: header-args:emacs-lisp :load yes
 
-; Below for emacs-jupyter;
-;; (setq comp-deferred-compilation-deny-list (list "jupyter"))
-
+#+begin_src emacs-lisp
 (use-package
  zmq
  ;; :straight '(zmq :host github :repo "jsigman/emacs-zmq")
@@ -89,73 +88,5 @@
  :straight t
  :defer t
  :custom (jupyter-repl-echo-eval-p t))
+#+end_src
 
-;; (with-eval-after-load 'ob-jupyter
-;; (defun org-babel-edit-prep:jupyter-python (babel-info)
-;;   (setq-local buffer-file-name
-;;               (->> babel-info
-;;                    caddr
-;;                    (alist-get :tangle)))
-;; (setq-local lsp-headerline-breadcrumb-enable
-;;             nil)
-;(lsp)
-;; )
-;; )
-
-
-;; (debug-on-variable-change org-babel-edi
-
-;; Hack!!
-;; (defun jupyter-make-ssh-tunnel (lport rport server remoteip)
-;;   (or remoteip (setq remoteip "127.0.0.1"))
-;;   (start-process
-;;    "jupyter-ssh-tunnel-%s-%s" lport rport nil ;; <= added the ports in case this name needs to be unique (I don't know)
-;;    "ssh"
-;;    ;; Run in background
-;;    ;; "-f" <= COMMENTED OUT THIS LINE
-;;    ;; Wait until the tunnel is open
-;;    "-o ExitOnForwardFailure=yes"
-;;    ;; Local forward
-;;    "-L" (format "127.0.0.1:%d:%s:%d" lport remoteip rport)
-;;    server
-;;    ;; Close the tunnel if no other connections are made within 60
-;;    ;; seconds
-;;    "sleep 60"))
-
-
-;; (straight-use-package 'simple-httpd)
-;; (require 'simple-httpd)
-;; (straight-use-package 'websocket)
-;; (require 'websocket)
-
-;; (load-file "/Users/johnnysigman/.emacs.d/straight/build/jupyter/jupyter-channel.el")
-;; (require 'jupyter)
-
-;; (require 'ob-jupyter)
-
-;; (require 'jupyter)
-
-
-;; (setq ein:markdown-enable-math t)
-;; (setq ein:markdown-use-pandoc-style-yaml-metadata t)
-;; (setq ein:worksheet-enable-undo t)
-
-;; (defun ein:log (level string &rest args)
-;;   (declare (indent 1))
-;;   `(ein:log-wrapper ,level (lambda () (format ,string ,@args))))
-
-;; (add-hook 'ein:ipynb-mode-hook (lambda ()
-;;                                  (defun ein:log (level string &rest args)
-;;                                    (declare (indent 1))
-;;                                    `(ein:log-wrapper ,level
-;;                                                      (lambda ()
-;;                                                        (format ,string ,@args))))))
-;; (add-hook 'ein:ipynb-mode 'poly-ein-mode)
-
-
-;; (straight-use-package '(ox-ipynb :host github
-;;                                  :repo "jkitchin/ox-ipynb")
-;;                       :defer t)
-
-;; (add-hook  'ein:ipynb-mode-hook '(tree-sitter-hl-mode nil))
-(provide 'jupyter-settings)

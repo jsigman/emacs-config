@@ -1,10 +1,12 @@
-
-(straight-use-package
+* MATLAB
+#+PROPERTY: header-args:emacs-lisp :load no
+#+begin_src emacs-lisp
+(use-package
+ matlab-mode
  '(matlab-mode
    :type git
    :repo "https://git.code.sf.net/p/matlab-emacs/src"))
 (require 'matlab)
 
 (setq matlab-shell-command-switches '("-nodesktop" "-nosplash"))
-
-(provide 'matlab-settings)
+#+end_src

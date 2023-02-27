@@ -1,0 +1,28 @@
+** Selectrum
+Currently using Vertico over this
+#+begin_src emacs-lisp :load no
+(setq projectile-completion-system 'default)
+
+;; (setq projectile-completion-system 'default)
+(use-package selectrum :straight t
+  :config (selectrum-mode t))
+
+
+(use-package selectrum-prescient :straight t
+  :config
+  (selectrum-prescient-mode t)
+  (prescient-persist-mode t)
+
+
+
+  (setq enable-recursive-minibuffers t)
+
+;; Persist history over Emacs restarts
+(savehist-mode)
+
+;; Optional performance optimization
+;; by highlighting only the visible candidates.
+(setq orderless-skip-highlighting (lambda () selectrum-is-active))
+(setq selectrum-highlight-candidates-function
+      #'orderless-highlight-matches)
+#+end_src
