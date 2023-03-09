@@ -1,6 +1,4 @@
 * Org Mode
-#+PROPERTY: header-args:emacs-lisp :load yes
-
 #+begin_src emacs-lisp
 (defun org-src-format-and-save ()
   (interactive)

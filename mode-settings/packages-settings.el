@@ -21,8 +21,9 @@
 (require 'use-package)
 
 (use-package general :straight t)
+(use-package org :straight t :demand t)
+
 (use-package literate-elisp :straight t)
 (require 'org-element) ; TODO: until org-element--cache-active-p autoload fixed in literate-elisp upstream
-
 
 (provide 'packages-settings)

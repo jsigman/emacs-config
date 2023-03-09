@@ -1,7 +1,7 @@
 * Modeline
 #+PROPERTY: header-args:emacs-lisp :load yes
-** Modeline visuals
-#+begin_src emacs-lisp
+** Telephone Line
+#+begin_src emacs-lisp :load no
 (straight-use-package 'telephone-line)
 (setq telephone-line-lhs
       '((evil . (telephone-line-evil-tag-segment))
@@ -20,8 +20,18 @@
         (evil . (telephone-line-airline-position-segment))))
 (telephone-line-mode t)
 #+end_src
+** Awesome Tray
+#+begin_src emacs-lisp :load yes
+(use-package awesome-tray :straight '(awesome-tray :type git :host github :repo "manateelazycat/awesome-tray")
+  :init
+  (setq awesome-tray-active-modules '("buffer-name" "mode-name")) ;TODO: add "belong" back in after treesit
+  :config (awesome-tray-mode 1)
+  awesome-tray-active-modules
+  )
+#+end_src
+
 ** Diminish/Blackout
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load no
 (use-package diminish :straight t)
 (diminish 'anzu-mode)
 (diminish 'ivy-mode)
@@ -49,7 +59,6 @@
 (blackout 'projectile-mode)
 (blackout 'git-gutter-mode)
 (blackout 'git-gutter+-mode)
-(blackout 'highlight-indent-guides-mode)
 (blackout 'goggles-mode)
 (blackout 'org-roam-mode)
 (blackout 'polymode)
@@ -73,4 +82,5 @@
 (diminish 'jupyter-repl-interaction-mode)
 (diminish 'page-break-lines-mode)
 (diminish 'org-src-mode)
+(diminish 'highlight-indent-guides)
 #+end_src

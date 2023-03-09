@@ -380,7 +380,7 @@
 (literate-elisp-load "elisp-settings.org")
 (use-package
  elisp-autofmt
- :commands (elisp-autofmt-mode)
+ :commands (elisp-autofmt-mode elisp-autofmt-buffer)
  :hook (emacs-lisp-mode . elisp-autofmt-mode)
  :straight
  '(elisp-autofmt
@@ -388,7 +388,7 @@
    :host nil
    :type git
    :repo "https://codeberg.org/ideasman42/emacs-elisp-autofmt.git")
- :config (setq elisp-autofmt-on-save-p 'always))
+ :config (setq elisp-autofmt-on-save-p nil))
 #+end_src
 
 **  Global Keybindings
