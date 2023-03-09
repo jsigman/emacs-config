@@ -4,16 +4,13 @@ I'm currently not using DAP mode, and prefer to use python from the command line
 #+begin_src emacs-lisp
 (use-package
  dap-mode
- :straight t
  :config
  (add-hook
   'dap-stopped-hook (lambda (arg) (call-interactively #'dap-hydra)))
-
  ;; Enabling only some features
  (setq dap-auto-configure-features
        '(sessions locals controls tooltip))
  (setq dap-python-debugger 'debugpy)
-
  (require 'dap-mode)
  (require 'dap-python)
  (require 'dap-ui)

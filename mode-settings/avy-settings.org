@@ -3,7 +3,6 @@
 #+begin_src emacs-lisp :load yes
 (use-package
  avy
- :straight t
  :config
  (global-set-key
   (kbd "C-;")

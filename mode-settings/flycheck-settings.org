@@ -3,7 +3,6 @@
 #+begin_src emacs-lisp
 (use-package
  flycheck
- :straight t
  :init
  (define-fringe-bitmap 'my-flycheck-fringe-indicator
    (vector
@@ -43,7 +42,7 @@
   :fringe-bitmap 'my-flycheck-fringe-indicator
   :fringe-face 'flycheck-fringe-info)
  ;; :config
- ;; (use-package flycheck-pos-tip :straight t)
+ ;; (use-package flycheck-pos-tip )
  ;; (flycheck-pos-tip-mode)
  )
 

@@ -4,7 +4,6 @@
 #+begin_src emacs-lisp
 (use-package
  projectile
- :straight t
  :init (setq projectile-git-submodule-command nil)
  ;; always ignore the home directory and root
  (setq projectile-ignored-projects
@@ -33,6 +32,7 @@
  (add-to-list 'projectile-globally-ignored-directories "/.cache")
  (add-to-list 'projectile-globally-ignored-directories "/.dvc/cache")
  (add-to-list 'projectile-globally-ignored-directories "/.dvc/tmp")
- (add-to-list 'projectile-globally-ignored-directories "/.jekyll-cache")
+ (add-to-list
+  'projectile-globally-ignored-directories "/.jekyll-cache")
  (projectile-mode +1))
 #+END_SRC

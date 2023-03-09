@@ -2,7 +2,8 @@
 #+PROPERTY: header-args:emacs-lisp :load yes
 
 #+begin_src emacs-lisp
-(use-package jq-mode :straight t)
-(use-package jsonian :straight
- '(jsonian :type git :host github :repo "iwahbe/jsonian"))
+(use-package jq-mode)
+(use-package
+ jsonian
+ :straight '(jsonian :type git :host github :repo "iwahbe/jsonian"))
 #+END_SRC

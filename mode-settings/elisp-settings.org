@@ -2,35 +2,30 @@
 #+PROPERTY: header-args:emacs-lisp :load yes
 
 #+begin_src emacs-lisp
-  ;; elisp settings
-  (use-package eros :straight t :config (eros-mode t))
-  (use-package
-   lisp-extra-font-lock
-   :straight t
-   :config (lisp-extra-font-lock-global-mode 1))
+;; elisp settings
+(use-package eros :config (eros-mode t))
+(use-package
+ lisp-extra-font-lock
+ :config (lisp-extra-font-lock-global-mode 1))
 
-  (use-package elisp-docstring-mode :straight t)
-  (use-package
-   highlight-function-calls
-   :straight t
-   :hook (emacs-lisp-mode . highlight-function-calls-mode))
+(use-package elisp-docstring-mode)
+(use-package
+ highlight-function-calls
+ :hook (emacs-lisp-mode . highlight-function-calls-mode))
 
-  (use-package
-   format-all
-   :straight t
-   :hook (elisp-mode . format-all-mode))
+(use-package format-all :hook (elisp-mode . format-all-mode))
 
 
-  (use-package
-    inspector
-   :straight
-   '(inspector :type git :host github :repo "mmontone/emacs-inspector"))
+(use-package
+ inspector
+ :straight
+ '(inspector :type git :host github :repo "mmontone/emacs-inspector"))
 
-  ; print the full value of eval'ed variables
-  (setq eval-expression-print-length nil)
-  (setq eval-expression-print-level nil)
+; print the full value of eval'ed variables
+(setq eval-expression-print-length nil)
+(setq eval-expression-print-level nil)
 
-  (add-to-list
-   'auto-mode-alist
-   '("\\.dir-locals\\(?:-2\\)?\\.el\\'" . emacs-lisp-mode))
+(add-to-list
+ 'auto-mode-alist
+ '("\\.dir-locals\\(?:-2\\)?\\.el\\'" . emacs-lisp-mode))
 #+END_SRC

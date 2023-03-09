@@ -11,7 +11,6 @@
 
 (use-package
  org
- :straight t
  ;; :demand t
  :defer t
  :hook (org-mode-hook . visual-line-mode)
@@ -49,19 +48,15 @@
    (org-babel-jupyter-aliases-from-kernelspecs 'refresh))
  (visual-line-mode t)
 
-(setq org-log-done t)
+ (setq org-log-done t)
 
-;; adding this does some weird stuff in colors
-(setq org-startup-indented nil)
+ ;; adding this does some weird stuff in colors
+ (setq org-startup-indented nil)
 
-;; fontify code in code blocks
-(setq org-src-fontify-natively t)
-(setq org-confirm-babel-evaluate nil) ;don't prompt me to confirm everytime I want to evaluate a block
-(setq org-src-preserve-indentation t)
-
-)
-
-
+ ;; fontify code in code blocks
+ (setq org-src-fontify-natively t)
+ (setq org-confirm-babel-evaluate nil) ;don't prompt me to confirm everytime I want to evaluate a block
+ (setq org-src-preserve-indentation t))
 #+end_src
 ** Org Babel
 #+begin_src emacs-lisp :load yes
@@ -69,21 +64,19 @@
 
 (use-package
  plantuml-mode
- :straight t
  :config
  (setq plantuml-default-exec-mode 'executable)
  (setq org-plantuml-exec-mode 'plantuml)
  (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode)))
-(use-package ob-napkin :straight t)
-(use-package mermaid-mode :straight t)
-(use-package ob-mermaid :straight t)
-(use-package htmlize :straight t :after org)
+(use-package ob-napkin)
+(use-package mermaid-mode)
+(use-package ob-mermaid)
+(use-package htmlize :after org)
 
 (defun my/org-babel-execute-and-next ()
   (interactive)
   (org-babel-execute-src-block)
   (org-babel-next-src-block))
-
 #+end_src
 ** Colors in Org
 #+begin_src emacs-lisp :load yes
@@ -106,14 +99,14 @@
   (dolist (face '(org-level-2))
     (set-face-attribute face nil :height 1.5)))
 
-(use-package org-bullets :defer t :straight t)
+(use-package org-bullets :defer t)
 
 ;;nil means to wrap lines in org mode
 (setq org-startup-truncated t)
 
 (use-package
  org-modern
- :straight t
+
  :defer t
  :config (global-org-modern-mode))
 #+end_src
@@ -122,17 +115,19 @@
 I'm not currently using Org Roam, but maybe some day I'd like to.
 #+begin_src emacs-lisp :load no
 (straight-use-package 'org-roam)
-(use-package org-roam
-  :ensure t
-  :custom (org-roam-directory (file-truename "~/Documents/PERSONAL/ORG_ROAM/")):bind
-  (("C-c n l" . org-roam-buffer-toggle)
-   ("C-c n f" . org-roam-node-find)
-   ("C-c n g" . org-roam-graph)
-   ("C-c n i" . org-roam-node-insert)
-   ("C-c n c" . org-roam-capture)
-   ;; Dailies
-   ("C-c n j" . org-roam-dailies-capture-today))
-  :config (org-roam-setup)(require 'org-roam-protocol))
+(use-package
+ org-roam
+ :ensure t
+ :custom (org-roam-directory (file-truename "~/Documents/PERSONAL/ORG_ROAM/"))
+ :bind
+ (("C-c n l" . org-roam-buffer-toggle)
+  ("C-c n f" . org-roam-node-find)
+  ("C-c n g" . org-roam-graph)
+  ("C-c n i" . org-roam-node-insert)
+  ("C-c n c" . org-roam-capture)
+  ;; Dailies
+  ("C-c n j" . org-roam-dailies-capture-today))
+ :config (org-roam-setup) (require 'org-roam-protocol))
 #+end_src
 
 ** Jupyter

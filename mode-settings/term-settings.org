@@ -4,7 +4,6 @@
 #+begin_src emacs-lisp
 (use-package
  vterm
- :straight t
  :init
  (setq vterm-always-compile-module t)
  (setq vterm-timer-delay 0.01)
@@ -65,7 +64,7 @@ BUFFER may be either a buffer or its name (a string)."
 #+begin_src emacs-lisp :load yes
 (use-package
  vterm-toggle
- :straight t
+ 
  :config
  (defun vterm-toggle--new (&optional buffer-name)
    "New vterm buffer."

@@ -13,7 +13,6 @@
 
 (use-package
  highlight-indent-guides
- :straight t
  :hook (python-mode . highlight-indent-guides-mode))
 
 (add-hook
@@ -49,13 +48,10 @@
 
 (use-package
  py-isort
- :straight t
- :config
- (define-key python-base-mode-map (kbd "M-I") 'py-isort-buffer))
+ :config (define-key python-base-mode-map (kbd "M-I") 'py-isort-buffer))
 
 (use-package
  pip-requirements
- :straight t
  :init
  (add-to-list
   'auto-mode-alist
@@ -86,7 +82,6 @@ Not using this in favor of Pyright
 #+begin_src emacs-lisp :load no
 (use-package
  lsp-python-ms
- :straight t
  :config
  (setq lsp-python-ms-cache "System")
  (setq lsp-python-ms-completion-add-brackets t)

@@ -2,9 +2,8 @@
 Currently not using this in favor of LSP-mode
 
 #+begin_src emacs-lisp :load no
-(use-package eglot :straight t)
+(use-package eglot)
 (setq my/lsp-package 'eglot)
-
 ;; (add-to-list 'eglot-server-programs
 ;;              `(python-base-mode . ("pyls" "-v" "--tcp" "--host"
 ;;                               "localhost" "--port" :autoport)))

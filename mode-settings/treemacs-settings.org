@@ -5,16 +5,14 @@
 (literate-elisp-load "projectile-settings.org")
 (use-package
  treemacs
- :straight t
  :bind (("M-P" . treemacs))
  :config (setq treemacs-persist-file "treemacs-persist"))
-(use-package treemacs-projectile :straight t)
+(use-package treemacs-projectile)
 
 (use-package
  treemacs-icons-dired
  :after
  treemacs
  dired
- :straight t
  :config (treemacs-icons-dired-mode))
 #+END_SRC

@@ -22,10 +22,9 @@
 (setq column-number-mode t)
 (setq blink-paren-function nil)
 (setq inhibit-startup-screen t)
-(use-package direnv :straight t :config (direnv-mode 't))
+(use-package direnv :config (direnv-mode 't))
 (use-package
  ctrlf
- :straight t
  :config
  (add-to-list
   'ctrlf-minibuffer-bindings '("C-r" . ctrlf-backward-default))
@@ -35,12 +34,10 @@
 
 (use-package
  whole-line-or-region
- :straight t
  :config (whole-line-or-region-global-mode t))
 
 (use-package
  popper
- :straight t
  :bind
  (("C-`" . popper-toggle-latest)
   ("M-`" . popper-cycle)
@@ -68,14 +65,12 @@
 
 (use-package
  expand-region
- :straight t
  :config (global-set-key (kbd "M-J") 'er/expand-region))
 
-(use-package which-key :straight t :config (which-key-mode 1))
+(use-package which-key :config (which-key-mode 1))
 
 (use-package
  ibuffer
- :straight t
  :config
  (global-set-key (kbd "C-x C-b") 'ibuffer)
  (define-key ibuffer-mode-map (kbd "M-o") nil))
@@ -93,7 +88,7 @@
 
 (use-package
   anzu
-  :straight t
+  
   :bind
   (([remap query-replace] . #'anzu-query-replace)
    ([remap query-replace-regexp] . #'anzu-query-replace-regexp))
@@ -109,10 +104,10 @@
                                  (set-face-foreground 'mode-line fg))
                                orig-fg))))
 
-(use-package lin :straight t)
+(use-package lin )
 (lin-global-mode t)
 
-(use-package hl-line :straight t
+(use-package hl-line 
   :config
 (add-hook
  'eshell-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
@@ -125,8 +120,8 @@
 
 (literate-elisp-load "term-settings.org")
 
-(use-package dash :straight t)
-(use-package ht :straight t)
+(use-package dash )
+(use-package ht )
 
 ;; Replace the text of selections
 (pending-delete-mode t)
@@ -147,10 +142,10 @@
 
 (use-package
  page-break-lines
- :straight t
+ 
  :config (global-page-break-lines-mode))
 
-(use-package eldoc :straight t :hook (prog-mode . eldoc-mode))
+(use-package eldoc  :hook (prog-mode . eldoc-mode))
 
 #+end_src
 ** Dashboard
@@ -214,10 +209,10 @@
 
 ** Icons
 #+begin_src emacs-lisp :load yes
-(use-package all-the-icons :straight t)
+(use-package all-the-icons )
 (use-package
  all-the-icons-ibuffer
- :straight t
+ 
  :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
 
 ;; I don't think I like buffer expose after all
@@ -226,7 +221,7 @@
 ;; (buffer-expose-mode 'nil)
 (use-package
  all-the-icons-completion
- :straight t
+ 
  :config (all-the-icons-completion-mode)
  :hook
  (marginalia-mode . all-the-icons-completion-marginalia-setup))
@@ -273,7 +268,7 @@
   (setq ace-popup-menu-show-pane-header t)
 
   ;; Start-up profiler
-  (use-package esup :straight t)
+  (use-package esup )
 
   ;; Scratch.el
   (use-package
@@ -285,11 +280,11 @@
      :repo "https://codeberg.org/emacs-weirdware/scratch.git")
    :config (scratch--create 'lisp-interaction-mode "*scratch*"))
 
-  (use-package fuzzy :straight t)
-  (use-package fuzzy-match :straight t)
+  (use-package fuzzy )
+  (use-package fuzzy-match )
 
-  (use-package free-keys :straight t)
-  (use-package restart-emacs :straight t)
+  (use-package free-keys )
+  (use-package restart-emacs )
 
   ; ---- Auto Revert Modes ----- ;
   (autoload 'eimp-mode "eimp" "Emacs Image Manipulation Package." t)
@@ -315,7 +310,7 @@
   ;; `helpful-callable' as a drop-in replacement.
   (use-package
    helpful
-   :straight t
+   
    :config (global-set-key (kbd "C-h f") #'helpful-callable)
 
    (global-set-key (kbd "C-h v") #'helpful-variable)
@@ -323,7 +318,7 @@
 
   (use-package
    dimmer
-   :straight t
+   
    :config
    (dimmer-configure-which-key)
    (dimmer-configure-org)
@@ -336,10 +331,10 @@
 
   (use-package
    volatile-highlights
-   :straight t
+   
    :config (volatile-highlights-mode t))
 
-  (use-package hl-todo :straight t :init (global-hl-todo-mode))
+  (use-package hl-todo  :init (global-hl-todo-mode))
 #+end_src
 
 ** Indentation
@@ -348,7 +343,7 @@
 (electric-indent-mode 0)
 (use-package
  aggressive-indent
- :straight t
+ 
  :config (aggressive-indent-global-mode t))
 #+end_src
 
@@ -356,7 +351,7 @@
 #+begin_src emacs-lisp :load yes
 (use-package
  apheleia
- :straight t
+ 
  :config
  (setf (alist-get 'isort apheleia-formatters)
        '("isort" "--stdout" "-"))

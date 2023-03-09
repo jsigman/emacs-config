@@ -1,14 +1,11 @@
 * Snippets
 #+PROPERTY: header-args:emacs-lisp :load yes
 #+begin_src emacs-lisp
-(use-package yasnippet :straight t :demand t)
-(use-package yasnippet-snippets :straight t :demand t)
+(use-package yasnippet :demand t)
+(use-package yasnippet-snippets :demand t)
 (yas-global-mode 1)
-
 (use-package
  consult-yasnippet
- :straight t
  :after consult
  :config (global-set-key (kbd "M-Y") 'consult-yasnippet))
-
 #+END_SRC

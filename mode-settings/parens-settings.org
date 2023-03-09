@@ -8,7 +8,6 @@
 
 (use-package
  elec-pair
- :straight t
  :config ;; Disable electric pair in minibuffer
  (defun my/inhibit-electric-pair-mode (char)
    (or (minibufferp) (electric-pair-conservative-inhibit char)))

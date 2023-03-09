@@ -64,7 +64,6 @@
 ;; Add extensions
 (use-package
  cape
- :straight t
  ;; Bind dedicated completion commands
  ;; :bind (("C-c p p" . completion-at-point) ;; capf
  ;;        ("C-c p t" . complete-tag)        ;; etags
@@ -82,7 +81,6 @@
  ;;        ("C-c p &" . cape-sgml)
  ;;        ("C-c p r" . cape-rfc1345))
  :hook (corfu-mode . add-cape-completions))
-
 ;; A few more useful configurations...
 (setq completion-cycle-threshold 3)
 #+end_src

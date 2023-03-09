@@ -22,17 +22,21 @@
 #+end_src
 ** Awesome Tray
 #+begin_src emacs-lisp :load yes
-(use-package awesome-tray :straight '(awesome-tray :type git :host github :repo "manateelazycat/awesome-tray")
-  :init
-  (setq awesome-tray-active-modules '("buffer-name" "mode-name")) ;TODO: add "belong" back in after treesit
-  :config (awesome-tray-mode 1)
-  awesome-tray-active-modules
-  )
+(use-package
+ awesome-tray
+ :straight
+ '(awesome-tray
+   :type git
+   :host github
+   :repo "manateelazycat/awesome-tray")
+ :init
+ (setq awesome-tray-active-modules '("buffer-name" "mode-name")) ;TODO: add "belong" back in after treesit
+ :config (awesome-tray-mode 1) awesome-tray-active-modules)
 #+end_src
 
 ** Diminish/Blackout
 #+begin_src emacs-lisp :load no
-(use-package diminish :straight t)
+(use-package diminish)
 (diminish 'anzu-mode)
 (diminish 'ivy-mode)
 (diminish 'rainbow-mode)
@@ -48,7 +52,7 @@
 (diminish 'all-the-icons-dired-mode)
 (diminish 'tree-sitter-hl-mode)
 
-(use-package blackout :straight t)
+(use-package blackout)
 (blackout 'ivy-mode)
 (blackout 'company-posframe-mode)
 (blackout 'company-mode)

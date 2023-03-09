@@ -5,9 +5,8 @@
 (literate-elisp-load "projectile-settings.org")
 (use-package
  magit
- :straight t
  :demand t
- :config (use-package transient :straight t)
+ :config (use-package transient)
 
  (setq vc-handled-backends nil)
 
@@ -24,7 +23,6 @@
 
 (use-package
  forge
- :straight t
  :config
  ; This is so we can access forge information
  (setq auth-sources '("~/.authinfo")))
@@ -32,7 +30,6 @@
 
 (use-package
  git-gutter+
- :straight t
  :config (global-git-gutter+-mode t)
 
  (setq git-gutter+-modified-sign " ") ;; two space
@@ -43,15 +40,14 @@
  (set-face-foreground 'git-gutter+-added "dark green")
  (set-face-foreground 'git-gutter+-deleted "red"))
 
-(use-package pcre2el :straight t)
-(use-package async :straight t)
-(use-package hl-todo :straight t)
-(use-package rg :straight t)
-(use-package ag :straight t)
+(use-package pcre2el)
+(use-package async)
+(use-package hl-todo)
+(use-package rg)
+(use-package ag)
 
-(use-package magit-todos :straight t :config (magit-todos-mode t))
-
-(use-package ghub :straight t)
+(use-package magit-todos :config (magit-todos-mode t))
+(use-package ghub)
 
 ; add this so that git gutter plus does not screw up tramp sessions
 ; it disables GGP during tramp

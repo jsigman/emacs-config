@@ -4,7 +4,6 @@
 #+begin_src emacs-lisp
 (use-package
  multiple-cursors
- :straight t
  :config
  (global-set-key (kbd "C-M-j") 'mc/edit-lines)
  (global-set-key (kbd "C->") 'mc/mark-next-like-this)

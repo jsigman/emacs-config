@@ -3,9 +3,11 @@
 #+begin_src emacs-lisp :load yes
 (setq default-directory "~/")
 
-(use-package package :straight t)
-(use-package exec-path-from-shell :straight t :demand t :config
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
-)
+(use-package package)
+(use-package
+ exec-path-from-shell
+ :demand t
+ :config
+ (when (memq window-system '(mac ns x))
+   (exec-path-from-shell-initialize)))
 #+END_SRC

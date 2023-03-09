@@ -20,20 +20,8 @@
 
 ** Colors in Dired
 #+begin_src emacs-lisp :load yes
-(use-package
- rainbow-mode
- :straight t
- :hook (LaTeX-mode . rainbow-mode))
-(use-package
- dired-hacks
- :straight t
- :hook (emacs-lisp-mode . rainbow-mode))
-
-;; Set the font
-;; (set-frame-font "-outline-Noto Serif SemCond SemBd-semibold-normal-normal-serif-*-*-*-*-p-*-iso10646-1")
-;; (set-frame-font "")
-;; (add-to-list 'default-frame-alist '(font . "FantasqueSansMono:"))
-
+(use-package rainbow-mode :hook (LaTeX-mode . rainbow-mode))
+(use-package dired-hacks :hook (emacs-lisp-mode . rainbow-mode))
 #+end_src
 
 ** Tree Sitter
@@ -41,11 +29,10 @@
 #+begin_src emacs-lisp :load yes
 (use-package
  tree-sitter
- :straight t
  :config (global-tree-sitter-mode t)
  :hook ((tree-sitter-after-on-hook . tree-sitter-hl-mode)))
 
-(use-package tree-sitter-langs :straight t)
+(use-package tree-sitter-langs)
 
 ;; (setq treesit-extra-load-path
 ;;       '("/Users/jsigman/.emacs.d/tree-sitter-grammars"))
@@ -62,5 +49,5 @@
 ;; (while (rassoc 'python-mode auto-mode-alist)
 ;;   (setf (cdr (rassoc 'python-mode auto-mode-alist)) 'python-ts-mode))
 
-;; (use-package treesit-auto :straight t)
+;; (use-package treesit-auto )
 #+END_SRC

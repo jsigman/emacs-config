@@ -19,7 +19,7 @@
  (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
  (setq reftex-plug-into-AUCTeX t)
  (setq TeX-PDF-mode t))
-(use-package cdlatex :straight t)
+(use-package cdlatex)
 
 ;; -------------------------/AucTex-------------------------------;;
 #+END_SRC
