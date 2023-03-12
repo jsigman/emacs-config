@@ -9,5 +9,6 @@
  :bind
  (:map copilot-completion-map (("M-<return>" . copilot-accept-completion)))
  :hook (prog-mode . copilot-mode)
+ :hook (yaml-mode . copilot-mode)
  :ensure t)
 #+end_src

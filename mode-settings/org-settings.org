@@ -81,34 +81,22 @@
 ** Colors in Org
 #+begin_src emacs-lisp :load yes
 (literate-elisp-load "colors-settings.org")
-(with-eval-after-load 'org
-  (dolist (face
-           '(org-block
-             org-block-begin-line
-             org-block-end-line
-             org-level-1
-             org-drawer
-             org-meta-line))
-    (set-face-attribute face nil :extend t)))
-
-(with-eval-after-load 'org
-  (dolist (face '(org-level-1))
-    (set-face-attribute face nil :height 2.0)))
-
-(with-eval-after-load 'org
-  (dolist (face '(org-level-2))
-    (set-face-attribute face nil :height 1.5)))
-
-(use-package org-bullets :defer t)
+(use-package org-bullets :after org)
 
 ;;nil means to wrap lines in org mode
 (setq org-startup-truncated t)
 
+(use-package org-modern :after org :config (global-org-modern-mode))
 (use-package
- org-modern
-
- :defer t
- :config (global-org-modern-mode))
+ org-modern-indent
+ :straight
+ '(org-modern-indent
+   :type git
+   :host github
+   :repo "jdtsmith/org-modern-indent")
+ :config
+ (setq org-startup-indented t)
+ (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
 #+end_src
 
 ** Org Roam
