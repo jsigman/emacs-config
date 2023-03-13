@@ -4,9 +4,9 @@
 (use-package
  avy
  :config
- (global-set-key
-  (kbd "C-;")
-  'avy-goto-char-timer) ;; I use this most frequently
+ ;; (global-set-key
+ ;;  (kbd "C-;")
+ ;;  'avy-goto-char-timer) ;; I use this most frequently
  (global-set-key
   (kbd "C-'")
   'avy-goto-line) ;; Consistent with ivy-avy

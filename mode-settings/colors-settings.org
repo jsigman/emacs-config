@@ -1,5 +1,4 @@
 * Colors and Theme
-#+PROPERTY: header-args:emacs-lisp :load yes
 ** Emacs Theme
 #+begin_src emacs-lisp :load yes
 ;-------------COLOR THEME----------------;
@@ -23,31 +22,3 @@
 (use-package rainbow-mode :hook (LaTeX-mode . rainbow-mode))
 (use-package dired-hacks :hook (emacs-lisp-mode . rainbow-mode))
 #+end_src
-
-** Tree Sitter
-
-#+begin_src emacs-lisp :load yes
-(use-package
- tree-sitter
- :config (global-tree-sitter-mode t)
- :hook ((tree-sitter-after-on-hook . tree-sitter-hl-mode)))
-
-(use-package tree-sitter-langs)
-
-;; (setq treesit-extra-load-path
-;;       '("/Users/jsigman/.emacs.d/tree-sitter-grammars"))
-
-;; ; Auto
-;; (use-package
-;;  treesit-auto
-;;  :straight '(treesit-auto :type git :host github :repo "renzmann/treesit-auto")
-;;  :config (treesit-auto-apply-remap)
-;;  ;undo for  these
-;;  ;; (setf (cdr (rassoc 'yaml-ts-mode auto-mode-alist)) 'yaml-mode)
-;;  )
-
-;; (while (rassoc 'python-mode auto-mode-alist)
-;;   (setf (cdr (rassoc 'python-mode auto-mode-alist)) 'python-ts-mode))
-
-;; (use-package treesit-auto )
-#+END_SRC

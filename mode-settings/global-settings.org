@@ -343,8 +343,7 @@
 (electric-indent-mode 0)
 (use-package
  aggressive-indent
- 
- :config (aggressive-indent-global-mode t))
+ :config (aggressive-indent-global-mode nil))
 #+end_src
 
 ** Autoformatting

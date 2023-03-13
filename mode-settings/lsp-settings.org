@@ -2,62 +2,63 @@
 #+PROPERTY: header-args:emacs-lisp :load yes
 ** LSP Mode
 #+begin_src emacs-lisp
-(setq my/lsp-package "lsp")
-;------------------------LSP---------------------------;
-; PATCH BELOW
-(setenv "LSP_USE_PLISTS" "true")
-(literate-elisp-load "corfu-vertico-settings.org")
-(use-package
- lsp-mode
- :custom (lsp-completion-provider :none) ; We use corfu
- :init
- (setq lsp-signature-render-documentation t)
- (setq lsp-signature-auto-activate t)
- (setq lsp-signature-doc-lines 3)
- (setq lsp-prefer-flymake nil)
- (setq lsp-idle-delay 0.0)
- (setq lsp-enable-snippet t)
- (setq lsp-keymap-prefix "M-P")
- (setq lsp-log-io nil)
- (setq lsp-print-performance nil)
- (setq lsp-response-timeout 10)
- (setq lsp-enable-on-type-formatting nil)
- (setq lsp-keep-workspace-alive nil)
- (setq lsp-headerline-breadcrumb-enable-diagnostics nil)
- (setq read-process-output-max (* 1024 1024))
- (setq lsp-semantic-highlighting-faces t)
- (setq lsp-enable-imenu nil)
- (setq lsp-enable-text-document-color t)
- (setq lsp-completion-no-cache t)
- (setq lsp-completion-filter-on-incomplete nil)
- (setq lsp-enable-file-watchers t)
- (setq lsp-auto-execute-action nil)
- (setq lsp-auto-guess-root 't)
- (setq lsp-document-sync-method nil)
- (setq lsp-completion-use-last-result nil)
- (setq lsp-completion-show-kind t)
- (setq lsp-completion-show-detail t)
+  (setq my/lsp-package "lsp")
+  ;------------------------LSP---------------------------;
+  ; PATCH BELOW
+  (setenv "LSP_USE_PLISTS" "true")
+  (literate-elisp-load "corfu-vertico-settings.org")
+  (use-package
+    lsp-mode
+    :custom (lsp-completion-provider :none) ; We use corfu
+    :demand t 
+    :init
+    (setq lsp-signature-render-documentation t)
+    (setq lsp-signature-auto-activate t)
+    (setq lsp-signature-doc-lines 3)
+    (setq lsp-prefer-flymake nil)
+    (setq lsp-idle-delay 0.0)
+    (setq lsp-enable-snippet t)
+    (setq lsp-keymap-prefix "M-P")
+    (setq lsp-log-io nil)
+    (setq lsp-print-performance nil)
+    (setq lsp-response-timeout 10)
+    (setq lsp-enable-on-type-formatting nil)
+    (setq lsp-keep-workspace-alive nil)
+    (setq lsp-headerline-breadcrumb-enable-diagnostics nil)
+    (setq read-process-output-max (* 1024 1024))
+    (setq lsp-semantic-highlighting-faces t)
+    (setq lsp-enable-imenu nil)
+    (setq lsp-enable-text-document-color t)
+    (setq lsp-completion-no-cache t)
+    (setq lsp-completion-filter-on-incomplete nil)
+    (setq lsp-enable-file-watchers t)
+    (setq lsp-auto-execute-action nil)
+    (setq lsp-auto-guess-root 't)
+    (setq lsp-document-sync-method nil)
+    (setq lsp-completion-use-last-result nil)
+    (setq lsp-completion-show-kind t)
+    (setq lsp-completion-show-detail t)
 
- ;; (defun my/lsp-mode-setup-completion ()
- ;;   (setf (alist-get
- ;;          'styles
- ;;          (alist-get 'lsp-capf completion-category-defaults))
- ;;         '(orderless))) ;; Configure orderless
+    ;; (defun my/lsp-mode-setup-completion ()
+    ;;   (setf (alist-get
+    ;;          'styles
+    ;;          (alist-get 'lsp-capf completion-category-defaults))
+    ;;         '(orderless))) ;; Configure orderless
 
- (defun my/lsp-mode-setup-completion ()
-   (setf (alist-get
-          'styles
-          (alist-get 'lsp-capf completion-category-defaults))
-         '(orderless)))
+    (defun my/lsp-mode-setup-completion ()
+      (setf (alist-get
+             'styles
+             (alist-get 'lsp-capf completion-category-defaults))
+            '(orderless)))
 
- ;; Optionally configure the cape-capf-buster.
- (setq-local completion-at-point-functions
-             (list (cape-capf-buster #'lsp-completion-at-point)))
- :hook
- (lsp-mode . lsp-enable-which-key-integration)
- (lsp-completion-mode . my/lsp-mode-setup-completion)
- ;; (lsp-mode . lsp-ui-mode)
- )
+    ;; Optionally configure the cape-capf-buster.
+    (setq-local completion-at-point-functions
+                (list (cape-capf-buster #'lsp-completion-at-point)))
+    :hook
+    (lsp-mode . lsp-enable-which-key-integration)
+    (lsp-completion-mode . my/lsp-mode-setup-completion)
+    ;; (lsp-mode . lsp-ui-mode)
+    )
 #+end_src
 ** LSP UI
 For right now, I don't really like LSP UI, let's not load this config
@@ -160,17 +161,12 @@ Configure here the modes for which you'd like to run LSP mode.
   (add-hook 'LaTeX-mode-hook #'lsp-deferred)
   (add-hook 'yaml-base-mode-hook #'lsp-deferred)
   (add-hook 'json-mode-hook #'lsp-deferred)
+  (add-hook 'dockerfile-mode-hook #'lsp-deferred)
 
   (setq lsp-enable-on-type-formatting t)
   (setq lsp-enable-indentation t)
 
   (add-hook 'sh-mode-hook #'lsp-deferred)
-  (straight-use-package 'lsp-docker)
-
-  (use-package
-   lsp-docker
-   
-   :config (add-hook 'dockerfile-mode-hook #'lsp-deferred))
 
   (use-package lsp-mssql  :hook (sql-mode . lsp))
   ;; (use-package
@@ -187,6 +183,11 @@ Configure here the modes for which you'd like to run LSP mode.
     (lsp-install-server t 'json-ls)
     (lsp-install-server t 'dockerfile-ls)
     (lsp-install-server t 'bash-ls))
+#+end_src
+** LSP Docker
+This mode is used to run language servers in a docker container. At some point I'd like to use this.
+#+begin_src emacs-lisp :load no
+(use-package lsp-docker)
 #+end_src
 
 ** LSP File Watchers

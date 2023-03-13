@@ -3,7 +3,6 @@
 
 #+begin_src emacs-lisp
 (require 'python)
-(add-hook 'python-mode-hook 'tree-sitter-hl-mode)
 
 (setq
  python-shell-interpreter "python3"
