@@ -37,8 +37,10 @@ This is the old way of using ~tree-sitter~ in emacs. In emacs 29, this moved to 
  :straight '(treesit-auto :type git :host github :repo "renzmann/treesit-auto")
  :demand t
  :config
- (setq treesit-auto-install 'prompt)
+ (setq treesit-auto-install 't)
+ (setq treesit-auto-opt-out-list '(protobuf))
  (global-treesit-auto-mode)
+ (treesit-auto-install-all)
 
  ;; Set up treesit mode hooks for relevant modes
  (setq python-ts-mode-hook python-mode-hook)

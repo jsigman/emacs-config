@@ -132,10 +132,7 @@ I'm now using iedit instead of my hand-crafted [[https://github.com/jsigman/lsp-
 ;---Multiple cursors------;
 (literate-elisp-load "multiple-cursors-settings.org")
 
-(use-package
- iedit
- 
- :init (setq iedit-toggle-key-default (kbd "C-,")))
+(use-package iedit :init (setq iedit-toggle-key-default (kbd "C-,")))
 (defun my/lsp-iedit ()
   (lsp-iedit-highlights)
   ;; (iedit-switch-to-mc-mode)
@@ -145,12 +142,16 @@ I'm now using iedit instead of my hand-crafted [[https://github.com/jsigman/lsp-
 (pcase my/lsp-highlight-setup
   ("iedit" (use-package
     iedit
-    
     :init
     (setq iedit-toggle-key-default nil)
     (setq iedit-auto-narrow t)
-    :bind (:map lsp-mode-map ("M-S" . lsp-iedit-highlights))
-    :after (:all lsp-mode)))
+    :bind
+    (:map
+     lsp-mode-map
+     ("M-S" . lsp-iedit-highlights)
+     (:map iedit-mode-keymap ("C-g" . iedit--quit)))
+    :after (:all lsp-mode)
+    :custom-face (iedit-occurrence ((t (:background "Red"))))))
   ("lsp-mc" (straight-use-package
     '(lsp-mc :type git :host github :repo "jsigman/lsp-mc"))
    (require 'lsp-mc) (add-hook 'lsp-mode-hook 'lsp-mc-mode)))
