@@ -2,7 +2,15 @@
 #+PROPERTY: header-args:emacs-lisp :load yes
 #+begin_src emacs-lisp
 (use-package yasnippet :demand t)
-(use-package yasnippet-snippets :demand t)
+(use-package
+ yasnippet-snippets
+ :demand t
+ :straight
+ '(yasnippet-snippets
+   :type git
+   :host github
+   :repo "jsigman/yasnippet-snippets"))
+
 (yas-global-mode 1)
 (use-package
  consult-yasnippet
