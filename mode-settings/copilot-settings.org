@@ -1,6 +1,4 @@
 * Github Copilot
-
-#+PROPERTY: header-args:emacs-lisp :load yes
 #+begin_src emacs-lisp
 (use-package
  copilot
@@ -11,4 +9,13 @@
  :hook (prog-mode . copilot-mode)
  :hook (yaml-mode . copilot-mode)
  :ensure t)
+#+end_src
+* C3PO
+#+begin_src emacs-lisp :load no
+(use-package
+ c3po
+ :straight (:host github :repo "d1egoaz/c3po.el")
+ :config
+ (setq c3po-api-key
+       (f-read-text (expand-file-name "~/.openai/api_key.txt"))))
 #+end_src

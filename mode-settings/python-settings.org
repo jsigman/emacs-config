@@ -8,14 +8,14 @@
  python-shell-interpreter "python3"
  python-shell-interpreter-args "-i")
 
-(define-key python-base-mode-map (kbd "C-c C-c") nil)
+(define-key python-mode-map (kbd "C-c C-c") nil)
 
 (use-package
  highlight-indent-guides
  :hook (python-mode . highlight-indent-guides-mode))
 
 (add-hook
- 'python-base-mode-hook
+ 'python-mode-hook
  (lambda ()
    (mapc
     (lambda (pair) (push pair prettify-symbols-alist))
@@ -43,11 +43,12 @@
       ))))
 
 ;; python mode keymap
-(define-key python-base-mode-map (kbd "C-c C-p") nil)
+(define-key python-mode-map (kbd "C-c C-p") nil)
 
 (use-package
  py-isort
- :config (define-key python-base-mode-map (kbd "M-I") 'py-isort-buffer))
+ :config
+ (define-key python-mode-map (kbd "M-I") 'py-isort-buffer))
 
 (use-package
  pip-requirements
@@ -97,9 +98,9 @@ Not using this in favor of Pyright
 ** Pyright LSP
 Not using this in favor of Pyright
 #+begin_src emacs-lisp :load yes
-(add-hook 'python-base-mode-hook #'lsp-deferred)
+(add-hook 'python-mode-hook #'lsp-deferred)
 (setq lsp-diagnostics-disabled-modes
-      '(python-base-mode python-mode python-ts-mode))
+      '(python-mode python-mode python-ts-mode))
 (use-package
   lsp-pyright
   :straight

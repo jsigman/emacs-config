@@ -239,102 +239,104 @@
 #+end_src
 ** Fonts
 #+begin_src emacs-lisp :load yes
-  ;; Font settings
-  (if (eq system-type 'darwin)
-      (if (> (x-display-pixel-width) 1440)
-	  ;; Set default font larger if on a big screen
-	  (set-face-font 'default "roboto mono-15")
-	;; (set-face-font 'default "arial-15")
+;; Font settings
+(if (eq system-type 'darwin)
+    (if (> (x-display-pixel-width) 1440)
+        ;; Set default font larger if on a big screen
+        (set-face-font 'default "roboto mono-15")
+      ;; (set-face-font 'default "arial-15")
 
-	;; else
-	(set-face-font 'default "roboto mono-14")
-	;; (set-fontset-font "fontset-default" "Menlo 12")
-	)
-    ;; else
-    (if (not (eq window-system nil))
-	(if (> (x-display-pixel-width) 1440)
-	    ;; Set default font larger if on a big screen
-	    (set-face-font 'default "roboto mono-15")
-	  ;; else
-	  (set-face-font 'default "roboto mono-14")
-	  ;; (set-fontset-font "fontset-default" "Menlo 12")
-	  )
       ;; else
-      ))
+      (set-face-font 'default "roboto mono-14")
+      ;; (set-fontset-font "fontset-default" "Menlo 12")
+      )
+  ;; else
+  (if (not (eq window-system nil))
+      (if (> (x-display-pixel-width) 1440)
+          ;; Set default font larger if on a big screen
+          (set-face-font 'default "roboto mono-15")
+        ;; else
+        (set-face-font 'default "roboto mono-14")
+        ;; (set-fontset-font "fontset-default" "Menlo 12")
+        )
+    ;; else
+    ))
 
-  ;; Use ace-popup-menu for completions
-  (straight-use-package 'ace-popup-menu)
-  (ace-popup-menu-mode 1)
-  (setq ace-popup-menu-show-pane-header t)
+;; Use ace-popup-menu for completions
+(straight-use-package 'ace-popup-menu)
+(ace-popup-menu-mode 1)
+(setq ace-popup-menu-show-pane-header t)
 
-  ;; Start-up profiler
-  (use-package esup )
+;; Start-up profiler
+(use-package esup)
 
-  ;; Scratch.el
-  (use-package
-   scratch
-   :straight
-   '(scratch
-     :host nil
-     :type git
-     :repo "https://codeberg.org/emacs-weirdware/scratch.git")
-   :config (scratch--create 'lisp-interaction-mode "*scratch*"))
+;; Scratch.el
+(use-package
+ scratch
+ :straight
+ '(scratch
+   :host nil
+   :type git
+   :repo "https://codeberg.org/emacs-weirdware/scratch.git")
+ :config (scratch--create 'lisp-interaction-mode "*scratch*"))
 
-  (use-package fuzzy )
-  (use-package fuzzy-match )
+(use-package fuzzy)
+(use-package fuzzy-match)
 
-  (use-package free-keys )
-  (use-package restart-emacs )
+(use-package free-keys)
+(use-package restart-emacs)
 
-  ; ---- Auto Revert Modes ----- ;
-  (autoload 'eimp-mode "eimp" "Emacs Image Manipulation Package." t)
-  (add-hook 'image-mode-hook 'auto-revert-mode)
+; ---- Auto Revert Modes ----- ;
+(autoload 'eimp-mode "eimp" "Emacs Image Manipulation Package." t)
+(add-hook 'image-mode-hook 'auto-revert-mode)
 
-  ; --- CSV --- ;
-  (use-package
-   csv-mode
-   :straight
-   '(csv-mode :type git :host github :repo "emacsmirror/csv-mode"))
+; --- CSV --- ;
+(use-package
+ csv-mode
+ :straight
+ '(csv-mode :type git :host github :repo "emacsmirror/csv-mode"))
 
-  (use-package explain-pause-mode
-   :straight
-   '(explain-pause-mode
-     :type git
-     :host github
-     :repo "lastquestion/explain-pause-mode")
-   :config (explain-pause-mode))
+(use-package
+ explain-pause-mode
+ :straight
+ '(explain-pause-mode
+   :type git
+   :host github
+   :repo "lastquestion/explain-pause-mode")
+ ;; :config (explain-pause-mode)
+ )
 
-  ;; use helpful instead of the normal help buffers
-  ;; Note that the built-in `describe-function' includes both functions
-  ;; and macros. `helpful-function' is functions only, so we provide
-  ;; `helpful-callable' as a drop-in replacement.
-  (use-package
-   helpful
-   
-   :config (global-set-key (kbd "C-h f") #'helpful-callable)
+;; use helpful instead of the normal help buffers
+;; Note that the built-in `describe-function' includes both functions
+;; and macros. `helpful-function' is functions only, so we provide
+;; `helpful-callable' as a drop-in replacement.
+(use-package
+ helpful
 
-   (global-set-key (kbd "C-h v") #'helpful-variable)
-   (global-set-key (kbd "C-h k") #'helpful-key))
+ :config (global-set-key (kbd "C-h f") #'helpful-callable)
 
-  (use-package
-   dimmer
-   
-   :config
-   (dimmer-configure-which-key)
-   (dimmer-configure-org)
-   (dimmer-configure-posframe)
-   (dimmer-configure-magit)
-   (dimmer-configure-hydra)
+ (global-set-key (kbd "C-h v") #'helpful-variable)
+ (global-set-key (kbd "C-h k") #'helpful-key))
 
-   (setq dimmer-fraction 0.15)
-   (dimmer-mode t))
+(use-package
+ dimmer
 
-  (use-package
-   volatile-highlights
-   
-   :config (volatile-highlights-mode t))
+ :config
+ (dimmer-configure-which-key)
+ (dimmer-configure-org)
+ (dimmer-configure-posframe)
+ (dimmer-configure-magit)
+ (dimmer-configure-hydra)
 
-  (use-package hl-todo  :init (global-hl-todo-mode))
+ (setq dimmer-fraction 0.15)
+ (dimmer-mode t))
+
+(use-package
+ volatile-highlights
+
+ :config (volatile-highlights-mode t))
+
+(use-package hl-todo :init (global-hl-todo-mode))
 #+end_src
 
 ** Indentation

@@ -15,10 +15,10 @@ I'm currently not using DAP mode, and prefer to use python from the command line
  (require 'dap-python)
  (require 'dap-ui)
 
- (add-hook 'python-base-mode-hook 'dap-mode)
- (add-hook 'python-base-mode-hook 'dap-ui-mode)
- (add-hook 'python-base-mode-hook 'dap-tooltip-mode)
+ (add-hook 'python-mode-hook 'dap-mode)
+ (add-hook 'python-mode-hook 'dap-ui-mode)
+ (add-hook 'python-mode-hook 'dap-tooltip-mode)
 
- ;; (define-key python-base-mode-map (kbd "C-r") 'dap-debug)
- (define-key python-base-mode-map (kbd "M-D") #'dap-hydra))
+ ;; (define-key python-mode-map (kbd "C-r") 'dap-debug)
+ (define-key python-mode-map (kbd "M-D") #'dap-hydra))
 #+end_src

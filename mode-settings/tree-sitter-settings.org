@@ -5,8 +5,7 @@ This is the old way of using ~tree-sitter~ in emacs. In emacs 29, this moved to 
 (use-package
  tree-sitter
  :config (global-tree-sitter-mode t)
- :hook ((tree-sitter-after-on-hook . tree-sitter-hl-mode)))
-
+ :hook ((tree-sitter-after-on-hook . tree-sitter-hl-mode) (python-mode . tree-sitter-hl-mode)))
 (use-package tree-sitter-langs)
 #+END_SRC
 ** Combobulate

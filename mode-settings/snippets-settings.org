@@ -1,7 +1,12 @@
 * Snippets
-#+PROPERTY: header-args:emacs-lisp :load yes
-#+begin_src emacs-lisp
-(use-package yasnippet :demand t)
+#+PROPERTY: header-args:emacs-lisp
+#+begin_src emacs-lisp :load yes
+(use-package
+ yasnippet
+ :demand t
+ :init
+ (load "yasnippet.el") ; get rid of weird invalid function issue
+ )
 (use-package
  yasnippet-snippets
  :demand t

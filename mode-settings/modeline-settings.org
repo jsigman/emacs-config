@@ -1,27 +1,29 @@
 * Modeline
-#+PROPERTY: header-args:emacs-lisp :load yes
 ** Telephone Line
-#+begin_src emacs-lisp :load no
-(straight-use-package 'telephone-line)
-(setq telephone-line-lhs
-      '((evil . (telephone-line-evil-tag-segment))
-        (accent
-         .
-         (telephone-line-vc-segment
-          telephone-line-erc-modified-channels-segment
-          telephone-line-process-segment))
-        (nil
-         .
-         (telephone-line-minor-mode-segment
-          telephone-line-buffer-segment))))
-(setq telephone-line-rhs
-      '((nil . (telephone-line-misc-info-segment))
-        (accent . (telephone-line-major-mode-segment))
-        (evil . (telephone-line-airline-position-segment))))
-(telephone-line-mode t)
-#+end_src
-** Awesome Tray
 #+begin_src emacs-lisp :load yes
+(use-package
+ telephone-line
+ :config
+ (setq telephone-line-lhs
+       '((evil . (telephone-line-evil-tag-segment))
+         (accent
+          .
+          (telephone-line-vc-segment
+           telephone-line-erc-modified-channels-segment
+           telephone-line-process-segment))
+         (nil
+          .
+          (telephone-line-minor-mode-segment
+           telephone-line-buffer-segment))))
+ (setq telephone-line-rhs
+       '((nil . (telephone-line-misc-info-segment))
+         (accent . (telephone-line-major-mode-segment))
+         (evil . (telephone-line-airline-position-segment))))
+ (telephone-line-mode t))
+#+end_src
+
+** Awesome Tray
+#+begin_src emacs-lisp :load no
 (use-package
  awesome-tray
  :straight
@@ -30,12 +32,13 @@
    :host github
    :repo "manateelazycat/awesome-tray")
  :init
- (setq awesome-tray-active-modules '("buffer-name" "mode-name")) ;TODO: add "belong" back in after treesit
+ (setq awesome-tray-active-modules
+       '("buffer-name" "mode-name" "belong")) ;TODO: add "belong" back in after treesit
  :config (awesome-tray-mode 1) awesome-tray-active-modules)
 #+end_src
 
 ** Diminish/Blackout
-#+begin_src emacs-lisp :load no
+#+begin_src emacs-lisp :load yes 
 (use-package diminish)
 (diminish 'anzu-mode)
 (diminish 'ivy-mode)
