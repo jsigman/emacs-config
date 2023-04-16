@@ -1,62 +1,14 @@
-#+title: Emacs Lisp Configuration (work in progress)
+#+title: Emacs Lisp Configuration
 #+author: Johnny Sigman
 
-This folder tracks my [[https://github.com/jingtaozf/literate-elisp][literate]] Emacs lisp config. Please use any content that you discover here.
+* About
 
-[[mode-settings/path-settings.org][path-settings.org]]
+This repository tracks my literate Emacs lisp config. Please use any content that you discover here.
 
-[[mode-settings/colors-settings.org][colors-settings.org]]
+* Installation
 
-[[mode-settings/global-settings.org][global-settings.org]]
+These configs rely heavily on [[https://github.com/radian-software/straight.el][straight.el]], [[https://github.com/jwiegley/use-package][use-package]], and [[https://github.com/jingtaozf/literate-elisp][literate-elisp]] for a reproducible emacs configuration. These libraries are loaded in [[mode-settings/packages-settings.org][packages-settings.org]]. Every other file relies on them, and is loaded after (as can be seen in [[init.el][init.el]]).
 
-[[mode-settings/parens-settings.org][parens-settings.org]]
+* Content
 
-[[mode-settings/elisp-settings.org][elisp-settings.org]]
-
-[[mode-settings/dired-settings.org][dired-settings.org]]
-
-[[mode-settings/projectile-settings.org][projectile-settings.org]]
-
-[[mode-settings/corfu-vertico-settings.org][corfu-vertico-settings.org]]
-
-[[mode-settings/consult-embark-marginalia-settings.org][consult-embark-marginalia-settings.org]]
-
-[[mode-settings/latex-settings.org][latex-settings.org]]
-
-[[mode-settings/snippets-settings.org][snippets-settings.org]]
-
-[[mode-settings/term-settings.org][term-settings.org]]
-
-[[mode-settings/global-keybindings.org][global-keybindings.org]]
-
-[[mode-settings/rg-settings.org][rg-settings.org]]
-
-[[mode-settings/avy-settings.org][avy-settings.org]]
-
-[[mode-settings/lsp-settings.org][lsp-settings.org]]
-
-[[mode-settings/python-settings.org][python-settings.org]]
-
-[[mode-settings/flycheck-settings.org][flycheck-settings.org]]
-
-[[mode-settings/tramp-settings.org][tramp-settings.org]]
-
-[[mode-settings/java-settings.org][java-settings.org]]
-
-[[mode-settings/org-settings.org][org-settings.org]]
-
-[[mode-settings/magit-settings.org][magit-settings.org]]
-
-[[mode-settings/multiple-cursors-settings.org][multiple-cursors-settings.org]]
-
-[[mode-settings/modeline-settings.org][modeline-settings.org]]
-
-[[mode-settings/docker-settings.org][docker-settings.org]]
-
-[[mode-settings/dap-settings.org][dap-settings.org]]
-
-[[mode-settings/treemacs-settings.org][treemacs-settings.org]]
-
-[[mode-settings/markdown-settings.org][markdown-settings.org]]
-
-
+The configuration content is in elisp code blocks of the ~.org~ files in the [[mode-settings/][mode-settings]] folder.
