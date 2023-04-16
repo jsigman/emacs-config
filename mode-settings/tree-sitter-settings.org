@@ -30,25 +30,24 @@ This is the old way of using ~tree-sitter~ in emacs. In emacs 29, this moved to 
 #+end_src
 ** Treesit
 #+begin_src emacs-lisp :load yes
-  (use-package
-   treesit-auto
-   :straight
-   '(treesit-auto
-     :type git
-     :host github
-     :repo "renzmann/treesit-auto"
-     )
-   :demand t
-   :config
-   (setq treesit-auto-install 't)
-   (setq treesit-auto-opt-out-list '(protobuf))
-   (global-treesit-auto-mode)
-   (treesit-auto-install-all)
-   ;; set up treesit mode hooks for relevant modes
-   (setq python-ts-mode-hook python-mode-hook)
-   (setq yaml-ts-mode-hook yaml-mode-hook)
-   (setq json-ts-mode-hook json-mode-hook)
-   ;; (setq js-ts-mode-hook js-mode-hook)
-   (setq markdown-ts-mode-hook markdown-mode-hook)
-   (setq bash-ts-mode-hook sh-mode-hook))
+(use-package
+ treesit-auto
+ :straight '(treesit-auto :type git :host github :repo "renzmann/treesit-auto")
+ :demand t
+ :init (setq treesit-auto-install t)
+
+
+ (setq treesit-auto-opt-out-list
+       '(protobuf
+         clojure cmake cpp css elixir gomod heex kotlin lua r))
+ :config
+ (global-treesit-auto-mode)
+ (treesit-auto-install-all)
+ ;; set up treesit mode hooks for relevant modes
+ (setq python-ts-mode-hook python-mode-hook)
+ (setq yaml-ts-mode-hook yaml-mode-hook)
+ (setq json-ts-mode-hook json-mode-hook)
+ ;; (setq js-ts-mode-hook js-mode-hook)
+ (setq markdown-ts-mode-hook markdown-mode-hook)
+ (setq bash-ts-mode-hook sh-mode-hook))
 #+END_SRC

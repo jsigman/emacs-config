@@ -85,7 +85,11 @@
 
 ;;nil means to wrap lines in org mode
 (setq org-startup-truncated t)
+#+end_src
 
+** Org Modern
+I thought I liked this at first, but now I'm going to disable it because of some annoying text interactions.
+#+begin_src emacs-lisp :load no
 (use-package org-modern :after org :config (global-org-modern-mode))
 (use-package
  org-modern-indent
