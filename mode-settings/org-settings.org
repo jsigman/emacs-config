@@ -84,7 +84,7 @@
 (use-package org-bullets :after org)
 
 ;;nil means to wrap lines in org mode
-(setq org-startup-truncated t)
+(setq org-startup-truncated nil)
 #+end_src
 
 ** Org Modern
