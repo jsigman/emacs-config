@@ -1,4 +1,11 @@
 * Colors and Theme
+#+begin_src emacs-lisp :load yes
+;; Treat all themes as safe; no query before use.
+(setf custom-safe-themes 't)
+(setq frame-title-format nil)
+#+end_src
+
+
 ** Emacs Theme
 #+begin_src emacs-lisp :load yes
 ;-------------COLOR THEME----------------;
@@ -8,14 +15,17 @@
       ;; (load-theme 'dracula t)
       (set-background-color "brightwhite"))
   (progn
-    (straight-use-package 'ef-themes)
-    (load-theme 'ef-day t)
-    ))
-
-;; Treat all themes as safe; no query before use.
-(setf custom-safe-themes 't)
-(setq frame-title-format nil)
+    (use-package ef-themes :config (load-theme 'ef-day t))))
 #+end_src
+** Nano
+#+begin_src emacs-lisp :load no
+(use-package
+ nano
+ :straight
+ (nano-emacs :type git :host github :repo "rougier/nano-emacs")
+ :config (require 'nano))
+#+end_src
+
 
 ** Colors in Dired
 #+begin_src emacs-lisp :load yes

@@ -278,7 +278,7 @@
    :host nil
    :type git
    :repo "https://codeberg.org/emacs-weirdware/scratch.git")
- :config (scratch--create 'lisp-interaction-mode "*scratch*"))
+ :config (scratch--create 'emacs-lisp-mode "*scratch*"))
 
 (use-package fuzzy)
 (use-package fuzzy-match)

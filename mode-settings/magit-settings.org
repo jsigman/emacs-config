@@ -1,25 +1,23 @@
 * Magit
-#+property: header-args:emacs-lisp :load yes
-
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load yes
 (literate-elisp-load "projectile-settings.org")
 (use-package
  magit
  :demand t
- :config (use-package transient)
-
+ :init
+ (setq magit-delete-by-moving-to-trash nil)
  (setq vc-handled-backends nil)
-
- (define-key magit-mode-map (kbd "C-x g") nil)
- (define-key magit-mode-map (kbd "M-G") 'magit-status)
- (define-key global-map (kbd "M-G") 'magit-status)
-
- (define-key magit-mode-map (kbd "M-0") nil)
- (define-key magit-mode-map (kbd "M-1") nil)
- (define-key magit-mode-map (kbd "M-2") nil)
- (define-key magit-mode-map (kbd "M-3") nil)
-
- (setq magit-delete-by-moving-to-trash nil))
+ :bind
+ (:map magit-mode-map
+  ("C-x g" . nil)
+  ("M-G" . nil)
+  ("M-0" . nil)
+  ("M-1" . nil)
+  ("M-2" . nil)
+  ("M-3" . nil))
+ :bind (:map global-map ("M-G" . magit-status))
+ :config (use-package transient)
+ )
 
 (use-package
  forge

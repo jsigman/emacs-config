@@ -12,3 +12,9 @@
  ;; (require 'lsp-marksman)
  )
 #+END_SRC
+
+* HTML
+#+begin_src emacs-lisp
+(require 'html-ts-mode)
+(define-key html-ts-mode-map (kbd "M-o M-o") nil)
+#+END_SRC
