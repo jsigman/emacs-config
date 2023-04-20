@@ -1,6 +1,5 @@
 ;------------PACKAGES------------------;
 ;; Bootstrap straight.el here
-(setq straight-repository-branch "develop") ;; TODO: remove this once fixed upstream
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el"
@@ -45,5 +44,4 @@
      :around #'literate-elisp-helpful--find-by-macroexpanding)))
 
 (require 'org-element) ; TODO: until org-element--cache-active-p autoload fixed in literate-elisp upstream
-
 (provide 'packages-settings)
