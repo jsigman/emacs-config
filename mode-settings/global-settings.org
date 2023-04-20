@@ -20,7 +20,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
 #+begin_src emacs-lisp :load yes
 (use-package
  centered-window
- :init (setq cwm-centered-window-width 160)
+ :init (setq cwm-centered-window-width 180)
  :ensure t
  :config (centered-window-mode t))
 #+end_src

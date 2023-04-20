@@ -30,7 +30,6 @@
 (literate-elisp-load "tramp-settings.org")
 (literate-elisp-load "java-settings.org")
 (literate-elisp-load "org-settings.org")
-(require 'jupyter-settings)
 (literate-elisp-load "magit-settings.org")
 (literate-elisp-load "multiple-cursors-settings.org")
 (literate-elisp-load "modeline-settings.org")
