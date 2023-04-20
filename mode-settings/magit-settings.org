@@ -7,9 +7,6 @@
  :init
  (setq magit-delete-by-moving-to-trash nil)
  (setq vc-handled-backends nil)
- :hook
- (magit-process-mode
-  . (lambda () (projectile-invalidate-cache nil)))
  :bind
  (:map
   magit-mode-map
@@ -20,14 +17,18 @@
   ("M-2" . nil)
   ("M-3" . nil))
  :bind (:map global-map ("M-G" . magit-status))
- :config (use-package transient))
+ :config
+ (use-package transient)
+ (add-hook
+  'magit-pre-command-hook
+  (lambda () (projectile-invalidate-cache nil))))
+
 
 (use-package
  forge
  :config
  ; This is so we can access forge information
  (setq auth-sources '("~/.authinfo")))
-
 
 (use-package
  git-gutter+

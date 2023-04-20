@@ -60,51 +60,55 @@ BUFFER may be either a buffer or its name (a string)."
     (interactive)
     (kill-buffer-and-its-windows (current-buffer)))))
 #+end_src
-** Vterm Toggle
+** COMMENT Vterm Toggle
 #+begin_src emacs-lisp :load yes
+;; Special overrides of vterm toggle functions to work better with projectile
+
+(defun vterm-toggle--new (&optional buffer-name)
+  "New vterm buffer."
+  (let ((default-directory default-directory)
+        (buffer-name (or buffer-name vterm-buffer-name))
+        project-root)
+    (when vterm-toggle-project-root
+      (setq project-root (vterm-toggle--project-root))
+      (when project-root
+        (setq default-directory project-root)))
+    (if vterm-toggle-fullscreen-p
+        (vterm buffer-name)
+      (if (eq major-mode 'vterm-mode)
+          (let ((display-buffer-alist nil))
+            (vterm buffer-name))
+        (vterm-other-window buffer-name)))))
+(defun vterm-toggle--project-root ()
+  (projectile-project-root))
+
+
 (use-package
  vterm-toggle
- 
- :config
- (defun vterm-toggle--new (&optional buffer-name)
-   "New vterm buffer."
-   (let ((default-directory default-directory)
-         (buffer-name (or buffer-name vterm-buffer-name))
-         project-root)
-     (when vterm-toggle-project-root
-       (setq project-root (vterm-toggle--project-root))
-       (when project-root
-         (setq default-directory project-root)))
-     (if vterm-toggle-fullscreen-p
-         (vterm buffer-name)
-       (if (eq major-mode 'vterm-mode)
-           (let ((display-buffer-alist nil))
-             (vterm buffer-name))
-         (vterm-other-window buffer-name)))))
- (defun vterm-toggle--project-root ()
-   (projectile-project-root))
- (define-key vterm-mode-map (kbd "<escape>") 'vterm-send-C-c)
- (define-key vterm-mode-map (kbd "M-T") 'vterm-toggle)
- (define-key vterm-mode-map (kbd "M-R") 'vterm-toggle-cd)
- ;Switch to next vterm buffer
- (global-set-key (kbd "M-T") 'vterm-toggle)
- (global-set-key (kbd "M-R") 'vterm-toggle-cd)
-
- (setq vterm-toggle-fullscreen-p nil)
+ :after vterm
+ :demand t
+ :bind
+ (:map
+  vterm-mode-map
+  ("<escape>" . vterm-send-C-c)
+  ("M-T" . vterm-toggle)
+  ("M-R" . vterm-toggle-cd)
+  ("M-n" . vterm-toggle-forward)
+  ("M-p" . vterm-toggle-backward))
+ (:map global-map ("M-T" . vterm-toggle) ("M-R" . vterm-toggle-cd))
+ :config (setq vterm-toggle-fullscreen-p nil)
  (add-to-list
   'display-buffer-alist
-  '((lambda (bufname _)
-      (with-current-buffer bufname
-        (equal major-mode 'vterm-mode)))
+  '((lambda (buffer-or-name _)
+      (let ((buffer (get-buffer buffer-or-name)))
+        (with-current-buffer buffer
+          (or (equal major-mode 'vterm-mode)
+              (string-prefix-p
+               vterm-buffer-name (buffer-name buffer))))))
     (display-buffer-reuse-window display-buffer-at-bottom)
-    ;; (display-buffer-reuse-window display-buffer-in-direction)
+    ;;(display-buffer-reuse-window display-buffer-in-direction)
     ;;display-buffer-in-direction/direction/dedicated is added in emacs27
-    (direction . bottom)
-    (dedicated . t) ;dedicated is supported in emacs27
-    (reusable-frames . visible) (window-height . 0.3)))
-
- ;;Switch to next vterm buffer
- (define-key vterm-mode-map (kbd "M-n") 'vterm-toggle-forward)
- ;;Switch to previous vterm buffer
- (define-key vterm-mode-map (kbd "M-p") 'vterm-toggle-backward))
+    ;;(direction . bottom)
+    ;; (dedicated . t) ;dedicated is supported in emacs27
+    (reusable-frames . visible) (window-height . 0.3))))
 #+END_SRC

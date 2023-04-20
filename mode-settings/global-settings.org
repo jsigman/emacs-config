@@ -338,15 +338,15 @@ I think this is a little too aggressive right now, but it's a cool idea.
 ;; `helpful-callable' as a drop-in replacement.
 (use-package
  helpful
-
- :config (global-set-key (kbd "C-h f") #'helpful-callable)
-
- (global-set-key (kbd "C-h v") #'helpful-variable)
- (global-set-key (kbd "C-h k") #'helpful-key))
+ ;; TODO: Add these back in when helpful plays nicely with literate-elisp
+ ;; :bind
+ ;; ("C-h f" . helpful-callable)
+ ;; ("C-h v" . helpful-variable)
+ ;; ("C-h k" . helpful-key)
+ )
 
 (use-package
  dimmer
-
  :config
  (dimmer-configure-which-key)
  (dimmer-configure-org)
