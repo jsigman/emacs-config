@@ -7,7 +7,9 @@
  :init
  (setq magit-delete-by-moving-to-trash nil)
  (setq vc-handled-backends nil)
- :hook (magit-pre-command-hook . projectile-invalidate-cache)
+ :hook
+ (magit-process-mode
+  . (lambda () (projectile-invalidate-cache nil)))
  :bind
  (:map
   magit-mode-map
