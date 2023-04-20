@@ -1,5 +1,31 @@
 * Global Settings for Editing
 #+PROPERTY: header-args:emacs-lisp :load yes
+** Window management
+#+begin_src emacs-lisp :load yes
+
+#+end_src
+*** Zoom
+I think this is a little too aggressive right now, but it's a cool idea.
+#+begin_src emacs-lisp :load no
+(use-package zoom :init (setq zoom-size '(0.618 . 0.618)) :config (zoom-mode))
+#+end_src
+*** Visual Fill Column
+#+begin_src emacs-lisp :load no
+(use-package
+ visual-fill-column
+ :init (setq visual-fill-column-center-text t)
+ :config (visual-fill-column-mode 1))
+#+end_src
+*** Centered window
+#+begin_src emacs-lisp :load yes
+(use-package
+ centered-window
+ :init (setq cwm-centered-window-width 160)
+ :ensure t
+ :config (centered-window-mode t))
+#+end_src
+
+** Miscellaneous
 #+begin_src emacs-lisp :load yes
 (setq native-comp-async-report-warnings-errors nil)
 ;; Show the line number of the cursor in the mode bar at the bottom of each buffer

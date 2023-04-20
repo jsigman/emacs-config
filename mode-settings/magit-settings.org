@@ -1,14 +1,16 @@
 * Magit
 #+begin_src emacs-lisp :load yes
-(literate-elisp-load "projectile-settings.org")
 (use-package
  magit
+ :after (projectile)
  :demand t
  :init
  (setq magit-delete-by-moving-to-trash nil)
  (setq vc-handled-backends nil)
+ :hook (magit-pre-command-hook . projectile-invalidate-cache)
  :bind
- (:map magit-mode-map
+ (:map
+  magit-mode-map
   ("C-x g" . nil)
   ("M-G" . nil)
   ("M-0" . nil)
@@ -16,8 +18,7 @@
   ("M-2" . nil)
   ("M-3" . nil))
  :bind (:map global-map ("M-G" . magit-status))
- :config (use-package transient)
- )
+ :config (use-package transient))
 
 (use-package
  forge
