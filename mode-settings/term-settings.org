@@ -82,7 +82,6 @@ BUFFER may be either a buffer or its name (a string)."
 (defun vterm-toggle--project-root ()
   (projectile-project-root))
 
-
 (use-package
  vterm-toggle
  :after vterm
@@ -105,10 +104,10 @@ BUFFER may be either a buffer or its name (a string)."
           (or (equal major-mode 'vterm-mode)
               (string-prefix-p
                vterm-buffer-name (buffer-name buffer))))))
-    (display-buffer-reuse-window display-buffer-at-bottom)
-    ;;(display-buffer-reuse-window display-buffer-in-direction)
-    ;;display-buffer-in-direction/direction/dedicated is added in emacs27
-    ;;(direction . bottom)
+    (display-buffer-reuse-window display-buffer-in-direction)
+    (direction . bottom)
     (dedicated . t) ;dedicated is supported in emacs27
-    (reusable-frames . visible) (window-height . 0.3))))
+    (reusable-frames . visible)
+    (window-height . 0.3)
+    (window-width . 0.3))))
 #+END_SRC

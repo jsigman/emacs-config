@@ -15,7 +15,11 @@
       ;; (load-theme 'dracula t)
       (set-background-color "brightwhite"))
   (progn
-    (use-package ef-themes :config (load-theme 'ef-day t))))
+    (use-package
+     ef-themes
+     :config
+     ;; :config (load-theme 'ef-night t)
+     (load-theme 'ef-day t))))
 #+end_src
 ** Nano
 #+begin_src emacs-lisp :load no
