@@ -435,3 +435,25 @@ I think this is a little too aggressive right now, but it's a cool idea.
 (global-set-key (kbd "C-.") 'xref-find-definitions-other-window)
 (define-key global-map (kbd "RET") 'newline-and-indent)
 #+end_src
+
+** Copying syntax highlighting to the clipboard
+#+begin_src  emacs-lisp :load yes
+(use-package
+ highlight2clipboard
+ :straight
+ '(highlight2clipboard
+   :type git
+   :host github
+   :repo "Lindydancer/highlight2clipboard"))
+#+end_src
+
+** Breadcrumb mode
+Because I'm using this, I'm going to disable LSP's breadcrumb mode, which I've been disappointed with.
+
+#+begin_src emacs-lisp
+(use-package
+ breadcrumb
+ :straight
+ '(breadcrumb :type git :host github :repo "joaotavora/breadcrumb")
+ :config (breadcrumb-mode t) (breadcrumb-imenu-crumbs))
+#+end_src

@@ -16,7 +16,6 @@
  :hook (org-mode-hook . visual-line-mode)
  :hook (org-babel-after-execute-hook . org-display-inline-images)
  :hook (org-babel-after-execute-hook . append)
- :hook (org-mode-hook . org-bullets-mode)
  :bind
  (:map
   org-mode-map
@@ -81,7 +80,9 @@
 ** Colors in Org
 #+begin_src emacs-lisp :load yes
 (literate-elisp-load "colors-settings.org")
-(use-package org-bullets :after org)
+(use-package org-bullets :after org
+ :hook (org-mode-hook . org-bullets-mode)
+)
 
 ;;nil means to wrap lines in org mode
 (setq org-startup-truncated nil)

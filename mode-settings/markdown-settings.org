@@ -6,11 +6,8 @@
  markdown-mode
  :mode ("README\\.md\\'" . gfm-mode)
  :init (setq markdown-command "multimarkdown")
- ;; :hook (markdown-mode . lsp)
- :config
- ;; (setq lsp-markdown-server-command "~/.local/bin")
- ;; (require 'lsp-marksman)
- )
+ :hook (markdown-mode . lsp-deferred)
+ :config)
 #+END_SRC
 
 * HTML

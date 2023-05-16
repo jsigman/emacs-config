@@ -1,4 +1,5 @@
 * Magit
+
 #+begin_src emacs-lisp :load yes
 (use-package
  magit
@@ -7,6 +8,15 @@
  :init
  (setq magit-delete-by-moving-to-trash nil)
  (setq vc-handled-backends nil)
+
+ (eval-after-load 'magit-branch
+   '(progn
+      (advice-add
+       'magit-checkout
+       :after '(projectile-invalidate-cache nil))
+      (advice-add
+       'magit-branch-and-checkout
+       :after '(projectile-invalidate-cache nil))))
  :bind
  (:map
   magit-mode-map
@@ -17,11 +27,7 @@
   ("M-2" . nil)
   ("M-3" . nil))
  :bind (:map global-map ("M-G" . magit-status))
- :config
- (use-package transient)
- (add-hook
-  'magit-pre-command-hook
-  (lambda () (projectile-invalidate-cache nil))))
+ :config (use-package transient))
 
 
 (use-package
@@ -67,4 +73,15 @@
                (git-gutter+-remote-file-path repo-root file)))
           (git-gutter+-process-diff
            (git-gutter+-local-file-path file)))))))
+#+end_src
+
+** Ediff
+
+#+begin_src emacs-lisp :load yes
+(use-package
+ ediff
+ :init (setq ediff-split-window-function 'split-window-horizontally)
+ (setq ediff-window-setup-function
+       'ediff-setup-windows-plain)
+ (setq ediff-diff-options "-w"))
 #+end_src

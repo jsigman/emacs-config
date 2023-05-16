@@ -84,7 +84,8 @@
 (blackout 'smartparens-mode)
 (blackout 'tree-sitter-hl-mode)
 (blackout 'tree-sitter-mode)
-(blackout 'highlight-indent-guides)
+(blackout 'highlight-indent-guides-mode)
+(blackout 'copilot-mode)
 
 (diminish 'jupyter-repl-interaction-mode)
 (diminish 'page-break-lines-mode)

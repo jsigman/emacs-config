@@ -32,12 +32,12 @@
 (literate-elisp-load "org-settings.org")
 (literate-elisp-load "magit-settings.org")
 (literate-elisp-load "multiple-cursors-settings.org")
-(literate-elisp-load "modeline-settings.org")
 (literate-elisp-load "docker-settings.org")
 (literate-elisp-load "dap-settings.org")
 (literate-elisp-load "treemacs-settings.org")
 (literate-elisp-load "markdown-settings.org")
 (literate-elisp-load "tree-sitter-settings.org")
+(literate-elisp-load "modeline-settings.org")
 
 (setq custom-file (concat user-emacs-directory "custom.el"))
 (if (not (file-exists-p custom-file))
