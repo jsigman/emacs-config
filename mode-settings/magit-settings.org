@@ -1,5 +1,6 @@
-* Magit
+* Magit and Version Control
 
+** Magit
 #+begin_src emacs-lisp :load yes
 (use-package
  magit
@@ -29,13 +30,20 @@
  :bind (:map global-map ("M-G" . magit-status))
  :config (use-package transient))
 
+#+end_src
 
+** Forge
+#+begin_src emacs-lisp
 (use-package
  forge
+ :after magit
  :config
  ; This is so we can access forge information
  (setq auth-sources '("~/.authinfo")))
+#+end_src
 
+** Magit coloring
+#+begin_src emacs-lisp :load yes
 (use-package
  git-gutter+
  :config (global-git-gutter+-mode t)
