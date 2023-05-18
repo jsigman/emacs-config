@@ -22,4 +22,7 @@ jobs:
       # print hello world
       - name: setup
         run: |
-          echo "Hello world"
+          sudo apt-get update
+          sudo apt-get install emacs tree
+          tree
+          emacs --batch --load .github/publish.el
