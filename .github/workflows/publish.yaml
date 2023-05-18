@@ -22,6 +22,8 @@ jobs:
       # print hello world
       - name: setup
         run: |
+          pwd
+          ls -l
           sudo apt-get update
           sudo apt-get install emacs tree
           tree
