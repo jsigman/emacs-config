@@ -1,52 +1,52 @@
 
 # Table of Contents
 
-1.  [MacOS specific settings](#org870d8cf)
-2.  [Path](#orga845b82)
-3.  [Colors and Theme](#orgd2a400e)
-    1.  [Emacs Theme](#org288271c)
-    2.  [Nano](#org9fb8f9d)
-    3.  [Colors in Dired](#orge2e96e0)
-4.  [Global Settings for Editing](#org0d068ce)
-    1.  [Window management](#org5bc9be5)
-        1.  [Zoom](#org39ba8f2)
-        2.  [Visual Fill Column](#org2c7059b)
-        3.  [Centered window](#orgc824da5)
-    2.  [Miscellaneous](#orgc290e14)
-    3.  [Dashboard](#org6fc029e)
-    4.  [Icons](#orgbb6286e)
-    5.  [Fonts](#orgc16d5c9)
-    6.  [Indentation](#orgdf3b94c)
-    7.  [Autoformatting](#orge67d2de)
-    8.  [Global Keybindings](#orgf7934ff)
-    9.  [Copying syntax highlighting to the clipboard](#org3086117)
-    10. [Breadcrumb mode](#org6486422)
-5.  [Config Modes](#org3dac275)
-    1.  [Yaml](#org41af74b)
-6.  [Parens](#org26ace85)
-7.  [Elisp](#org54a750d)
-8.  [Dired Mode](#org44e9611)
-9.  [Projectile](#org7527e15)
-10. [Corfu-Vertico-Orderless](#org9f3a6be)
-    1.  [Corfu](#org7ab3a32)
-    2.  [Cape](#orgeaa31cd)
-    3.  [Orderless](#org7ffcc4d)
-11. [Selectrum](#org9eb6306)
-12. [Ivy/Counsel/Swiper Settings](#org26d1b1d)
-13. [Company Settings](#orgf905bff)
-14. [MATLAB](#org59ed2b5)
-15. [Consult/Embark/Marginalia](#org62a60e9)
-    1.  [Marginalia](#org586558b)
-    2.  [Embark](#org92e0e30)
-    3.  [Consult](#orgad46058)
-16. [Latex](#org39af113)
-17. [Snippets](#orga811a52)
-18. [Terminal](#org756ef24)
-    1.  [Vterm](#orgb2f4620)
+1.  [MacOS specific settings](#org8a09e14)
+2.  [Path](#org8f7c42d)
+3.  [Colors and Theme](#org28d9442)
+    1.  [Emacs Theme](#orga0228f7)
+    2.  [Nano](#orga681dbf)
+    3.  [Colors in Dired](#org0fcfdb9)
+4.  [Global Settings for Editing](#orgf378e9c)
+    1.  [Window management](#orgf75f06d)
+        1.  [Zoom](#org2b0bb72)
+        2.  [Visual Fill Column](#org5255a58)
+        3.  [Centered window](#org2b9ffde)
+    2.  [Miscellaneous](#orgf2edd24)
+    3.  [Dashboard](#orgfd50f17)
+    4.  [Icons](#org20a430b)
+    5.  [Fonts](#org1abf404)
+    6.  [Indentation](#orgb84a68d)
+    7.  [Autoformatting](#orgd3c7417)
+    8.  [Global Keybindings](#org055ded2)
+    9.  [Copying syntax highlighting to the clipboard](#orgf227b5b)
+    10. [Breadcrumb mode](#orgfd6ca35)
+5.  [Config Modes](#org8feba62)
+    1.  [Yaml](#org9e1d766)
+6.  [Parens](#org4f7e162)
+7.  [Elisp](#org5ad3e7e)
+8.  [Dired Mode](#orgfc0fa3a)
+9.  [Projectile](#org4f0d511)
+10. [Corfu-Vertico-Orderless](#org02d159e)
+    1.  [Corfu](#org3209790)
+    2.  [Cape](#org53faeb3)
+    3.  [Orderless](#org7e2eecb)
+11. [Selectrum](#orga39c353)
+12. [Ivy/Counsel/Swiper Settings](#orgb0f0051)
+13. [Company Settings](#orge5109fb)
+14. [MATLAB](#org590fd41)
+15. [Consult/Embark/Marginalia](#org7a53dee)
+    1.  [Marginalia](#org8bb5554)
+    2.  [Embark](#orgb9ed31e)
+    3.  [Consult](#org3116ebd)
+16. [Latex](#orga5d9093)
+17. [Snippets](#orgfb7a988)
+18. [Terminal](#org896f285)
+    1.  [Vterm](#org4804882)
 
 
 
-<a id="org870d8cf"></a>
+<a id="org8a09e14"></a>
 
 # MacOS specific settings
 
@@ -66,7 +66,7 @@
     )
 
 
-<a id="orga845b82"></a>
+<a id="org8f7c42d"></a>
 
 # Path
 
@@ -83,7 +83,7 @@
        (exec-path-from-shell-initialize)))
 
 
-<a id="orgd2a400e"></a>
+<a id="org28d9442"></a>
 
 # Colors and Theme
 
@@ -92,7 +92,7 @@
     (setq frame-title-format nil)
 
 
-<a id="org288271c"></a>
+<a id="orga0228f7"></a>
 
 ## Emacs Theme
 
@@ -110,7 +110,7 @@
          (load-theme 'ef-day t))))
 
 
-<a id="org9fb8f9d"></a>
+<a id="orga681dbf"></a>
 
 ## Nano
 
@@ -121,7 +121,7 @@
      :config (require 'nano))
 
 
-<a id="orge2e96e0"></a>
+<a id="org0fcfdb9"></a>
 
 ## Colors in Dired
 
@@ -129,20 +129,20 @@
     (use-package dired-hacks :hook (emacs-lisp-mode . rainbow-mode))
 
 
-<a id="org0d068ce"></a>
+<a id="orgf378e9c"></a>
 
 # Global Settings for Editing
 
 
 
-<a id="org5bc9be5"></a>
+<a id="orgf75f06d"></a>
 
 ## Window management
 
     
 
 
-<a id="org39ba8f2"></a>
+<a id="org2b0bb72"></a>
 
 ### Zoom
 
@@ -151,7 +151,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
     (use-package zoom :init (setq zoom-size '(0.618 . 0.618)) :config (zoom-mode))
 
 
-<a id="org2c7059b"></a>
+<a id="org5255a58"></a>
 
 ### Visual Fill Column
 
@@ -161,7 +161,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
      :config (visual-fill-column-mode 1))
 
 
-<a id="orgc824da5"></a>
+<a id="org2b9ffde"></a>
 
 ### Centered window
 
@@ -172,7 +172,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
      :config (centered-window-mode t))
 
 
-<a id="orgc290e14"></a>
+<a id="orgf2edd24"></a>
 
 ## Miscellaneous
 
@@ -321,7 +321,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
     (use-package eldoc  :hook (prog-mode . eldoc-mode))
 
 
-<a id="org6fc029e"></a>
+<a id="orgfd50f17"></a>
 
 ## Dashboard
 
@@ -382,7 +382,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
      (dashboard-setup-startup-hook))
 
 
-<a id="orgbb6286e"></a>
+<a id="org20a430b"></a>
 
 ## Icons
 
@@ -415,7 +415,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
      :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 
-<a id="orgc16d5c9"></a>
+<a id="org1abf404"></a>
 
 ## Fonts
 
@@ -519,7 +519,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
     (use-package hl-todo :init (global-hl-todo-mode))
 
 
-<a id="orgdf3b94c"></a>
+<a id="orgb84a68d"></a>
 
 ## Indentation
 
@@ -530,7 +530,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
     ;;  :config (aggressive-indent-global-mode nil))
 
 
-<a id="orge67d2de"></a>
+<a id="orgd3c7417"></a>
 
 ## Autoformatting
 
@@ -571,7 +571,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
      :config (setq elisp-autofmt-on-save-p nil))
 
 
-<a id="orgf7934ff"></a>
+<a id="org055ded2"></a>
 
 ## Global Keybindings
 
@@ -596,7 +596,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
     (define-key global-map (kbd "RET") 'newline-and-indent)
 
 
-<a id="org3086117"></a>
+<a id="orgf227b5b"></a>
 
 ## Copying syntax highlighting to the clipboard
 
@@ -609,7 +609,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
        :repo "Lindydancer/highlight2clipboard"))
 
 
-<a id="org6486422"></a>
+<a id="orgfd6ca35"></a>
 
 ## Breadcrumb mode
 
@@ -622,20 +622,20 @@ Because I'm using this, I'm going to disable LSP's breadcrumb mode, which I've b
      :config (breadcrumb-mode t) (breadcrumb-imenu-crumbs))
 
 
-<a id="org3dac275"></a>
+<a id="org8feba62"></a>
 
 # Config Modes
 
 
 
-<a id="org41af74b"></a>
+<a id="org9e1d766"></a>
 
 ## Yaml
 
     (use-package yaml-mode)
 
 
-<a id="org26ace85"></a>
+<a id="org4f7e162"></a>
 
 # Parens
 
@@ -671,7 +671,7 @@ Because I'm using this, I'm going to disable LSP's breadcrumb mode, which I've b
     (show-paren-mode t)
 
 
-<a id="org54a750d"></a>
+<a id="org5ad3e7e"></a>
 
 # Elisp
 
@@ -703,7 +703,7 @@ Because I'm using this, I'm going to disable LSP's breadcrumb mode, which I've b
      '("\\.dir-locals\\(?:-2\\)?\\.el\\'" . emacs-lisp-mode))
 
 
-<a id="org44e9611"></a>
+<a id="orgfc0fa3a"></a>
 
 # Dired Mode
 
@@ -725,7 +725,7 @@ Because I'm using this, I'm going to disable LSP's breadcrumb mode, which I've b
      (define-key dired-mode-map (kbd "M-G") nil))
 
 
-<a id="org7527e15"></a>
+<a id="org4f0d511"></a>
 
 # Projectile
 
@@ -768,13 +768,13 @@ Because I'm using this, I'm going to disable LSP's breadcrumb mode, which I've b
     )
 
 
-<a id="org9f3a6be"></a>
+<a id="org02d159e"></a>
 
 # Corfu-Vertico-Orderless
 
 
 
-<a id="org7ab3a32"></a>
+<a id="org3209790"></a>
 
 ## Corfu
 
@@ -825,7 +825,7 @@ Because I'm using this, I'm going to disable LSP's breadcrumb mode, which I've b
      )
 
 
-<a id="orgeaa31cd"></a>
+<a id="org53faeb3"></a>
 
 ## Cape
 
@@ -861,7 +861,7 @@ Because I'm using this, I'm going to disable LSP's breadcrumb mode, which I've b
     (setq completion-cycle-threshold 3)
 
 
-<a id="org7ffcc4d"></a>
+<a id="org7e2eecb"></a>
 
 ## Orderless
 
@@ -946,7 +946,7 @@ Because I'm using this, I'm going to disable LSP's breadcrumb mode, which I've b
      (setq enable-recursive-minibuffers t))
 
 
-<a id="org9eb6306"></a>
+<a id="orga39c353"></a>
 
 # Selectrum
 
@@ -973,7 +973,7 @@ Currently using Vertico over this
            #'orderless-highlight-matches))
 
 
-<a id="org26d1b1d"></a>
+<a id="orgb0f0051"></a>
 
 # Ivy/Counsel/Swiper Settings
 
@@ -1072,7 +1072,7 @@ Currently not using this in favor of Vertico
     (use-package ivy-rich :config (ivy-rich-mode t))
 
 
-<a id="orgf905bff"></a>
+<a id="orge5109fb"></a>
 
 # Company Settings
 
@@ -1148,7 +1148,7 @@ Company was a great package, but I'm currently not using it. I migrated over to 
     (use-package company-posframe :config (company-posframe-mode t))
 
 
-<a id="org59ed2b5"></a>
+<a id="org590fd41"></a>
 
 # MATLAB
 
@@ -1162,20 +1162,20 @@ Company was a great package, but I'm currently not using it. I migrated over to 
     (setq matlab-shell-command-switches '("-nodesktop" "-nosplash"))
 
 
-<a id="org62a60e9"></a>
+<a id="org7a53dee"></a>
 
 # Consult/Embark/Marginalia
 
 
 
-<a id="org586558b"></a>
+<a id="org8bb5554"></a>
 
 ## Marginalia
 
     (use-package marginalia :demand t :config (marginalia-mode))
 
 
-<a id="org92e0e30"></a>
+<a id="orgb9ed31e"></a>
 
 ## Embark
 
@@ -1206,7 +1206,7 @@ Company was a great package, but I'm currently not using it. I migrated over to 
      :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 
-<a id="orgad46058"></a>
+<a id="org3116ebd"></a>
 
 ## Consult
 
@@ -1358,7 +1358,7 @@ Company was a great package, but I'm currently not using it. I migrated over to 
     ;; This package should be installed if Selectrum is used.
 
 
-<a id="org39af113"></a>
+<a id="orga5d9093"></a>
 
 # Latex
 
@@ -1384,7 +1384,7 @@ Company was a great package, but I'm currently not using it. I migrated over to 
     ;; -------------------------/AucTex-------------------------------;;
 
 
-<a id="orga811a52"></a>
+<a id="orgfb7a988"></a>
 
 # Snippets
 
@@ -1410,13 +1410,13 @@ Company was a great package, but I'm currently not using it. I migrated over to 
      :config (global-set-key (kbd "M-Y") 'consult-yasnippet))
 
 
-<a id="org756ef24"></a>
+<a id="org896f285"></a>
 
 # Terminal
 
 
 
-<a id="orgb2f4620"></a>
+<a id="org4804882"></a>
 
 ## Vterm
 
