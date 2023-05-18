@@ -26,5 +26,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           export: html
           files: web_version.org
-          branch: pages
+          branch: workflows
           commit_message: "Publish: !#!"
