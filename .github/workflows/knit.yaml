@@ -23,7 +23,7 @@ jobs:
       - name: Org Knit
         uses: tecosaur/org-knit-action@v0.3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PUBLISH_TOKEN }}
           export: html
           files: web_version.org
           branch: pages
