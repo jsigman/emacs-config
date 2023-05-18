@@ -34,5 +34,12 @@ jobs:
       - name: Publish to markdown
         run: |
           emacs --batch --load .github/publish.el
+      - name: Commit
+        run: |
+          git config --global user.name 'Workflow'
+          git config --global user.email ''
+          git add published_version.md
+          git commit -m 'Update published version'
+          git push
       - name: Close
         run: exit 0
