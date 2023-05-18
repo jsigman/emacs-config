@@ -15,6 +15,11 @@ concurrency:
   group: "publish"
   cancel-in-progress: true
 
+defaults:
+  run:
+    shell: bash
+    working-directory: ./
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -24,9 +29,6 @@ jobs:
         run: |
           pwd
           ls -l
-          cd ..
-          ls -l
-          pwd
           sudo apt-get update
           sudo apt-get install emacs tree
           tree
