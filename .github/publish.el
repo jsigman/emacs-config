@@ -3,7 +3,7 @@
 
 ; Set current buffer to the publishable org buffer
 (find-file "web_version.org")
-(let ((md-buffer (find-file-noselect "../published_version.md")))
+(let ((md-buffer (find-file-noselect "published_version.md")))
 (org-export-to-buffer 'md md-buffer
     nil nil nil nil nil (lambda () (text-mode)))
 ; Save the buffer
