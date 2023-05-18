@@ -25,11 +25,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # print hello world
-      - name: setup
-        run: |
-          pwd
-          ls -l
-          sudo apt-get update
-          sudo apt-get install emacs tree
-          tree
-          emacs --batch --load .github/publish.el
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Print publish.el file
+        run: cat .github/publish.el
+      - name: Close
+        run: exit 0
+
+      # - name: setup
+      #   run: |
+      #     pwd
+      #     ls -l
+      #     sudo apt-get update
+      #     sudo apt-get install emacs tree
+      #     tree
+      #     emacs --batch --load .github/publish.el
