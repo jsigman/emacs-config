@@ -26,17 +26,13 @@ jobs:
     steps:
       # print hello world
       - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Print publish.el file
-        run: cat .github/publish.el
+        uses: actions/checkout@v3
+      - name: Setup emacs
+        run: |
+          sudo apt-get update
+          sudo apt-get install emacs tree
+      - name: Publish to markdown
+        run: |
+          emacs --batch --load .github/publish.el
       - name: Close
         run: exit 0
-
-      # - name: setup
-      #   run: |
-      #     pwd
-      #     ls -l
-      #     sudo apt-get update
-      #     sudo apt-get install emacs tree
-      #     tree
-      #     emacs --batch --load .github/publish.el
