@@ -1,6 +1,6 @@
 * Modeline
 ** Telephone Line
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package
  telephone-line
  :config
@@ -23,7 +23,7 @@
 #+end_src
 
 ** Awesome Tray
-#+begin_src emacs-lisp :load no
+#+begin_src emacs-lisp :load yes
 (use-package
  awesome-tray
  :straight

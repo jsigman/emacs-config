@@ -453,7 +453,11 @@ Because I'm using this, I'm going to disable LSP's breadcrumb mode, which I've b
 #+begin_src emacs-lisp
 (use-package
  breadcrumb
- :straight
- '(breadcrumb :type git :host github :repo "joaotavora/breadcrumb")
- :config (breadcrumb-mode t) (breadcrumb-imenu-crumbs))
+ :straight '(breadcrumb :type git :host github :repo "joaotavora/breadcrumb")
+ :config (breadcrumb-mode t)
+ ; TODO: need to make it take this value every new buffer
+ (setq header-line-format
+       '((:eval (breadcrumb-project-crumbs))
+         " | "
+         (:eval (breadcrumb-imenu-crumbs)))))
 #+end_src
