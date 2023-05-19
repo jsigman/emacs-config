@@ -36,12 +36,17 @@ jobs:
       - name: Publish to markdown
         run: |
           emacs --batch --load .github/publish.el
-      - name: Commit
-        run: |
-          git config --global user.name 'Workflow'
-          git config --global user.email ''
-          git add published_version.md
-          git commit -m 'Update published version'
-          git push
+      # - name: Commit
+      #   run: |
+      #     git config --global user.name 'Workflow'
+      #     git config --global user.email ''
+      #     git add published_version.md
+      #     git commit -m 'Update published version'
+      #     git push
+      - name: Store Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: web_version
+          path: published_version.md
       - name: Close
         run: exit 0

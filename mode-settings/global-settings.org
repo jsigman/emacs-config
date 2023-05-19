@@ -1,9 +1,6 @@
 * Global Settings for Editing
 #+PROPERTY: header-args:emacs-lisp :load yes
 ** Window management
-#+begin_src emacs-lisp :load yes
-
-#+end_src
 *** Zoom
 I think this is a little too aggressive right now, but it's a cool idea.
 #+begin_src emacs-lisp :load no
