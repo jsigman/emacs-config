@@ -1,0 +1,43 @@
+name: publish
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "publish"
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+    working-directory: ./
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup emacs
+        run: |
+          sudo apt-add-repository ppa:ubuntu-elisp/ppa
+          sudo apt-get update
+          sudo apt-get install emacs-snapshot
+          emacs --version
+      - name: Publish to markdown
+        run: |
+          emacs --batch --load .github/publish.el
+      - name: Store Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: emacs_config_web_version.md
+          path: published_version.md
+      - name: Close
+        run: exit 0

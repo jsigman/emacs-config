@@ -204,3 +204,8 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
 
 (use-package jupyter :defer t :custom (jupyter-repl-echo-eval-p t))
 #+end_src
+
+** Org Markdown
+#+begin_src emacs-lisp :load yes
+(use-package ox-jekyll-md)
+#+end_src
