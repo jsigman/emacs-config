@@ -31,6 +31,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install emacs tree
+          emacs --version
       - name: Publish to markdown
         run: |
           emacs --batch --load .github/publish.el
