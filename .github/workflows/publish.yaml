@@ -41,8 +41,8 @@ jobs:
       #     path: published_version.md
       - name: Create Release
         uses: softprops/action-gh-release@v1
-        tag_name: ${{ github.sha }}
         with:
+          tag_name: ${{ github.sha }}
           files: published_version.md
       - name: Clear old releases
         uses: dev-drprasad/delete-older-releases@v0.2.1
