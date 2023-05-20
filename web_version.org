@@ -3,7 +3,7 @@
 #+category: fun
 #+importance: 1
 #+layout: post
-#+tags: 1
+#+tags:
 
 
 #+include: "mode-settings/macos-settings.org"
