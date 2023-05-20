@@ -1,6 +1,10 @@
 #+title: .emacs.d
 #+author: Johnny Sigman
+# TODO: Export the TOC when you can control it
+#+OPTIONS: toc:nil        (no default TOC at all)
 
+
+#+BEGIN_EXPORT HTML
 ---
 layout: post
 title: \".emacs.d\"
@@ -11,6 +15,7 @@ keywords:
 description: Sharing my literate emacs config as a web page
 importance: 1
 ---
+#+END_EXPORT HTML
 
 #+include: "mode-settings/macos-settings.org"
 #+include: "mode-settings/path-settings.org"
