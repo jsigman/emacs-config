@@ -1,10 +1,18 @@
 #+title: .emacs.d
 #+author: Johnny Sigman
-#+category: fun
-#+importance: 1
-#+layout: post
-#+tags:
 
+#+BEGIN_EXPORT HTML
+---
+layout: post
+title: \".emacs.d\"
+date: 
+category: fun
+tags: 
+keywords: 
+description: Sharing my literate emacs config as a web page
+importance: 1
+---
+#+END_EXPORT HTML"
 
 #+include: "mode-settings/macos-settings.org"
 #+include: "mode-settings/path-settings.org"

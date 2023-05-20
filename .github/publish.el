@@ -5,7 +5,7 @@
 (add-to-list 'package-archives
              '("melpa" . "https://melpa.org/packages/") t)
 (require 'use-package)
-(use-package ox-jekyll-md :ensure t)
+(use-package ox-jekyll-md :ensure t :init (setq org-jekyll-md-include-yaml-front-matter nil))
 
 ; Set current buffer to the publishable org buffer
 (find-file "web_version.org")
