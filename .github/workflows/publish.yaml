@@ -34,11 +34,6 @@ jobs:
       - name: Publish to markdown
         run: |
           emacs --batch --load .github/publish.el
-      # - name: Store Artifact
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: emacs_config_web_version.md
-      #     path: published_version.md
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
