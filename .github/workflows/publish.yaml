@@ -2,7 +2,7 @@ name: publish
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ["main"]
+    branches: ["main", "release"]
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -34,10 +34,20 @@ jobs:
       - name: Publish to markdown
         run: |
           emacs --batch --load .github/publish.el
-      - name: Store Artifact
-        uses: actions/upload-artifact@v2
+      # - name: Store Artifact
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: emacs_config_web_version.md
+      #     path: published_version.md
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: emacs_config_web_version.md
-          path: published_version.md
+          files: published_version.md
+      - name: Clear old releases
+        uses: dev-drprasad/delete-older-releases@v0.2
+        with:
+          keep_latest: 1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Close
         run: exit 0
