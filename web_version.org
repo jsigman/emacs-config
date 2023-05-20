@@ -1,5 +1,10 @@
-#+title: Emacs Lisp Configuration
+#+title: .emacs.d
 #+author: Johnny Sigman
+#+category: fun
+#+importance: 1
+#+layout: post
+#+tags: 1
+
 
 #+include: "mode-settings/macos-settings.org"
 #+include: "mode-settings/path-settings.org"
