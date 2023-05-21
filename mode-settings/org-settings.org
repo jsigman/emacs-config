@@ -207,5 +207,5 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
 
 ** Org Markdown
 #+begin_src emacs-lisp :load yes
-(use-package ox-jekyll-md)
+(use-package ox-jekyll-md :init (setq org-jekyll-md-include-yaml-front-matter nil))
 #+end_src
