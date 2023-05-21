@@ -1,7 +1,6 @@
 #+title: .emacs.d
 #+author: Johnny Sigman
-# TODO: Export the TOC when you can control it
-#+OPTIONS: toc:nil        (no default TOC at all)
+#+OPTIONS: toc:t
 
 #+BEGIN_EXPORT markdown
 ---
@@ -9,7 +8,7 @@ layout: post
 title: .emacs.d
 category: fun
 tags: 
-keywords: 
+keywords: emacs
 description: Sharing my literate emacs config
 importance: 1
 ---
