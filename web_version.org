@@ -6,8 +6,7 @@
 #+BEGIN_EXPORT markdown
 ---
 layout: post
-title: \".emacs.d\"
-date: 
+title: .emacs.d
 category: fun
 tags: 
 keywords: 
