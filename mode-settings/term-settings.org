@@ -1,7 +1,6 @@
 * Terminal
-#+PROPERTY: header-args:emacs-lisp :load yes
 ** Vterm
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load y
 (use-package
  vterm
  :init
@@ -60,10 +59,9 @@ BUFFER may be either a buffer or its name (a string)."
     (interactive)
     (kill-buffer-and-its-windows (current-buffer)))))
 #+end_src
-** COMMENT Vterm Toggle
+** Vterm Toggle
 #+begin_src emacs-lisp :load yes
 ;; Special overrides of vterm toggle functions to work better with projectile
-
 (defun vterm-toggle--new (&optional buffer-name)
   "New vterm buffer."
   (let ((default-directory default-directory)
