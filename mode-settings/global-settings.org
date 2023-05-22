@@ -100,8 +100,6 @@ I think this is a little too aggressive right now, but it's a cool idea.
 #+END_SRC
 
 #+begin_src emacs-lisp :load yes
-(literate-elisp-load "term-settings.org")
-
 (define-key term-raw-map (kbd "M-o") 'next-multiframe-window)
 (define-key term-raw-map (kbd "M-i") 'previous-multiframe-window)
 (define-key global-map (kbd "M-o") 'next-multiframe-window)
