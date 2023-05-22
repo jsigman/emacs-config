@@ -1,5 +1,18 @@
-#+title: Emacs Lisp Configuration
+#+title: .emacs.d
 #+author: Johnny Sigman
+#+OPTIONS: toc:t
+
+#+BEGIN_EXPORT markdown
+---
+layout: post
+title: .emacs.d
+category: fun
+tags: 
+keywords: emacs
+description: Sharing my literate emacs config
+importance: 1
+---
+#+END_EXPORT
 
 #+include: "mode-settings/macos-settings.org"
 #+include: "mode-settings/path-settings.org"
