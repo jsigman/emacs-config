@@ -1,6 +1,6 @@
 #+title: .emacs.d
 #+author: Johnny Sigman
-#+OPTIONS: toc:t
+#+OPTIONS: toc:nil
 
 #+BEGIN_EXPORT markdown
 ---
@@ -13,6 +13,8 @@ description: Sharing my literate emacs config
 importance: 1
 ---
 #+END_EXPORT
+
+#+TOC: headlines 2
 
 #+include: "mode-settings/macos-settings.org"
 #+include: "mode-settings/path-settings.org"
