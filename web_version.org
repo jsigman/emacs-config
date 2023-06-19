@@ -7,6 +7,7 @@ tags:
 keywords: emacs
 description: Sharing my literate emacs config
 importance: 1
+img: assets/img/Emacs.png
 ---
 #+END_EXPORT
 

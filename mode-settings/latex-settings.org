@@ -5,6 +5,7 @@
 (use-package
  tex
  :straight auctex
+ :defer t
  :hook (LaTeX-mode . visual-line-mode)
  :hook (LaTeX-mode . flyspell-mode)
  :hook (LaTeX-mode . LaTeX-math-mode)
