@@ -1,8 +1,5 @@
 * Treemacs
-#+PROPERTY: header-args:emacs-lisp :load yes
-
-#+begin_src emacs-lisp
-(literate-elisp-load "projectile-settings.org")
+#+begin_src emacs-lisp :load yes
 (use-package
  treemacs
  :bind (("M-P" . treemacs))
