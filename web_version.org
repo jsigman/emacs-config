@@ -8,7 +8,7 @@ keywords: emacs
 description: Sharing my literate emacs config
 importance: 1
 img: assets/img/Emacs.png
-date:
+date: 05-22-2023
 ---
 #+END_EXPORT
 
