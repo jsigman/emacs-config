@@ -8,6 +8,7 @@ keywords: emacs
 description: Sharing my literate emacs config
 importance: 1
 img: assets/img/Emacs.png
+date:
 ---
 #+END_EXPORT
 
@@ -15,9 +16,9 @@ img: assets/img/Emacs.png
 #+author: Johnny Sigman
 #+OPTIONS: toc:nil
 
-* TODO About
+* About
 
-This web page is a tangled version of my literate [[https://github.com/jsigman/emacs-config][elisp config]]. Throughout this document, you may find helpful notes, tricks, and comments. I have been tinkering with emacs in some way since 2013. I made this repeatable and git-controlled in 2019, and in 2023 I began to publish it on my web page.
+This web page is a tangled version of my literate [[https://github.com/jsigman/emacs-config][elisp config]]. Throughout this document, you may find helpful notes, tricks, and comments. I have been tinkering with emacs in some way since 2013. I made this repeatable and git-controlled in 2019, and in 2023 I began to publish it on my web site.
 
 #+TOC: headlines 2
 

@@ -7,8 +7,10 @@
 
 
 ** Emacs Theme
+
+I'm always changing my theme, but I tend to like light themes with yellow-ish backgrounds. Almost like handwriting with a yellow memo pad.
+
 #+begin_src emacs-lisp :load yes
-;-------------COLOR THEME----------------;
 (if (eq window-system nil)
     (progn
       (+ 1 2) ;; no-op if we're in terminal mode
@@ -18,9 +20,9 @@
     (use-package
      ef-themes
      :config
-     ;; :config (load-theme 'ef-night t)
      (load-theme 'ef-day t))))
 #+end_src
+
 ** Nano
 #+begin_src emacs-lisp :load no
 (use-package
@@ -29,7 +31,6 @@
  (nano-emacs :type git :host github :repo "rougier/nano-emacs")
  :config (require 'nano))
 #+end_src
-
 
 ** Colors in Dired
 #+begin_src emacs-lisp :load yes
