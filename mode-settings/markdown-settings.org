@@ -13,5 +13,15 @@
 * HTML
 #+begin_src emacs-lisp
 (require 'html-ts-mode)
+(define-key html-mode-map (kbd "M-o M-o") nil)
+(define-key sgml-mode-map (kbd "M-o M-o") nil)
+(define-key html-mode-map (kbd "M-o") nil)
+(define-key sgml-mode-map (kbd "M-o") nil)
+(define-key html-mode-map (kbd "M-o") 'next-multiframe-window)
+(define-key html-mode-map (kbd "M-i") 'previous-multiframe-window)
+
 (define-key html-ts-mode-map (kbd "M-o M-o") nil)
+(define-key html-ts-mode-map (kbd "M-o") nil)
+(define-key html-ts-mode-map (kbd "M-o") 'next-multiframe-window)
+(define-key html-ts-mode-map (kbd "M-i") 'previous-multiframe-window)
 #+END_SRC
