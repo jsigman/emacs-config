@@ -4,6 +4,9 @@ I'm currently not using DAP mode, and prefer to use python from the command line
 #+begin_src emacs-lisp
 (use-package
  dap-mode
+ :init
+ (if (eq system-type 'gnu/linux)
+     (add-to-list 'image-types 'svg))
  :config
  (add-hook
   'dap-stopped-hook (lambda (arg) (call-interactively #'dap-hydra)))

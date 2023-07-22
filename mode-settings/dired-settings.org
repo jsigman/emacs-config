@@ -6,9 +6,9 @@
  dired-omit-files
  "^\\.?#\\|^\\.\\(DS_Store\\|localized\\|AppleDouble\\)$\\|^\\.\\.$")
 (setq dired-kill-when-opening-new-dired-buffer t)
-(setq
+(when (eq system-type 'darwin) (setq
  insert-directory-program "gls"
- dired-use-ls-dired t)
+ dired-use-ls-dired t))
 (setq dired-listing-switches "-al --group-directories-first")
 
 ;; wdired settings
