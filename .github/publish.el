@@ -7,6 +7,14 @@
 (require 'use-package)
 (use-package ox-jekyll-md :ensure t :init (setq org-jekyll-md-include-yaml-front-matter nil))
 
+(defun my/org-export-filter-src-blocks (backend)
+  (when (eq backend 'jekyll)
+    (goto-char (point-min))
+    (while (re-search-forward "^#\\+begin_src\\s-+emacs-lisp\\(.*:load\\s-+no.*\\)$" nil t)
+      (replace-match "#+begin_src plaintext"))))
+
+(add-hook 'org-export-before-processing-hook 'my/org-export-filter-src-blocks)
+
 ; Set current buffer to the publishable org buffer
 (find-file "web_version.org")
 (let ((md-buffer (find-file-noselect "published_version.md")))

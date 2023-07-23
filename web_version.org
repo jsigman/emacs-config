@@ -33,7 +33,7 @@ If a code block is active, then it will appear with ~emacs-lisp~ syntax highligh
 {% endhighlight %}
 #+END_EXPORT
 
-Whether a code block is run at load time is controlled by the "~:load yes~" block argument of ~literate-elisp~.
+Whether a code block is run at load time is controlled by the ~:load yes~ block argument of ~literate-elisp~.
 
 #+TOC: headlines 2
 
