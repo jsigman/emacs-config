@@ -12,7 +12,6 @@
  :ensure t
  :init (setq org-jekyll-md-include-yaml-front-matter nil))
 
-
 (defun my/org-export-filter-src-blocks (backend)
   (when (eq backend 'jekyll)
     (goto-char (point-min))
@@ -24,11 +23,15 @@
  'org-export-before-processing-hook 'my/org-export-filter-src-blocks)
 
 ;; Set current buffer to the publishable org buffer
-(with-current-buffer (find-file "web_version.org")
-  (org-org-export-to-org nil nil nil nil nil)
-  (let ((org-buffer (find-file-noselect "intermediate.org")))
-    (write-region (point-min) (point-max) (buffer-file-name org-buffer)))
-  (let ((md-buffer (find-file-noselect "published_version.md")))
-    (org-export-to-buffer 'jekyll md-buffer nil nil nil nil nil (lambda () (text-mode)))
-    (with-current-buffer md-buffer
-      (write-file "published_version.md"))))
+(find-file "web_version.org")
+
+;; Manually process #+INCLUDE: directives
+(org-export-expand-include-keyword)
+
+(let ((md-buffer (find-file-noselect "published_version.md")))
+(org-export-to-buffer 'jekyll md-buffer
+    nil nil nil nil nil (lambda () (text-mode)))
+; Save the buffer
+(set-buffer md-buffer)
+;; write the buffer md-buffer to file
+(write-file "published_version.md"))
