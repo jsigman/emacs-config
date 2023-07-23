@@ -24,17 +24,11 @@
  'org-export-before-processing-hook 'my/org-export-filter-src-blocks)
 
 ;; Set current buffer to the publishable org buffer
-(find-file "web_version.org")
-;; Create an intermediate buffer for org export
-(let ((org-buffer (get-buffer-create "intermediate.org")))
-  ;; export to org first
-  (org-org-export-to-org nil nil nil nil nil org-buffer)
-  ;; Now let's export to jekyll
+(with-current-buffer (find-file "web_version.org")
+  (org-org-export-to-org nil nil nil nil nil)
+  (let ((org-buffer (find-file-noselect "intermediate.org")))
+    (write-region (point-min) (point-max) (buffer-file-name org-buffer)))
   (let ((md-buffer (find-file-noselect "published_version.md")))
-    (with-current-buffer org-buffer
-      (org-export-to-buffer
-       'jekyll md-buffer nil nil nil nil nil (lambda () (text-mode))))
-    ;; Save the buffer
+    (org-export-to-buffer 'jekyll md-buffer nil nil nil nil nil (lambda () (text-mode)))
     (with-current-buffer md-buffer
-      ;; write the buffer md-buffer to file
       (write-file "published_version.md"))))
