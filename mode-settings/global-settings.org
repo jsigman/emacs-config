@@ -1,7 +1,6 @@
-* Global Settings for Editing
 #+PROPERTY: header-args:emacs-lisp :load yes
-** Window management
-*** Zoom
+* Window management
+** Zoom
 I think this is a little too aggressive right now, but it's a cool idea.
 #+begin_src emacs-lisp :load no
 (use-package
@@ -9,14 +8,14 @@ I think this is a little too aggressive right now, but it's a cool idea.
  :init (setq zoom-size '(0.618 . 0.618))
  :config (zoom-mode))
 #+end_src
-*** Visual Fill Column
+** Visual Fill Column
 #+begin_src emacs-lisp :load no
 (use-package
  visual-fill-column
  :init (setq visual-fill-column-center-text t)
  :config (visual-fill-column-mode 1))
 #+end_src
-*** Centered window
+** Centered window
 #+begin_src emacs-lisp :load yes
 (use-package
  centered-window
@@ -24,7 +23,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
  :ensure t
  :config (centered-window-mode t))
 #+end_src
-** Miscellaneous
+* Miscellaneous
 #+begin_src emacs-lisp :load yes
 (setq native-comp-async-report-warnings-errors nil)
 ;; Show the line number of the cursor in the mode bar at the bottom of each buffer
@@ -113,7 +112,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
  (define-key ibuffer-mode-map (kbd "M-o") nil))
 #+END_SRC
 
-*** Window movement keybindings
+** Window movement keybindings
 #+begin_src emacs-lisp :load yes
 (define-key term-raw-map (kbd "M-o") 'next-multiframe-window)
 (define-key term-raw-map (kbd "M-i") 'previous-multiframe-window)
@@ -122,7 +121,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
 
 (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
 #+END_SRC
-*** Sqlite
+** Sqlite
 So far, I am unable to find a way to compile sqlite3 on my own, but I would love to be able to do this with straight package management.
 #+begin_src emacs-lisp :load no
 (use-package
@@ -137,7 +136,7 @@ So far, I am unable to find a way to compile sqlite3 on my own, but I would love
 
 
 
-*** Anzu
+** Anzu
 #+begin_src emacs-lisp :load yes
 (use-package
   anzu
@@ -148,7 +147,7 @@ So far, I am unable to find a way to compile sqlite3 on my own, but I would love
   :config (global-anzu-mode +1))
 #+end_src
 
-*** Line Highlighting
+** Line Highlighting
 #+begin_src emacs-lisp :load yes
 (use-package lin :init (lin-global-mode t))
 
@@ -172,17 +171,17 @@ So far, I am unable to find a way to compile sqlite3 on my own, but I would love
 (pending-delete-mode t)
 #+end_src
 
-*** Undo Tree
+** Undo Tree
 I haven't found a great way to use undo-tree, but everyone seems to love it.
 #+begin_src emacs-lisp :load no
 (use-package undo-tree :init (global-undo-tree-mode))
 #+end_src
-*** So long mode
+** So long mode
 I find this breaks browsing of long json files, more than it helps me out.
 #+begin_src emacs-lisp :load no
 (global-so-long-mode t)
 #+end_src
-** Dashboard
+* Dashboard
 #+begin_src emacs-lisp :load yes
 (use-package
  dashboard
@@ -239,7 +238,7 @@ I find this breaks browsing of long json files, more than it helps me out.
 
  (dashboard-setup-startup-hook))
 #+end_src
-** Icons
+* Icons
 #+begin_src emacs-lisp :load yes
 (use-package all-the-icons)
 (use-package
@@ -279,7 +278,7 @@ I find this breaks browsing of long json files, more than it helps me out.
  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
  :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 #+end_src
-** Fonts
+* Fonts
 #+begin_src emacs-lisp :load yes
 ;; Font settings
 (if (eq system-type 'darwin)
@@ -306,7 +305,7 @@ I find this breaks browsing of long json files, more than it helps me out.
 
 #+end_src
 
-*** Ace popup
+** Ace popup
 #+begin_src emacs-lisp :load yes
 ;; Use ace-popup-menu for completions
 (use-package
@@ -317,13 +316,13 @@ I find this breaks browsing of long json files, more than it helps me out.
 
 #+end_src
 
-*** Emacs startup profiler
+** Emacs startup profiler
 #+begin_src emacs-lisp :load yes
 (use-package esup)
 
 #+end_src
 
-*** Scratch
+** Scratch
 #+begin_src emacs-lisp :load yes
 (use-package
  scratch
@@ -392,7 +391,7 @@ I find this breaks browsing of long json files, more than it helps me out.
 (use-package hl-todo :init (global-hl-todo-mode))
 #+end_src
 
-** Indentation
+* Indentation
 #+begin_src emacs-lisp :load yes
 (electric-indent-mode 0)
 ;; (use-package
@@ -400,7 +399,7 @@ I find this breaks browsing of long json files, more than it helps me out.
 ;;  :config (aggressive-indent-global-mode nil))
 #+end_src
 
-** Autoformatting
+* Autoformatting
 #+begin_src emacs-lisp :load yes
 (use-package
  apheleia
@@ -440,7 +439,7 @@ I find this breaks browsing of long json files, more than it helps me out.
  :config (setq elisp-autofmt-on-save-p nil))
 #+end_src
 
-** Global Keybindings
+* Global Keybindings
 #+begin_src emacs-lisp :load yes
 (global-set-key (kbd "M-k") 'kill-this-buffer)
 (global-set-key (kbd "C-c C-b") 'compile)
@@ -458,7 +457,7 @@ I find this breaks browsing of long json files, more than it helps me out.
 (global-set-key (kbd "C-.") 'xref-find-definitions-other-window)
 (define-key global-map (kbd "RET") 'newline-and-indent)
 #+end_src
-** Copying syntax highlighting to the clipboard
+* Copying syntax highlighting to the clipboard
 #+begin_src  emacs-lisp :load yes
   (when (eq system-type 'darwin)
     (use-package
@@ -469,7 +468,7 @@ I find this breaks browsing of long json files, more than it helps me out.
        :host github
        :repo "Lindydancer/highlight2clipboard")))
 #+end_src
-** Breadcrumb mode
+* Breadcrumb mode
 Because I'm trying this out, I'm going to disable LSP's breadcrumb mode, which I've been disappointed with.
 #+begin_src emacs-lisp :load yes
 (use-package
