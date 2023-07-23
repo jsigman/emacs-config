@@ -95,7 +95,6 @@ Not using this in favor of Pyright
 #+end_src
 
 ** Pyright LSP
-Not using this in favor of Pyright
 #+begin_src emacs-lisp :load yes
 (add-hook 'python-mode-hook #'lsp-deferred)
 (setq lsp-diagnostics-disabled-modes
