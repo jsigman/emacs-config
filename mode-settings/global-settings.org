@@ -241,30 +241,40 @@ I find this breaks browsing of long json files, more than it helps me out.
 #+end_src
 ** Icons
 #+begin_src emacs-lisp :load yes
-(use-package all-the-icons )
+(use-package all-the-icons)
 (use-package
  all-the-icons-ibuffer
- 
  :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
 
 ;; I don't think I like buffer expose after all
-;; (straight-use-package 'buffer-expose)
-;; (require 'buffer-expose)
-;; (buffer-expose-mode 'nil)
 (use-package
  all-the-icons-completion
- 
+
  :config (all-the-icons-completion-mode)
- :hook
- (marginalia-mode . all-the-icons-completion-marginalia-setup))
+ :hook (marginalia-mode . all-the-icons-completion-marginalia-setup))
 
 (literate-elisp-load "projectile-settings.org")
 
 ; Re-enable with SVG support
-(use-package svg-lib
+(use-package
+ svg-lib
  :straight '(svg-lib :host github :repo "emacs-straight/svg-lib"))
-(use-package kind-icon :straight '(kind-icon :host github :repo "jdtsmith/kind-icon")  :ensure t
+(use-package
+ kind-icon
+ :straight '(kind-icon :host github :repo "jdtsmith/kind-icon")
+ :ensure t
  :after corfu
+ :config
+ ; On my linux machine, I need to use smaller icons like this due to the 4k display
+ (when (eq system-type 'gnu/linux)
+   (setq kind-icon-default-style
+         '(:padding
+           -1
+           :stroke 0
+           :margin 0
+           :radius 0
+           :height 0.5
+           :scale 1.0)))
  :custom
  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
  :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
