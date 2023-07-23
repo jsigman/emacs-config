@@ -27,8 +27,6 @@
 (find-file "web_version.org")
 (let ((md-buffer (find-file-noselect "published_version.md")))
   (org-export-to-buffer
-   'org md-buffer nil nil nil nil nil (lambda () (text-mode)))
-  (org-export-to-buffer
    'jekyll md-buffer nil nil nil nil nil (lambda () (text-mode)))
   ; Save the buffer
   (set-buffer md-buffer)
