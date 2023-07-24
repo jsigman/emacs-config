@@ -38,7 +38,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: latest
-          files: published_version.md
+          files: emacs_config.md
       - name: Clear old releases
         uses: dev-drprasad/delete-older-releases@v0.2.1
         with:

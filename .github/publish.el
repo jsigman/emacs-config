@@ -28,10 +28,10 @@
 ;; Manually process #+INCLUDE: directives
 (org-export-expand-include-keyword)
 
-(let ((md-buffer (find-file-noselect "published_version.md")))
+(let ((md-buffer (find-file-noselect "emacs_config.md")))
 (org-export-to-buffer 'jekyll md-buffer
     nil nil nil nil nil (lambda () (text-mode)))
 ; Save the buffer
 (set-buffer md-buffer)
 ;; write the buffer md-buffer to file
-(write-file "published_version.md"))
+(write-file "emacs_config.md"))
