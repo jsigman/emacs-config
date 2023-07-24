@@ -1,7 +1,7 @@
 #+BEGIN_EXPORT markdown
 ---
 layout: post
-title: .emacs.d
+title: Emacs init config
 category: fun
 tags: 
 keywords: emacs
