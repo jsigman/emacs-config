@@ -35,8 +35,6 @@ If a code block is active, then it will appear with ~emacs-lisp~ syntax highligh
 
 Whether a code block is run at load time is controlled by the ~:load yes~ block argument of ~literate-elisp~.
 
-#+TOC: headlines 2
-
 #+include: "mode-settings/macos-settings.org" :minlevel 1
 #+include: "mode-settings/path-settings.org" :minlevel 1
 #+include: "mode-settings/colors-settings.org" :minlevel 1
