@@ -2,7 +2,6 @@
 
 Company was a great package, but I'm currently not using it. I migrated over to the simpler and more flexible Corfu.
 #+begin_src emacs-lisp :load no
-;----------------AUTO COMPLETE MODE--------------;
 (use-package
  company
  :config
@@ -43,10 +42,8 @@ Company was a great package, but I'm currently not using it. I migrated over to 
  (setq company-backends (remove 'company-dabbrev company-backends)))
 (use-package
  company-quickhelp
-
  :config ;; Sort by recent use
  (company-quickhelp-mode))
-
 (setq company-dabbrev-downcase nil)
 
 (use-package company-box :hook (company-mode . company-box-mode))
@@ -67,7 +64,5 @@ Company was a great package, but I'm currently not using it. I migrated over to 
      '(:with company-yasnippet))))
 (setq company-backends
       (mapcar #'company-mode/backend-with-yas company-backends))
-
-
 (use-package company-posframe :config (company-posframe-mode t))
 #+end_src

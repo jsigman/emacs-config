@@ -7,20 +7,17 @@
 
 
 ** Emacs Theme
-
+*** Leuven
+Leuven is always a nice option, beautiful with Org Mode.
+#+begin_src emacs-lisp :load no
+(use-package leuven-theme
+  :config
+  (load-theme 'leuven))
+#+end_src
+*** ef-day
 I'm always changing my theme, but I tend to like light themes with yellow-ish backgrounds. Almost like handwriting with a yellow memo pad.
-
 #+begin_src emacs-lisp :load yes
-(if (eq window-system nil)
-    (progn
-      (+ 1 2) ;; no-op if we're in terminal mode
-      ;; (load-theme 'dracula t)
-      (set-background-color "brightwhite"))
-  (progn
-    (use-package
-     ef-themes
-     :config
-     (load-theme 'ef-day t))))
+(use-package ef-themes :config (load-theme 'ef-day t))
 #+end_src
 
 ** Nano

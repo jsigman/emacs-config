@@ -475,9 +475,4 @@ Because I'm trying this out, I'm going to disable LSP's breadcrumb mode, which I
  breadcrumb
  :straight '(breadcrumb :type git :host github :repo "joaotavora/breadcrumb")
  :config (breadcrumb-mode t)
- ; TODO: need to make it take this value every new buffer
- (setq header-line-format
-       '((:eval (breadcrumb-project-crumbs))
-         " | "
-         (:eval (breadcrumb-imenu-crumbs)))))
-#+end_src
+ +end_src
