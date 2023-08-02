@@ -25,10 +25,9 @@ This one didn't work very well
 #+begin_src emacs-lisp :load yes
 (use-package
  openai
- :straight (openai :type git :host github :repo "emacs-openai/openai")
- :init
- (setq openai-key
-       (f-read-text (expand-file-name "~/.openai/emacs-key.txt"))))
+ :straight
+ (openai :type git :host github :repo "emacs-openai/openai")
+ :init (setq openai-key (getenv "OPENAI_API_KEY")))
 (use-package
  chatgpt
  :straight
