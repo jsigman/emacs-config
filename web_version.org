@@ -25,7 +25,9 @@ If a code block is active, then it will appear with ~emacs-lisp~ syntax highligh
 
 Whether a code block is run at load time is controlled by the ~:load yes~ block argument of ~literate-elisp~.
 
-* Packages Management
+* Package Management
+
+I love and rely heavily on ~straight.el~.
 
 #+BEGIN_EXPORT org
 #+begin_src emacs-lisp :exports code
