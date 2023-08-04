@@ -30,7 +30,7 @@ Whether a code block is run at load time is controlled by the ~:load yes~ block 
 I love and rely heavily on ~straight.el~.
 
 #+BEGIN_EXPORT org
-#+begin_src emacs-lisp :exports code
+#+begin_src emacs-lisp
 #+END_EXPORT
 #+include: "mode-settings/packages-settings.el" :minlevel 1
 #+BEGIN_EXPORT org
