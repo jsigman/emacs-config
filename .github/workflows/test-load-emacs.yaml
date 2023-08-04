@@ -24,7 +24,7 @@ jobs:
 
       - name: Initialize Emacs
         run: |
-          emacs --batch -L ~/.emacs.d --eval "(print 'success)"
+          emacs --batch -L ~/.emacs.d --eval "(print 'success) (print 'success2)"
 
       - name: Verify Initialization
         run: |
