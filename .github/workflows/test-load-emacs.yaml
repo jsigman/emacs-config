@@ -25,11 +25,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install emacs-snapshot
           emacs --version
-          ls -la
-          pwd
-          echo $EMACS_DIR
-          ls -l .emacs.d
-          ls -l ~/.emacs.d
       - name: Initialize Emacs
         run: |
           emacs --batch -L ${{ env.EMACS_DIR }} --eval "(progn (toggle-debug-on-error)(load \"${{ env.EMACS_DIR }}/early-init.el\" nil t)(load \"${{ env.EMACS_DIR }}/init.el\" nil t)(setq initial-buffer-choice t))"
