@@ -27,13 +27,14 @@ Whether a code block is run at load time is controlled by the ~:load yes~ block 
 
 * Packages Management
 
-#+BEGIN_SRC emacs-lisp :exports code
-(with-temp-buffer
-  (insert-file-contents "mode-settings/packages-settings.el")
-  (concat "{% highlight emacs-lisp %}\n"
-          (buffer-string)
-          "{% endhighlight %}"))
-#+END_SRC
+#+BEGIN_EXPORT org
+#+begin_src emacs-lisp :exports code
+#+END_EXPORT
+#+include: "mode-settings/packages-settings.el" :minlevel 1
+#+BEGIN_EXPORT org
+#+end_src
+#+END_EXPORT
+
 
 #+include: "mode-settings/macos-settings.org" :minlevel 1
 #+include: "mode-settings/path-settings.org" :minlevel 1
