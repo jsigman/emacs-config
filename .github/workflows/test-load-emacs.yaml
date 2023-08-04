@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: .emacs.d
-      - name: Configure Emacs
+      - name: Install Emacs
         run: |
           sudo apt-add-repository ppa:ubuntu-elisp/ppa
           sudo apt-get update
@@ -28,7 +28,7 @@ jobs:
 
       - name: Initialize Emacs
         run: |
-          emacs --batch -L ${{ env.EMACS_DIR }} --eval "(progn (toggle-debug-on-error)(load \"${{ env.EMACS_DIR }}/early-init.el\" nil t)(load (concat user-emacs-directory \"init.el\") nil t)(setq initial-buffer-choice t))"
+          emacs --batch -L ${{ env.EMACS_DIR }} --eval "(progn (toggle-debug-on-error)(load \"${{ env.EMACS_DIR }}/early-init.el\" nil t)(load \"${{ env.EMACS_DIR }}/init.el\" nil t)(setq initial-buffer-choice t))"
           echo "Emacs initialized successfully!"
       - name: Verify Initialization
         run: |
