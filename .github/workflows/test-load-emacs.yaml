@@ -1,0 +1,36 @@
+name: test-load-emacs
+
+on:
+  push:
+    branches:
+      - develop-ci-flow
+      - main
+  pull_request: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Configure Emacs
+        run: |
+          sudo apt-add-repository ppa:ubuntu-elisp/ppa
+          sudo apt-get update
+          sudo apt-get install emacs-snapshot
+          emacs --version
+
+      - name: Initialize Emacs
+        run: |
+          emacs --batch -L ~/.emacs.d --eval "(print 'success)"
+
+      - name: Verify Initialization
+        run: |
+          if [ $? -eq 0 ]; then
+            echo "Emacs initialized successfully!"
+          else
+            echo "Emacs failed to initialize."
+            exit 1
+          fi
