@@ -23,17 +23,17 @@ This web page is a tangled version of my literate [[https://github.com/jsigman/e
 ** Notes on code blocks
 If a code block is active, then it will appear with ~emacs-lisp~ syntax highlighting. If it's not being used, then it will show up with ~plaintext~ highlighting. For example:
 
-#+BEGIN_EXPORT markdown
-{% highlight plaintext %}
-(print "This code will not be run!")
-{% endhighlight %}
-
-{% highlight emacs-lisp %}
-(print "This code is run in my config!")
-{% endhighlight %}
-#+END_EXPORT
-
 Whether a code block is run at load time is controlled by the ~:load yes~ block argument of ~literate-elisp~.
+
+* Packages Management
+
+#+BEGIN_SRC emacs-lisp :exports code
+(with-temp-buffer
+  (insert-file-contents "mode-settings/packages-settings.el")
+  (concat "{% highlight emacs-lisp %}\n"
+          (buffer-string)
+          "{% endhighlight %}"))
+#+END_SRC
 
 #+include: "mode-settings/macos-settings.org" :minlevel 1
 #+include: "mode-settings/path-settings.org" :minlevel 1
