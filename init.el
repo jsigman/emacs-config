@@ -1,4 +1,5 @@
 (add-to-list 'load-path (concat user-emacs-directory "mode-settings"))
+(print user-emacs-directory)
 (setq comp-speed 2)
 
 (require 'packages-settings)
