@@ -24,8 +24,8 @@ jobs:
 
       - name: Initialize Emacs
         run: |
-          emacs --batch -L ~/.emacs.d --eval "(print 'success) (print 'success2)"
-
+          emacs --batch -L ~/.emacs.d --eval "(progn (toggle-debug-on-error)(load \"~/.emacs.d/early-init.el\" nil t)(load (concat user-emacs-directory \"init.el\") nil t)(setq initial-buffer-choice t))"
+          echo "Emacs initialized successfully!"
       - name: Verify Initialization
         run: |
           if [ $? -eq 0 ]; then
