@@ -7,6 +7,9 @@ on:
       - main
   pull_request: {}
 
+env:
+  EMACS_DIR: ${{ github.workspace }}/.emacs.d
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -25,7 +28,7 @@ jobs:
 
       - name: Initialize Emacs
         run: |
-          emacs --batch -L ~/.emacs.d --eval "(progn (toggle-debug-on-error)(load \"~/.emacs.d/early-init.el\" nil t)(load (concat user-emacs-directory \"init.el\") nil t)(setq initial-buffer-choice t))"
+          emacs --batch -L ${{ env.EMACS_DIR }} --eval "(progn (toggle-debug-on-error)(load \"${{ env.EMACS_DIR }}/early-init.el\" nil t)(load (concat user-emacs-directory \"init.el\") nil t)(setq initial-buffer-choice t))"
           echo "Emacs initialized successfully!"
       - name: Verify Initialization
         run: |
