@@ -14,7 +14,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
-        path: "~/.emacs.d"
+        with:
+          path: "~/.emacs.d"
       - name: Configure Emacs
         run: |
           sudo apt-add-repository ppa:ubuntu-elisp/ppa
