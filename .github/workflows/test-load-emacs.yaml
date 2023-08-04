@@ -3,7 +3,6 @@ name: test-load-emacs
 on:
   push:
     branches:
-      - develop-ci-flow
       - main
   pull_request: {}
 
@@ -12,7 +11,7 @@ env:
   HOME: ${{ github.workspace }}
 
 jobs:
-  test:
+  test-load-emacs:
     runs-on: ubuntu-latest
 
     steps:
