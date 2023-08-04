@@ -27,6 +27,7 @@ jobs:
           emacs --version
           ls -la
           pwd
+          echo $EMACS_DIR
           ls -l .emacs.d
           ls -l ~/.emacs.d
       - name: Initialize Emacs
