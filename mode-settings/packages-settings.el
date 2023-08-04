@@ -1,5 +1,4 @@
-;------------PACKAGES------------------;
-;; Bootstrap straight.el here
+(print "debug")
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el"
