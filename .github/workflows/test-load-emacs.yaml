@@ -1,0 +1,42 @@
+name: test-load-emacs
+
+on:
+  push:
+    branches:
+      - main
+  pull_request: {}
+
+env:
+  EMACS_DIR: ${{ github.workspace }}/.emacs.d
+  HOME: ${{ github.workspace }}
+
+jobs:
+  test-load-emacs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          path: .emacs.d
+      - name: Install Emacs
+        run: |
+          sudo apt-add-repository ppa:ubuntu-elisp/ppa
+          sudo apt-get update
+          sudo apt-get install emacs-snapshot
+          emacs --version
+          sudo apt install cmake libtool-bin libvterm-dev direnv
+      - name: Initialize Emacs
+        run: |
+          emacs --batch --eval "(print module-file-suffix)"
+          emacs --batch --eval "(print (treesit-available-p))"
+          emacs --batch --eval "(progn (toggle-debug-on-error)(load (concat user-emacs-directory \"early-init.el\") nil t)(load (concat user-emacs-directory \"init.el\") nil t)(setq initial-buffer-choice t))"
+          echo "Emacs initialized successfully!"
+      - name: Verify Initialization
+        run: |
+          if [ $? -eq 0 ]; then
+            echo "Emacs initialized successfully!"
+          else
+            echo "Emacs failed to initialize."
+            exit 1
+          fi

@@ -1,4 +1,4 @@
-(add-to-list 'load-path "~/.emacs.d/mode-settings/")
+(add-to-list 'load-path (concat user-emacs-directory "mode-settings"))
 (setq comp-speed 2)
 
 (require 'packages-settings)
@@ -43,3 +43,4 @@
 (if (not (file-exists-p custom-file))
     (f-touch custom-file))
 (load custom-file)
+

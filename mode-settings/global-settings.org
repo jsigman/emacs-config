@@ -282,7 +282,7 @@ I find this breaks browsing of long json files, more than it helps me out.
 #+begin_src emacs-lisp :load yes
 ;; Font settings
 (if (eq system-type 'darwin)
-    (if (> (x-display-pixel-width) 1440)
+    (if (and (display-graphic-p) (> (x-display-pixel-width) 1440))
         ;; Set default font larger if on a big screen
         (set-face-font 'default "roboto mono-15")
       ;; (set-face-font 'default "arial-15")
@@ -293,7 +293,7 @@ I find this breaks browsing of long json files, more than it helps me out.
       )
   ;; else
   (if (not (eq window-system nil))
-      (if (> (x-display-pixel-width) 1440)
+      (if (and (display-graphic-p) (> (x-display-pixel-width) 1440))
           ;; Set default font larger if on a big screen
           (set-face-font 'default "roboto mono-12")
         ;; else
@@ -302,7 +302,6 @@ I find this breaks browsing of long json files, more than it helps me out.
         )
     ;; else
     ))
-
 #+end_src
 
 ** Ace popup
