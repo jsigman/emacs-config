@@ -1,8 +1,6 @@
-(print "debug init 1")
 (add-to-list 'load-path (concat user-emacs-directory "mode-settings"))
 (print user-emacs-directory)
 (setq comp-speed 2)
-(print "debug init 12")
 
 (require 'packages-settings)
 (literate-elisp-load "macos-settings.org")
@@ -46,4 +44,4 @@
 (if (not (file-exists-p custom-file))
     (f-touch custom-file))
 (load custom-file)
-(print "debug init 1")
+

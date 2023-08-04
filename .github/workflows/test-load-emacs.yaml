@@ -28,7 +28,7 @@ jobs:
           emacs --version
       - name: Initialize Emacs
         run: |
-          emacs --batch --eval "(progn (toggle-debug-on-error)(print (concat user-emacs-directory \"early-init.el\"))(load (concat user-emacs-directory \"early-init.el\") nil t)(load (concat user-emacs-directory \"init.el\") nil t)(setq initial-buffer-choice t))"
+          emacs --batch --eval "(progn (toggle-debug-on-error)(load (concat user-emacs-directory \"early-init.el\") nil t)(load (concat user-emacs-directory \"init.el\") nil t)(setq initial-buffer-choice t))"
           echo "Emacs initialized successfully!"
       - name: Verify Initialization
         run: |
