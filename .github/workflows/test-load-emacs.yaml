@@ -26,7 +26,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install emacs-snapshot
           emacs --version
-          sudo apt install cmake libtool-bin libvterm-dev
+          sudo apt install cmake libtool-bin libvterm-dev direnv
       - name: Initialize Emacs
         run: |
           emacs --batch --eval "(print module-file-suffix)"
