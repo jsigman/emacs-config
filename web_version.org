@@ -10,7 +10,7 @@ importance: 1
 img: assets/img/Emacs.png
 date: 2023-05-22
 ---
-#+END_EXPORT
+#+end_export
 
 #+title: .emacs.d
 #+author: Johnny Sigman
@@ -29,14 +29,13 @@ Whether a code block is run at load time is controlled by the ~:load yes~ block 
 
 I love and rely heavily on ~straight.el~.
 
-#+BEGIN_EXPORT org
-#+begin_src emacs-lisp
+#+BEGIN_EXPORT markdown
+{% highlight emacs-lisp %}
 #+END_EXPORT
 #+include: "mode-settings/packages-settings.el" :minlevel 1
-#+BEGIN_EXPORT org
-#+end_src
+#+BEGIN_EXPORT markdown
+{% endhighlight %}
 #+END_EXPORT
-
 
 #+include: "mode-settings/macos-settings.org" :minlevel 1
 #+include: "mode-settings/path-settings.org" :minlevel 1
