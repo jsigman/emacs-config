@@ -9,7 +9,7 @@ on:
 
 env:
   EMACS_DIR: ${{ github.workspace }}/.emacs.d
-
+  HOME: ${{ github.workspace }}
 jobs:
   test:
     runs-on: ubuntu-latest
