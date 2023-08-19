@@ -1,7 +1,7 @@
 * Debug Adapter Protocal (DAP)
 #+property: header-args:emacs-lisp :load yes
 I'm currently not using DAP mode, and prefer to use python from the command line (vterm) with ~pdb~. Some day I'd like to learn this.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load no
 (use-package
  dap-mode
  :init
@@ -22,6 +22,5 @@ I'm currently not using DAP mode, and prefer to use python from the command line
  (add-hook 'python-mode-hook 'dap-ui-mode)
  (add-hook 'python-mode-hook 'dap-tooltip-mode)
 
- ;; (define-key python-mode-map (kbd "C-r") 'dap-debug)
  (define-key python-mode-map (kbd "M-D") #'dap-hydra))
 #+end_src

@@ -11,6 +11,7 @@
 
 (use-package
  org
+    :straight nil
  ;; :demand t
  :defer t
  :hook (org-mode-hook . visual-line-mode)
@@ -206,6 +207,7 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
 #+end_src
 
 ** Org Markdown
-#+begin_src emacs-lisp :load yes
+This is really only used in the publishing script of my emacs config, I don't need to load this on every startup.
+#+begin_src emacs-lisp :load no
 (use-package ox-jekyll-md :init (setq org-jekyll-md-include-yaml-front-matter nil))
 #+end_src
