@@ -1,9 +1,7 @@
 * Java/Javascript/JSON
-#+PROPERTY: header-args:emacs-lisp :load yes
-
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load yes
   (use-package jq-mode)
   (use-package
    jsonian
    :straight '(jsonian :type git :host github :repo "iwahbe/jsonian" :build (:not autoloads)))
-#+END_SRC
+#+end_src

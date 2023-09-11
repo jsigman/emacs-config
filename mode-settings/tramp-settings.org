@@ -1,6 +1,5 @@
 * TRAMP
-#+PROPERTY: header-args:emacs-lisp :load yes
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load yes
 (setq enable-remote-dir-locals 't)
 (setq tramp-chunksize 4050)
-#+END_SRC
+#+end_src

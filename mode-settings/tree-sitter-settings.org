@@ -50,4 +50,4 @@ This is the old way of using ~tree-sitter~ in emacs. In emacs 29, this moved to 
  ;; (setq js-ts-mode-hook js-mode-hook)
  (setq markdown-ts-mode-hook markdown-mode-hook)
  (setq bash-ts-mode-hook sh-mode-hook))
-#+END_SRC
+#+end_src

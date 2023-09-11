@@ -1,7 +1,6 @@
 * Language Server Protocol (LSP)
-#+PROPERTY: header-args:emacs-lisp :load yes
 ** LSP Mode
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load yes
 (setq my/lsp-package "lsp")
 ;------------------------LSP---------------------------;
 ; PATCH BELOW

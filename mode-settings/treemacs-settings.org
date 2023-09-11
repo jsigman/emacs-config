@@ -12,4 +12,4 @@
  treemacs
  dired
  :config (treemacs-icons-dired-mode))
-#+END_SRC
+#+end_src

@@ -33,13 +33,19 @@
 #+end_src
 
 ** Forge
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load yes
 (use-package
  forge
  :after magit
  :config
  ; This is so we can access forge information
  (setq auth-sources '("~/.authinfo")))
+#+end_src
+
+** Magit Todos mode
+This is currently broken for me.
+#+begin_src emacs-lisp :load no
+(use-package magit-todos :config (magit-todos-mode t))
 #+end_src
 
 ** Magit coloring
@@ -62,7 +68,6 @@
 (use-package rg)
 (use-package ag)
 
-(use-package magit-todos :config (magit-todos-mode t))
 (use-package ghub)
 
 ; add this so that git gutter plus does not screw up tramp sessions

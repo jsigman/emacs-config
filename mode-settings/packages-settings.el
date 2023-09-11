@@ -16,7 +16,7 @@
 (require 'use-package)
 
 (use-package general)
-(use-package org :straight nil)
+(use-package org)
 
 (use-package
  literate-elisp

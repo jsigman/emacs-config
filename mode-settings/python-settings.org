@@ -1,6 +1,5 @@
 * Python
-#+PROPERTY: header-args:emacs-lisp :load yes
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load yes
 (require 'python)
 
 (setq

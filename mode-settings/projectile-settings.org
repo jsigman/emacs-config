@@ -1,7 +1,5 @@
 * Projectile
-#+PROPERTY: header-args:emacs-lisp :load yes
-
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load yes
 (use-package
  projectile
  :init (setq projectile-git-submodule-command nil)
@@ -39,4 +37,4 @@
  (add-hook
   'magit-section-post-command-hook 'projectile-invalidate-cache)
 )
-#+END_SRC
+#+end_src

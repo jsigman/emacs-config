@@ -1,7 +1,5 @@
 * Parens
-#+PROPERTY: header-args:emacs-lisp :load yes
-
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load yes
 (setq show-paren-when-point-inside-paren 't)
 (setq show-paren-style 'mixed)
 (setq show-paren-context-when-offscreen 't)
@@ -32,4 +30,4 @@
 ;; Show matching parens
 (setq show-paren-delay 0)
 (show-paren-mode t)
-#+END_SRC
+#+end_src

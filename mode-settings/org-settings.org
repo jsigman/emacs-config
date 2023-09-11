@@ -1,5 +1,5 @@
 * Org Mode
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load yes
 (defun org-src-format-and-save ()
   (interactive)
   (when (eq major-mode 'python-base-mode)
@@ -11,8 +11,6 @@
 
 (use-package
  org
-    :straight nil
- ;; :demand t
  :defer t
  :hook (org-mode-hook . visual-line-mode)
  :hook (org-babel-after-execute-hook . org-display-inline-images)

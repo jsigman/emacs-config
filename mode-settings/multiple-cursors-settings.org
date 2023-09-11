@@ -1,7 +1,5 @@
 * Multiple Cursors (MC)
-#+PROPERTY: header-args:emacs-lisp :load yes
-
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load yes
 (use-package
  multiple-cursors
  :config

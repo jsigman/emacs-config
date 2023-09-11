@@ -1,6 +1,5 @@
 * Docker
-#+PROPERTY: header-args:emacs-lisp :load yes
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load yes
 (use-package
  dockerfile-mode
  :config (setq dockerfile-mode-command "docker"))

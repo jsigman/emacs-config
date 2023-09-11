@@ -1,4 +1,3 @@
-#+PROPERTY: header-args:emacs-lisp :load yes
 * Window management
 ** Zoom
 I think this is a little too aggressive right now, but it's a cool idea.

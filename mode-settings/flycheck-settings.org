@@ -1,6 +1,5 @@
 * Flycheck
-#+PROPERTY: header-args:emacs-lisp :load yes
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load yes
 (use-package
  flycheck
  :init
@@ -61,7 +60,7 @@
 #+end_src
 ** Toggling flycheck buffer with "M-C"
 I have my own little hook to open the flycheck buffer with ~M-C~, and close it again with another ~M-C~ keystroke.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load yes
 (defvar should-delete-flycheck-list-buffer nil)
 (defun my/flycheck-list-errors ()
   "Open flycheck list if it doesn't exist.  If it does, close it."
@@ -82,4 +81,4 @@ I have my own little hook to open the flycheck buffer with ~M-C~, and close it a
               (> (count-windows) starting-window-count))))))
 
 (define-key flycheck-mode-map (kbd "M-C") 'my/flycheck-list-errors)
-#+END_SRC
+#+end_src

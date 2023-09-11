@@ -1,6 +1,6 @@
 * Large Language Models in Emacs
 ** Github Copilot
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load yes
 (use-package
  copilot
  :straight

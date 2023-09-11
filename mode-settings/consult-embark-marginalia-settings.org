@@ -1,11 +1,10 @@
 * Consult/Embark/Marginalia
-#+PROPERTY: header-args:emacs-lisp :load yes
 ** Marginalia
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load yes
 (use-package marginalia :demand t :config (marginalia-mode))
 #+end_src
 ** Embark
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :load yes
 (use-package
  embark
  :demand t
