@@ -1,7 +1,7 @@
 #+BEGIN_EXPORT markdown
 ---
 layout: post
-title: Emacs init config
+title: Literate Emacs Config
 category: fun
 tags: 
 keywords: emacs
@@ -22,6 +22,18 @@ This web page is a tangled version of my literate [[https://github.com/jsigman/e
 
 ** Notes on code blocks
 If a code block is active, then it will appear with ~emacs-lisp~ syntax highlighting. If it's not being used, then it will show up with ~plaintext~ highlighting. For example:
+
+#+BEGIN_EXPORT markdown
+{% highlight plaintext %}
+(print "This code will not be run!")
+{% endhighlight %}
+#+END_EXPORT
+
+#+BEGIN_EXPORT markdown
+{% highlight emacs-lisp %}
+(print "This code is run in my config!")
+{% endhighlight %}
+#+END_EXPORT
 
 Whether a code block is run at load time is controlled by the ~:load yes~ block argument of ~literate-elisp~.
 
