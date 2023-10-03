@@ -30,8 +30,9 @@ This one didn't work very well
  :init (setq openai-key (getenv "OPENAI_API_KEY")))
 (use-package
  chatgpt
- :straight
- (chatgpt :type git :host github :repo "emacs-openai/chatgpt"))
+ :straight (chatgpt :type git :host github :repo "emacs-openai/chatgpt")
+ ;; :config (setq chatgpt-model "gpt-4-0613")
+ )
 (use-package
  codegpt
  :straight

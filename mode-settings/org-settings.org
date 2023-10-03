@@ -193,12 +193,11 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
    ;; this is a hack so i don't have to ask about downloading the compatible binary
    (setq noninteractive t)
    (safe-wrap
-    (require 'zmq)
-    ;; make a copy of the file with the right target
-    (fix-zmq-file-naming)
-    ;; Then reload zmq, should work!
-    (require 'zmq))
-   ;; set the variable back to its original value
+    (condition-case nil
+        (require 'zmq)
+      (error
+       (fix-zmq-file-naming)
+       (require 'zmq)))) ;; set the variable back to its original value
    (setq noninteractive original-noninteractive-value)))
 
 (use-package jupyter :defer t :custom (jupyter-repl-echo-eval-p t))
