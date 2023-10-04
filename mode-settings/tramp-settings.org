@@ -1,5 +1,13 @@
 * TRAMP
+** General Settings
 #+begin_src emacs-lisp :load yes
 (setq enable-remote-dir-locals 't)
 (setq tramp-chunksize 4050)
+(setq tramp-verbose 10)
+(setq vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
+                                   vc-ignore-dir-regexp
+                                   tramp-file-name-regexp))
+#+end_src
+** Magit in Tramp
+#+begin_src emacs-lisp :load yes
 #+end_src
