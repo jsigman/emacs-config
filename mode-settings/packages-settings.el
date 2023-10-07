@@ -27,7 +27,6 @@
    '(advice-add
      'elisp-refs--read-all-buffer-forms
      :around #'literate-elisp-refs--read-all-buffer-forms))
-
  ;; To make `elisp-refs' work with `literate-elisp', we need to add an advice to `elisp-refs--loaded-paths'.
  (eval-after-load "elisp-refs"
    '(advice-add

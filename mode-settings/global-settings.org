@@ -54,7 +54,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
 (setq column-number-mode t)
 (setq blink-paren-function nil)
 (setq inhibit-startup-screen t)
-(use-package direnv :config (direnv-mode 't))
+
 (use-package
  ctrlf
  :config
@@ -110,6 +110,14 @@ I think this is a little too aggressive right now, but it's a cool idea.
  (global-set-key (kbd "C-x C-b") 'ibuffer)
  (define-key ibuffer-mode-map (kbd "M-o") nil))
 #+END_SRC
+** Direnv
+#+begin_src emacs-lisp :load yes
+(use-package
+ direnv
+ :config (direnv-mode 't)
+)
+#+end_src
+
 
 ** Window movement keybindings
 #+begin_src emacs-lisp :load yes

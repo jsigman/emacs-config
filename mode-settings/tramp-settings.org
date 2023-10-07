@@ -11,3 +11,88 @@
 ** Magit in Tramp
 #+begin_src emacs-lisp :load yes
 #+end_src
+** Local PATH
+#+begin_src emacs-lisp :load yes
+(defun my-setup-tramp-path ()
+  (let ((local-path (cdr (assoc 'my-project-specific-path dir-local-variables-alist))))
+    (when local-path
+      (add-to-list 'tramp-remote-path
+                   (concat "/sshx:your_username@remote_host:" local-path)))))
+(add-hook 'hack-dir-local-variables-hook #'my-setup-tramp-path)
+#+end_src
+
+** Lock files
+Disable lock files in TRAMP
+#+begin_src emacs-lisp :load yes
+(defun my-tramp-file-name-handler (operation &rest args)
+  "Disable file locks for TRAMP files."
+  (if (eq operation 'vc-registered)
+      nil
+    (let ((file-name-handler-alist
+           (remove (cons "\\`/\\(ssh\\|scp\\|ftp\\):" 'my-tramp-file-name-handler)
+                   file-name-handler-alist)))
+      (apply operation args))))
+
+(add-to-list 'file-name-handler-alist
+             '("\\`/\\(ssh\\|scp\\|ftp\\):" . my-tramp-file-name-handler))
+#+end_src
+
+** Dir-locals helper function
+I'm still trying to make all my editing features work inside TRAMP with Emacs.
+
+#+begin_src emacs-lisp :load no
+(defun set-remote-venv-path ()
+  "Set PATH for TRAMP to include the venv/bin directory."
+  (with-parsed-tramp-file-name default-directory tramp-info
+    (let* ((absolute-local-directory (if (string= tramp-info-localname "~/")
+                                         (tramp-call-process tramp-info-method tramp-info-user tramp-info-host "pwd" nil t nil)
+                                       tramp-info-localname))
+           (remote-path (concat "/" tramp-info-method ":" tramp-info-user "@" tramp-info-host ":" absolute-local-directory)))
+      (set (make-local-variable 'process-environment)
+           (append
+            (list (format "PATH=%svenv/bin:%s"
+                          remote-path
+                          (getenv "PATH")))
+            process-environment)))))
+#+end_src
+
+
+#+begin_src emacs-lisp :load no
+(defun set-remote-venv-path ()
+  "Set PATH for TRAMP to include the venv/bin directory."
+  (with-parsed-tramp-file-name default-directory tramp-info
+    (let ((remote-path (if (string= tramp-info-localname "~/")
+                           (concat "/" tramp-info-method ":" tramp-info-user "@" tramp-info-host ":/")
+                         (concat "/" tramp-info-method ":" tramp-info-user "@" tramp-info-host ":" tramp-info-localname))))
+      (set (make-local-variable 'process-environment)
+           (append
+            (list (format "PATH=%svenv/bin:%s"
+                          remote-path
+                          (getenv "PATH")))
+            process-environment)))))
+#+end_src
+** Direnv in Tramp
+[[https://github.com/eush77/dotfiles/blob/ace2b1dc0f229b4897d60728a320a8f88722e0c4/emacs/.emacs.d/config/config-direnv.el#L28-L52][Code exists in an unmerged branch]].
+#+begin_src emacs-lisp :load yes
+(defcustom my-direnv-enabled-hosts nil
+  "List of remote hosts to use Direnv on.
+
+Each host must have `direnv' executable accessible in the default
+environment."
+  :type '(repeat string)
+  :group 'my)
+
+(defun tramp-sh-handle-start-file-process@my-direnv (args)
+  "Enable Direnv for hosts in `my-direnv-enabled-hosts'."
+  (with-parsed-tramp-file-name
+   (expand-file-name default-directory) nil
+   (if (member host my-direnv-enabled-hosts)
+       (progn (pcase-let ((`(,name ,buffer ,program . ,args) args))
+         `(,name ,buffer "direnv" "exec" ,localname ,program ,@args)) (debug))
+     args)))
+
+(with-eval-after-load "tramp-sh"
+  (advice-add
+   'tramp-sh-handle-start-file-process
+   :filter-args #'tramp-sh-handle-start-file-process@my-direnv))
+#+end_src
