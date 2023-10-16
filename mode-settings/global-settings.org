@@ -24,6 +24,8 @@ I think this is a little too aggressive right now, but it's a cool idea.
 #+end_src
 * Miscellaneous
 #+begin_src emacs-lisp :load yes
+(setq require-final-newline t)
+(setq show-trailing-whitespace t)
 (setq native-comp-async-report-warnings-errors nil)
 ;; Show the line number of the cursor in the mode bar at the bottom of each buffer
 (setq line-number-mode t)

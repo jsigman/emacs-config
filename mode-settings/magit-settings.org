@@ -14,10 +14,11 @@
    '(progn
       (advice-add
        'magit-checkout
-       :after '(projectile-invalidate-cache nil))
+       :after (lambda (&rest args) (projectile-invalidate-cache nil)))
       (advice-add
        'magit-branch-and-checkout
-       :after '(projectile-invalidate-cache nil))))
+       :after
+       (lambda (&rest args) (projectile-invalidate-cache nil)))))
  :bind
  (:map
   magit-mode-map
@@ -29,7 +30,6 @@
   ("M-3" . nil))
  :bind (:map global-map ("M-G" . magit-status))
  :config (use-package transient))
-
 #+end_src
 
 ** Forge
