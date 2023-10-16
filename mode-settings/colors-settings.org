@@ -4,8 +4,6 @@
 (setf custom-safe-themes 't)
 (setq frame-title-format nil)
 #+end_src
-
-
 ** Emacs Theme
 *** Leuven
 Leuven is always a nice option, beautiful with Org Mode.
@@ -14,9 +12,20 @@ Leuven is always a nice option, beautiful with Org Mode.
   :config
   (load-theme 'leuven))
 #+end_src
+*** [[https://github.com/catppuccin/emacs][Catpuccin Theme]]
+Trying this theme out for a little bit.
+#+begin_src emacs-lisp :load yes
+(use-package
+ catppuccin-theme
+ :init (setq catppuccin-flavor 'frappe)
+ ;; (setq catppuccin-flavor 'latte)
+ ;; (setq catppuccin-flavor 'macchiato)
+ ;; (setq catppuccin-flavor 'mocha)
+ :config (load-theme 'catppuccin :no-confirm) (catppuccin-reload))
+#+end_src
 *** ef-day
 I'm always changing my theme, but I tend to like light themes with yellow-ish backgrounds. Almost like handwriting with a yellow memo pad.
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package ef-themes :config (load-theme 'ef-day t))
 #+end_src
 
