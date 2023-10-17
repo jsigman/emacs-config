@@ -132,7 +132,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
 #+END_SRC
 ** Sqlite
 So far, I am unable to find a way to compile sqlite3 on my own, but I would love to be able to do this with straight package management.
-#+begin_src emacs-lisp :load no
+#+begin_src emacs-lisp :load yes
 (use-package
  sqlite3
  :straight
@@ -142,9 +142,6 @@ So far, I am unable to find a way to compile sqlite3 on my own, but I would love
    :repo "pekingduck/emacs-sqlite3-api"
    :files ("*.c" "*.h" "*.el" "Makefile")))
 #+END_SRC
-
-
-
 ** Anzu
 #+begin_src emacs-lisp :load yes
 (use-package
