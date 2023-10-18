@@ -17,11 +17,13 @@ Trying this theme out for a little bit.
 #+begin_src emacs-lisp :load yes
 (use-package
  catppuccin-theme
- :init (setq catppuccin-flavor 'frappe)
+ :config
+ (load-theme 'catppuccin :no-confirm)
+ (setq catppuccin-flavor 'frappe)
  ;; (setq catppuccin-flavor 'latte)
  ;; (setq catppuccin-flavor 'macchiato)
  ;; (setq catppuccin-flavor 'mocha)
- :config (load-theme 'catppuccin :no-confirm) (catppuccin-reload))
+ (catppuccin-reload))
 #+end_src
 *** ef-day
 I'm always changing my theme, but I tend to like light themes with yellow-ish backgrounds. Almost like handwriting with a yellow memo pad.
