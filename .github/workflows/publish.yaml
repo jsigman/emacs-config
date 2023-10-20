@@ -46,8 +46,6 @@ jobs:
           keep_latest: 1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Close
-        run: exit 0
       - name: Trigger rebuild of the website
         run: |
           curl -X POST \
@@ -55,3 +53,5 @@ jobs:
                -H "Accept: application/vnd.github.v3+json" \
                https://api.github.com/repos/jsigman/jsigman.github.io/actions/workflows/deploy.yml/dispatches \
                -d '{"ref":"main"}'
+      - name: Close
+        run: exit 0
