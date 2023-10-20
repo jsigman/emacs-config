@@ -48,7 +48,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Close
         run: exit 0
-      - name: Trigger Workflow in Another Repo
+      - name: Trigger rebuild of the website
         run: |
           curl -X POST \
                -H "Authorization: token ${{ secrets.WEBSITE_BUILD }}" \
