@@ -52,6 +52,6 @@ jobs:
                -H "Authorization: token ${{ secrets.WEBSITE_BUILD }}" \
                -H "Accept: application/vnd.github.v3+json" \
                https://api.github.com/repos/jsigman/jsigman.github.io/actions/workflows/deploy.yml/dispatches \
-               -d '{"ref":"main"}'
+               -d '{"ref":"master"}'
       - name: Close
         run: exit 0
