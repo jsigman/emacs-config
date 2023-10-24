@@ -133,14 +133,20 @@ I think this is a little too aggressive right now, but it's a cool idea.
 ** Sqlite
 So far, I am unable to find a way to compile sqlite3 on my own, but I would love to be able to do this with straight package management.
 #+begin_src emacs-lisp :load yes
-(use-package
- sqlite3
- :straight
- '(sqlite3
-   :type git
-   :host github
-   :repo "pekingduck/emacs-sqlite3-api"
-   :files ("*.c" "*.h" "*.el" "Makefile")))
+;; Override the 'yes-or-no-p' temporarily
+(let ((original-yes-or-no-p (symbol-function 'yes-or-no-p)))
+  (fset 'yes-or-no-p (lambda (&rest args) t))
+
+  ;; Load the sqlite3 package
+  (use-package sqlite3
+    :straight (sqlite3
+               :type git
+               :host github
+               :repo "pekingduck/emacs-sqlite3-api"
+               :files ("*.c" "*.h" "*.el" "Makefile")))
+
+  ;; Restore the original function
+  (fset 'yes-or-no-p original-yes-or-no-p))
 #+END_SRC
 ** Anzu
 #+begin_src emacs-lisp :load yes

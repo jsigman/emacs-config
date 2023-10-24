@@ -83,5 +83,6 @@ I love and rely heavily on ~straight.el~.
 #+include: "mode-settings/dap-settings.org" :minlevel 1
 #+include: "mode-settings/treemacs-settings.org" :minlevel 1
 #+include: "mode-settings/markdown-settings.org" :minlevel 1
+#+include: "mode-settings/lua-settings.org" :minlevel 1
 #+include: "mode-settings/tree-sitter-settings.org" :minlevel 1
 #+include: "mode-settings/modeline-settings.org" :minlevel 1

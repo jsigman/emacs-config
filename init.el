@@ -36,6 +36,7 @@
 (literate-elisp-load "dap-settings.org")
 (literate-elisp-load "treemacs-settings.org")
 (literate-elisp-load "markdown-settings.org")
+(literate-elisp-load "lua-settings.org")
 (literate-elisp-load "tree-sitter-settings.org")
 (literate-elisp-load "modeline-settings.org")
 

@@ -1,0 +1,7 @@
+* Lua
+#+begin_src emacs-lisp :load yes
+(use-package
+ lua-mode
+ :ensure t
+ :mode ("\\.lsyncd\\.conf\\'" . lua-mode))
+#+END_SRC
