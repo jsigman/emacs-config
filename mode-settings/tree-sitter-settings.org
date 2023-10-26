@@ -39,7 +39,7 @@ This is the old way of using ~tree-sitter~ in emacs. In emacs 29, this moved to 
 
  (setq treesit-auto-opt-out-list
        '(protobuf
-         clojure cmake cpp css elixir gomod heex kotlin lua r))
+         clojure cmake cpp css elixir gomod heex kotlin r))
  :config
  (global-treesit-auto-mode)
  (treesit-auto-install-all)
