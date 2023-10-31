@@ -46,7 +46,8 @@
 (use-package
  py-isort
  :config
- (define-key python-mode-map (kbd "M-I") 'py-isort-buffer))
+ (define-key python-mode-map (kbd "M-I") 'py-isort-buffer)
+ (define-key python-ts-mode-map (kbd "M-I") 'py-isort-buffer))
 
 (use-package
  pip-requirements

@@ -418,8 +418,7 @@ I find this breaks browsing of long json files, more than it helps me out.
  :config
  (setf (alist-get 'isort apheleia-formatters)
        '("isort" "--stdout" "-"))
- (setf (alist-get 'python-base-mode apheleia-mode-alist)
-       '(isort black))
+ (setf (alist-get 'python-ts-mode apheleia-mode-alist) '(isort black))
  (add-to-list
   'apheleia-formatters
   '(prettier-toml

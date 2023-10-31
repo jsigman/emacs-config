@@ -30,6 +30,15 @@ This is the old way of using ~tree-sitter~ in emacs. In emacs 29, this moved to 
 #+end_src
 ** Treesit
 #+begin_src emacs-lisp :load yes
+(defun copy-different-key-bindings (source-map dest-map)
+  "Copy key bindings from SOURCE-MAP to DEST-MAP, but only where they differ."
+  (map-keymap
+   (lambda (binding value)
+     (unless (eq value (lookup-key dest-map (vector binding)))
+       (define-key dest-map (vector binding) value)))
+   source-map))
+
+
 (use-package
  treesit-auto
  :straight '(treesit-auto :type git :host github :repo "renzmann/treesit-auto")
@@ -38,8 +47,7 @@ This is the old way of using ~tree-sitter~ in emacs. In emacs 29, this moved to 
 
 
  (setq treesit-auto-opt-out-list
-       '(protobuf
-         clojure cmake cpp css elixir gomod heex kotlin r))
+       '(protobuf clojure cmake cpp css elixir gomod heex kotlin r))
  :config
  (global-treesit-auto-mode)
  (treesit-auto-install-all)
@@ -49,5 +57,13 @@ This is the old way of using ~tree-sitter~ in emacs. In emacs 29, this moved to 
  (setq json-ts-mode-hook json-mode-hook)
  ;; (setq js-ts-mode-hook js-mode-hook)
  (setq markdown-ts-mode-hook markdown-mode-hook)
- (setq bash-ts-mode-hook sh-mode-hook))
+ (setq bash-ts-mode-hook sh-mode-hook)
+
+
+ ;; Then call the function like this:
+ (copy-different-key-bindings python-mode-map python-ts-mode-map)
+ ;; (copy-different-key-bindings yaml-mode-map yaml-ts-mode-map)
+ ;; (copy-different-key-bindings json-mode-map json-ts-mode-map)
+ ;; (copy-different-key-bindings markdown-mode-map markdown-ts-mode-map)
+ (copy-different-key-bindings sh-mode-map bash-ts-mode-map))
 #+end_src
