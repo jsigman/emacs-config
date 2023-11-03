@@ -24,11 +24,11 @@
  :config (global-set-key (kbd "M-Y") 'consult-yasnippet))
 #+END_SRC
 ** Yasnippet-Capf
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package
  yasnippet-capf
  :after cape
  :init
- (setq yasnippet-capf-lookup-by 'name) ;; Prefer the name of the snippet instead
+ (setq yasnippet-capf-lookup-by 'key) ;; key or name
  :config (add-to-list 'completion-at-point-functions #'yasnippet-capf))
 #+END_SRC
