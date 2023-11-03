@@ -25,7 +25,7 @@
 #+END_SRC
 ** Yasnippet-Capf
 #+begin_src emacs-lisp :load yes
-(use-package!
+(use-package
  yasnippet-capf
  :after cape
  :init
