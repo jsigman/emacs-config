@@ -9,7 +9,7 @@
 #+END_SRC
 
 * HTML
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (when (not (eq system-type 'gnu/linux))
   (require 'html-ts-mode)
   (define-key html-ts-mode-map (kbd "M-o M-o") nil)

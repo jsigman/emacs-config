@@ -43,11 +43,31 @@ This is the old way of using ~tree-sitter~ in emacs. In emacs 29, this moved to 
  treesit-auto
  :straight '(treesit-auto :type git :host github :repo "renzmann/treesit-auto")
  :demand t
- :init (setq treesit-auto-install t)
-
-
- (setq treesit-auto-opt-out-list
-       '(protobuf clojure cmake cpp css elixir gomod heex kotlin r))
+ :init
+ (setq treesit-auto-install t)
+ (setq treesit-auto-langs
+       '(awk
+         bash
+         bibtex
+         c
+         cmake
+         commonlisp
+         cpp
+         css
+         dockerfile
+         html
+         java
+         javascript
+         json
+         latex
+         make
+         markdown
+         proto
+         python
+         ruby
+         toml
+         typescript
+         yaml))
  :config
  (global-treesit-auto-mode)
  (treesit-auto-install-all)
@@ -58,8 +78,6 @@ This is the old way of using ~tree-sitter~ in emacs. In emacs 29, this moved to 
  ;; (setq js-ts-mode-hook js-mode-hook)
  (setq markdown-ts-mode-hook markdown-mode-hook)
  (setq bash-ts-mode-hook sh-mode-hook)
-
-
  ;; Then call the function like this:
  (copy-different-key-bindings python-mode-map python-ts-mode-map)
  ;; (copy-different-key-bindings yaml-mode-map yaml-ts-mode-map)
