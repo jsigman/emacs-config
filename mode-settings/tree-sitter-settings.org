@@ -68,9 +68,7 @@ This is the old way of using ~tree-sitter~ in emacs. In emacs 29, this moved to 
          toml
          typescript
          yaml))
- :config
- (global-treesit-auto-mode)
- (treesit-auto-install-all)
+ :config (global-treesit-auto-mode)
  ;; set up treesit mode hooks for relevant modes
  (setq python-ts-mode-hook python-mode-hook)
  (setq yaml-ts-mode-hook yaml-mode-hook)

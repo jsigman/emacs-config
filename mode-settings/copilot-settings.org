@@ -24,7 +24,7 @@ This one didn't work very well
        (f-read-text (expand-file-name "~/.openai/emacs-key.txt"))))
 #+end_src
 ** OpenAI
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package
  openai
  :straight
