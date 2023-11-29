@@ -486,3 +486,10 @@ Because I'm trying this out, I'm going to disable LSP's breadcrumb mode, which I
  :straight '(breadcrumb :type git :host github :repo "joaotavora/breadcrumb")
  :config (breadcrumb-mode t))
 #+end_src
+* Rsync-mode
+Loving use of my old colleague [[https://github.com/r-zip][Ryan Pilgrim]]'s package to sync accross our secure environments.
+#+begin_src emacs-lisp :load yes
+(use-package
+ rsync-mode
+ :straight '(rsync-mode :type git :host github :repo "r-zip/rsync-mode"))
+#+end_src
