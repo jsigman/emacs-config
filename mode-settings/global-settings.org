@@ -493,3 +493,23 @@ Loving use of my old colleague [[https://github.com/r-zip][Ryan Pilgrim]]'s pack
  rsync-mode
  :straight '(rsync-mode :type git :host github :repo "r-zip/rsync-mode"))
 #+end_src
+* Shortcuts
+** Jump to remote
+#+begin_src emacs-lisp :load yes
+(defun open-remote-dired ()
+  "Opens a Dired buffer at the path specified by REMOTE_HOST and REMOTE_PATH environment variables."
+  (interactive)
+  (condition-case nil
+      (let ((remote-host (getenv "REMOTE_HOST"))
+            (remote-path (getenv "REMOTE_PATH")))
+        (if (and remote-host remote-path)
+            (progn
+              (message "Attempting to open remote directory...")
+              (dired (concat "/ssh:" remote-host ":" remote-path))
+              (message "Remote directory opened."))
+          (message "Error: REMOTE_HOST or REMOTE_PATH environment variables not set.")))
+    (error (message "Error: Unable to open remote directory. Check your connection and environment variables."))))
+
+;; Bind the function to M-R globally
+(global-set-key (kbd "M-R") 'open-remote-dired)
+#+end_src
