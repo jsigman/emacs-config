@@ -9,7 +9,8 @@ This is the old way of using ~tree-sitter~ in emacs. In emacs 29, this moved to 
 (use-package tree-sitter-langs)
 #+END_SRC
 ** Combobulate
-#+begin_src emacs-lisp :load yes
+Combobulate seems like a cool idea, but I've found it to be more frustrating than helpful in python.
+#+begin_src emacs-lisp :load no
 (use-package
  combobulate
  :straight '(combobulate :type git :host github :repo "mickeynp/combobulate")

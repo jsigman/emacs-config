@@ -65,13 +65,12 @@ BUFFER may be either a buffer or its name (a string)."
 ;; Special overrides of vterm toggle functions to work better with projectile
 (defun vterm-toggle--new (&optional buffer-name)
   "New vterm buffer."
-  (let ((default-directory default-directory)
-        (buffer-name (or buffer-name vterm-buffer-name))
-        project-root)
-    (when vterm-toggle-project-root
-      (setq project-root (vterm-toggle--project-root))
-      (when project-root
-        (setq default-directory project-root)))
+  (let* ((buffer-name (or buffer-name vterm-buffer-name))
+         (project-root
+          (when vterm-toggle-project-root
+            (ignore-errors
+              (projectile-project-root))))
+         (default-directory (or project-root default-directory)))
     (if vterm-toggle-fullscreen-p
         (vterm buffer-name)
       (if (eq major-mode 'vterm-mode)

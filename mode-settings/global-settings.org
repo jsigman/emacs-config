@@ -507,8 +507,11 @@ Loving use of my old colleague [[https://github.com/r-zip][Ryan Pilgrim]]'s pack
               (message "Attempting to open remote directory...")
               (dired (concat "/ssh:" remote-host ":" remote-path))
               (message "Remote directory opened."))
-          (message "Error: REMOTE_HOST or REMOTE_PATH environment variables not set.")))
-    (error (message "Error: Unable to open remote directory. Check your connection and environment variables."))))
+          (message
+           "Error: REMOTE_HOST or REMOTE_PATH environment variables not set.")))
+    (error
+     (message
+      "Error: Unable to open remote directory. Check your connection and environment variables."))))
 
 ;; Bind the function to M-R globally
 (global-set-key (kbd "M-R") 'open-remote-dired)
