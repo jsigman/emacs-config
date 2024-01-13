@@ -90,17 +90,6 @@ I think this is a little too aggressive right now, but it's a cool idea.
 (use-package eldoc :hook (prog-mode . eldoc-mode))
 
 (use-package
- combobulate
- ;; Optional, but recommended.
- ;;
- ;; You can manually enable Combobulate with `M-x
- ;; combobulate-mode'.
- :hook ((python-mode . combobulate-mode) (yaml-mode . combobulate-mode))
- ;; Amend this to the directory where you keep Combobulate's source
- ;; code.
- :straight '(combobulate :type git :host github :repo "mickeynp/combobulate"))
-
-(use-package
  expand-region
  :config (global-set-key (kbd "M-J") 'er/expand-region))
 
@@ -480,7 +469,7 @@ I find this breaks browsing of long json files, more than it helps me out.
 #+end_src
 * Breadcrumb mode
 Because I'm trying this out, I'm going to disable LSP's breadcrumb mode, which I've been disappointed with.
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package
  breadcrumb
  :straight '(breadcrumb :type git :host github :repo "joaotavora/breadcrumb")
@@ -491,7 +480,30 @@ Loving use of my old colleague [[https://github.com/r-zip][Ryan Pilgrim]]'s pack
 #+begin_src emacs-lisp :load yes
 (use-package
  rsync-mode
- :straight '(rsync-mode :type git :host github :repo "r-zip/rsync-mode"))
+ :straight '(rsync-mode :type git :host github :repo "jsigman/rsync-mode"))
+#+end_src
+* Shortcuts
+** Jump to remote
+#+begin_src emacs-lisp :load yes
+(defun open-remote-dired ()
+  "Opens a Dired buffer at the path specified by REMOTE_HOST and REMOTE_PATH environment variables."
+  (interactive)
+  (condition-case nil
+      (let ((remote-host (getenv "REMOTE_HOST"))
+            (remote-path (getenv "REMOTE_PATH")))
+        (if (and remote-host remote-path)
+            (progn
+              (message "Attempting to open remote directory...")
+              (dired (concat "/ssh:" remote-host ":" remote-path))
+              (message "Remote directory opened."))
+          (message
+           "Error: REMOTE_HOST or REMOTE_PATH environment variables not set.")))
+    (error
+     (message
+      "Error: Unable to open remote directory. Check your connection and environment variables."))))
+
+;; Bind the function to M-R globally
+(global-set-key (kbd "M-R") 'open-remote-dired)
 #+end_src
 * Local Variables Settings
 #+begin_src  emacs-lisp :load yes

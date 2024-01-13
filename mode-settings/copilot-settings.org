@@ -44,3 +44,12 @@ This one didn't work very well
  :straight
  (dall-e :type git :host github :repo "emacs-openai/dall-e"))
 #+end_src
+** Ellama
+#+begin_src emacs-lisp :load no
+(use-package llm)
+(use-package
+ ellama
+ :init
+ (setopt
+  ellama-provider (make-llm-ollama :chat-model "codellama:34b")))
+#+end_src

@@ -22,8 +22,13 @@
  (telephone-line-mode t))
 #+end_src
 
-** Awesome Tray
+** Doom Modeline
 #+begin_src emacs-lisp :load yes
+(use-package doom-modeline :config (doom-modeline-mode 1))
+#+end_src
+
+** Awesome Tray
+#+begin_src emacs-lisp :load no
 (use-package
  awesome-tray
  :straight
@@ -38,7 +43,7 @@
 #+end_src
 
 ** Diminish/Blackout
-#+begin_src emacs-lisp :load yes 
+#+begin_src emacs-lisp :load no
 (use-package diminish)
 (diminish 'anzu-mode)
 (diminish 'ivy-mode)
