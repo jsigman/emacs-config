@@ -23,7 +23,12 @@
 #+end_src
 
 ** Doom Modeline
+Bugfix: Requires installing shrink path manually on linux. Not sure why.
 #+begin_src emacs-lisp :load yes
+(use-package
+ shrink-path
+ :straight
+ '(shrink-path :type git :host github :repo "zbelial/shrink-path.el"))
 (use-package doom-modeline :config (doom-modeline-mode 1))
 #+end_src
 
