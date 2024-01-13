@@ -493,3 +493,20 @@ Loving use of my old colleague [[https://github.com/r-zip][Ryan Pilgrim]]'s pack
  rsync-mode
  :straight '(rsync-mode :type git :host github :repo "r-zip/rsync-mode"))
 #+end_src
+* Local Variables Settings
+#+begin_src  emacs-lisp :load yes
+(defun my-dir-local-variable-error-handler (orig-fun &rest args)
+  "A custom error handler for directory-local variables."
+  (condition-case nil
+      (apply orig-fun args)
+    (error
+     (progn
+       (message "Error loading .dir-locals.el!")
+       ;; Optionally, use something like `(shell-command "your-sound-playing-command")`
+       ;; to play a sound or give another form of alert.
+       ))))
+
+(advice-add
+ 'hack-dir-local-variables
+ :around #'my-dir-local-variable-error-handler)
+#+end_src
