@@ -29,7 +29,7 @@ Bugfix: Requires installing shrink path manually on linux. Not sure why.
  shrink-path
  :straight
  '(shrink-path :type git :host github :repo "zbelial/shrink-path.el"))
-(use-package doom-modeline :config (doom-modeline-mode 1))
+(use-package doom-modeline :config (doom-modeline-mode 1) (setq doom-modeline-unicode-fallback t))
 #+end_src
 
 ** Awesome Tray

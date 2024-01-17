@@ -10,7 +10,9 @@
   copilot-completion-map (("M-<return>" . copilot-accept-completion)))
  :hook (prog-mode . copilot-mode)
  :hook (yaml-mode . copilot-mode)
- :config (setq copilot-max-char -1)
+ :config
+ (setq copilot-max-char -1)
+ (setq copilot-indent-offset-warning-disable t)
  :ensure t)
 #+end_src
 ** C3PO

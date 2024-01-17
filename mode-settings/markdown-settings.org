@@ -26,3 +26,11 @@
   (define-key
    html-ts-mode-map (kbd "M-i") 'previous-multiframe-window))
 #+END_SRC
+
+* Web mode
+#+begin_src emacs-lisp :load yes
+(use-package
+ web-mode
+ :config
+ (add-to-list 'auto-mode-alist '("\\.liquid\\'" . web-mode)))
+#+end_src
