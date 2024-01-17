@@ -110,3 +110,20 @@ Not using this in favor of Pyright
   (setq lsp-pyright-disable-organize-imports t)
   :config (setq lsp-pyright-log-level "trace"))
 #+end_src
+
+** Copying lines as a single line for pasting into the pdbpp debugger
+#+begin_src emacs-lisp :load yes
+(defun python-multiline-to-singleline ()
+  "Convert multi-line Python code in the current region to a single line with single spaces."
+  (interactive)
+  (when (use-region-p)
+    (let* ((start (region-beginning))
+           (end (region-end))
+           (multi-line-code (buffer-substring start end))
+           (single-line-code (replace-regexp-in-string "[ \t\n]+" " " multi-line-code)))
+      (kill-new single-line-code)
+      (message "Single-line code copied to kill ring."))))
+
+(with-eval-after-load 'python
+  (define-key python-mode-map (kbd "C-c C-l") 'python-multiline-to-singleline))
+#+end_src
