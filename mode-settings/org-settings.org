@@ -220,6 +220,7 @@ This is really only used in the publishing script of my emacs config, I don't ne
 
 * Org Ref
 #+begin_src emacs-lisp :load yes
+(use-package request)
 (use-package
  org-ref
  :config
