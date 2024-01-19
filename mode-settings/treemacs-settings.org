@@ -4,8 +4,7 @@
  treemacs
  :bind (("M-P" . treemacs))
  :config (setq treemacs-persist-file "treemacs-persist"))
-(use-package treemacs-projectile)
-
+(use-package treemacs-projectile :after treemacs)
 (use-package
  treemacs-icons-dired
  :after

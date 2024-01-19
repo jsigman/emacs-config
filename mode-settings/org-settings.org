@@ -61,9 +61,9 @@
 ** Org Babel
 #+begin_src emacs-lisp :load yes
 (setq ob-ipython-command "jupyter")
-
 (use-package
  plantuml-mode
+ :after org
  :config
  (setq plantuml-default-exec-mode 'executable)
  (setq org-plantuml-exec-mode 'plantuml)
@@ -81,9 +81,10 @@
 ** Colors in Org
 #+begin_src emacs-lisp :load yes
 (literate-elisp-load "colors-settings.org")
-(use-package org-bullets :after org
- :hook (org-mode-hook . org-bullets-mode)
-)
+(use-package
+ org-bullets
+ :after org
+ :hook (org-mode-hook . org-bullets-mode))
 
 ;;nil means to wrap lines in org mode
 (setq org-startup-truncated nil)
@@ -95,6 +96,7 @@ I thought I liked this at first, but now I'm going to disable it because of some
 (use-package org-modern :after org :config (global-org-modern-mode))
 (use-package
  org-modern-indent
+ :after org
  :straight
  '(org-modern-indent
    :type git
@@ -207,7 +209,6 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
 
 ** Org Markdown
 This is really only used in the publishing script of my emacs config, I don't need to load this on every startup.
-
 *** ox-md
 #+begin_src emacs-lisp :load no
 (use-package ox-jekyll-md :init (setq org-jekyll-md-include-yaml-front-matter nil))
@@ -215,14 +216,23 @@ This is really only used in the publishing script of my emacs config, I don't ne
 *** org-jekyll-lite
 This is really only used in the publishing script of my emacs config, I don't need to load this on every startup.
 #+begin_src emacs-lisp :load yes
-(use-package ox-jekyll-lite :ensure t :straight '(ox-jekyll-lite :type git :host github :repo "peterewills/ox-jekyll-lite"))
+(use-package
+ ox-jekyll-lite
+ :after org
+ :defer t
+ :straight
+ '(ox-jekyll-lite
+   :type git
+   :host github
+   :repo "jsigman/ox-jekyll-lite"))
 #+end_src
 
 * Org Ref
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package request)
 (use-package
  org-ref
+ :after org
  :config
  (setq org-latex-pdf-process
        (list "latexmk -shell-escape -bibtex -f -pdf %f")))
