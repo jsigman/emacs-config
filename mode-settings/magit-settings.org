@@ -33,7 +33,8 @@
 #+end_src
 
 ** Forge
-#+begin_src emacs-lisp :load yes
+Haven't yet found a great use for this.
+#+begin_src emacs-lisp :load no
 (use-package
  forge
  :after magit
@@ -68,7 +69,7 @@ This is currently broken for me.
 (use-package rg)
 (use-package ag)
 
-(use-package ghub)
+(use-package ghub :defer t)
 
 ; add this so that git gutter plus does not screw up tramp sessions
 ; it disables GGP during tramp
@@ -93,6 +94,7 @@ This is currently broken for me.
 #+begin_src emacs-lisp :load yes
 (use-package
  ediff
+ :defer t
  :init (setq ediff-split-window-function 'split-window-horizontally)
  (setq ediff-window-setup-function
        'ediff-setup-windows-plain)

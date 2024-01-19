@@ -319,13 +319,13 @@ I find this breaks browsing of long json files, more than it helps me out.
 ** Emacs startup profiler
 #+begin_src emacs-lisp :load yes
 (use-package esup)
-
 #+end_src
 
 ** Scratch
 #+begin_src emacs-lisp :load yes
 (use-package
  scratch
+ :defer t
  :straight
  '(scratch
    :host nil
@@ -355,8 +355,7 @@ I find this breaks browsing of long json files, more than it helps me out.
  '(explain-pause-mode
    :type git
    :host github
-   :repo "lastquestion/explain-pause-mode")
- )
+   :repo "lastquestion/explain-pause-mode"))
 
 ;; use helpful instead of the normal help buffers
 ;; Note that the built-in `describe-function' includes both functions
@@ -364,6 +363,7 @@ I find this breaks browsing of long json files, more than it helps me out.
 ;; `helpful-callable' as a drop-in replacement.
 (use-package
  helpful
+ :defer t
  ;; TODO: Add these back in when helpful plays nicely with literate-elisp
  ;; :bind
  ;; ("C-h f" . helpful-callable)
