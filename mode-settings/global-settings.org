@@ -506,19 +506,20 @@ Loving use of my old colleague [[https://github.com/r-zip][Ryan Pilgrim]]'s pack
 (global-set-key (kbd "M-R") 'open-remote-dired)
 #+end_src
 * Local Variables Settings
+This really improves use with local variables. You get a highly visible warning when a dir-local file is unreadable or misconfigured.
 #+begin_src  emacs-lisp :load yes
-(defun my-dir-local-variable-error-handler (orig-fun &rest args)
-  "A custom error handler for directory-local variables."
-  (condition-case nil
+(defun my/dir-local-error-warning (orig-fun &rest args)
+  "Advice to display a warning on directory local variable read errors."
+  (condition-case err
       (apply orig-fun args)
     (error
-     (progn
-       (message "Error loading .dir-locals.el!")
-       ;; Optionally, use something like `(shell-command "your-sound-playing-command")`
-       ;; to play a sound or give another form of alert.
-       ))))
+     (display-warning
+      'dir-locals
+      (format "Error reading .dir-locals.el: %s"
+              (error-message-string err))
+      :error))))
 
 (advice-add
  'hack-dir-local-variables
- :around #'my-dir-local-variable-error-handler)
+ :around #'my/dir-local-error-warning)
 #+end_src
