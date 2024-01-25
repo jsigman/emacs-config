@@ -219,7 +219,6 @@ This is really only used in the publishing script of my emacs config, I don't ne
 (use-package
  ox-jekyll-lite
  :after org
- :defer t
  :straight
  '(ox-jekyll-lite
    :type git

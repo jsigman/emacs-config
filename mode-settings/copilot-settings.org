@@ -10,6 +10,7 @@
   copilot-completion-map (("M-<return>" . copilot-accept-completion)))
  :hook (prog-mode . copilot-mode)
  :hook (yaml-mode . copilot-mode)
+ :hook (org-mode . copilot-mode)
  :config
  (setq copilot-max-char -1)
  (setq copilot-indent-offset-warning-disable t)

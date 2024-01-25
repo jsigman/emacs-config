@@ -403,7 +403,6 @@ I find this breaks browsing of long json files, more than it helps me out.
 #+begin_src emacs-lisp :load yes
 (use-package
  apheleia
-
  :config
  (setf (alist-get 'isort apheleia-formatters)
        '("isort" "--stdout" "-"))
@@ -421,6 +420,8 @@ I find this breaks browsing of long json files, more than it helps me out.
      (funcall callback scratch)))
 
  (push '(jsonian-mode . prettier-json) apheleia-mode-alist)
+ (setq apheleia-mode-alist
+       (assq-delete-all 'emacs-lisp-mode apheleia-mode-alist))
  (apheleia-global-mode t))
 
 (literate-elisp-load "elisp-settings.org")
