@@ -84,7 +84,7 @@ I have my own little hook to open the flycheck buffer with ~M-C~, and close it a
 #+end_src
 ** Ruff in flycheck
 Credit to [[https://gist.github.com/abo-abo/277d1fe1e86f0e46d3161345f26e8f3a][abo-abo]]
-#+begin_src emacs-lisp :load no
+#+begin_src emacs-lisp :load yes
 ;; From https://github.com/flycheck/flycheck/issues/1974#issuecomment-1343495202
 (flycheck-define-checker
  python-ruff
@@ -93,7 +93,7 @@ Credit to [[https://gist.github.com/abo-abo/277d1fe1e86f0e46d3161345f26e8f3a][ab
   `flycheck-python-ruff-executable'.
   See URL `http://pypi.python.org/pypi/ruff'."
  :command
- ("ruff" "--format=text"
+ ("ruff" "check"
   (eval
    (when buffer-file-name
      (concat "--stdin-filename=" buffer-file-name)))
