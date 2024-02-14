@@ -24,6 +24,7 @@
  (add-to-list 'projectile-globally-ignored-directories "/venv")
  (add-to-list 'projectile-globally-ignored-directories "/data")
  (add-to-list 'projectile-globally-ignored-directories "/typings")
+ (add-to-list 'projectile-globally-ignored-directories "/node_modules")
  (add-to-list 'projectile-globally-ignored-directories "/.mypy_cache")
  (add-to-list
   'projectile-globally-ignored-directories "/.pytest_cache")

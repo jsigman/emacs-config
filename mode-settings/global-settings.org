@@ -438,7 +438,12 @@ I find this breaks browsing of long json files, more than it helps me out.
    :repo "https://codeberg.org/ideasman42/emacs-elisp-autofmt.git")
  :config (setq elisp-autofmt-on-save-p nil))
 #+end_src
-
+** Whitespace butler
+#+begin_src emacs-lisp :load yes
+(use-package ws-butler
+:hook (prog-mode . ws-butler-mode)
+:hook (org-mode . ws-butler-mode))
+#+end_src
 * Global Keybindings
 #+begin_src emacs-lisp :load yes
 (global-set-key (kbd "M-k") 'kill-this-buffer)

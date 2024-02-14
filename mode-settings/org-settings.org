@@ -225,7 +225,15 @@ This is really only used in the publishing script of my emacs config, I don't ne
    :host github
    :repo "jsigman/ox-jekyll-lite"))
 #+end_src
-
+** Org Appear
+#+begin_src emacs-lisp :load yes
+(use-package
+ org-appear
+ :straight
+ '(org-appear :type git :host github :repo "awth13/org-appear")
+ :after org
+ :hook (org-mode-hook . org-appear-mode))
+#+end_src
 * Org Ref
 #+begin_src emacs-lisp :load no
 (use-package request)

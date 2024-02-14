@@ -50,6 +50,7 @@ This is currently broken for me.
 #+end_src
 
 ** Magit coloring
+*** ~git-gutter~
 #+begin_src emacs-lisp :load yes
 (use-package
  git-gutter+
@@ -88,9 +89,15 @@ This is currently broken for me.
           (git-gutter+-process-diff
            (git-gutter+-local-file-path file)))))))
 #+end_src
-
+*** ~diff-hl~
+#+begin_src emacs-lisp :load no
+(use-package
+ diff-hl
+ :config (global-diff-hl-mode)
+ (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
+ (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
+#+end_src
 ** Ediff
-
 #+begin_src emacs-lisp :load yes
 (use-package
  ediff
