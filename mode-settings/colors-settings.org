@@ -27,10 +27,25 @@ Trying this theme out for a little bit.
 #+end_src
 *** ef-day
 I'm always changing my theme, but I tend to like light themes with yellow-ish backgrounds. Almost like handwriting with a yellow memo pad.
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package ef-themes :config (load-theme 'ef-day t))
 #+end_src
-
+*** Gruvbox-dark
+#+begin_src emacs-lisp :load yes
+(use-package
+ gruvbox-theme
+ :ensure t
+ :config (load-theme 'gruvbox-dark-hard :no-confirm)
+ ;; :after (centered-window-mode) :hook (centered-window-mode . cwm-update-fringe-background)
+)
+#+end_src
+** Catch if running centered-window-mode
+This may be needed to set the fringe to the new background color
+#+begin_src emacs-lisp :load yes
+; if cwm-update-fringe-background is defined, run this function
+(if (boundp 'cwm-update-fringe-background)
+    (cwm-update-fringe-background))
+#+end_src
 ** Nano
 #+begin_src emacs-lisp :load no
 (use-package

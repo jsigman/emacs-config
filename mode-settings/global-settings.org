@@ -20,8 +20,14 @@ I think this is a little too aggressive right now, but it's a cool idea.
  centered-window
  :init (setq cwm-centered-window-width 180)
  :ensure t
- :config (centered-window-mode t))
+ :config (centered-window-mode t)
+ ; reload the fringe color after loading the theme
+ (cwm-update-fringe-background))
 #+end_src
+
+#+RESULTS:
+: #s(hash-table size 65 test eql rehash-size 1.5 rehash-threshold 0.8125 data (:use-package (26060 51299 622076 0) :init (26060 51299 622073 0) :config (26060 51299 622066 0) :config-secs (0 0 184 0) :init-secs (0 0 14077 0) :use-package-secs (0 0 954450 0)))
+
 * Miscellaneous
 #+begin_src emacs-lisp :load yes
 (setq require-final-newline t)
