@@ -4,7 +4,6 @@
 (require 'packages-settings)
 (literate-elisp-load "macos-settings.org")
 (literate-elisp-load "path-settings.org")
-(literate-elisp-load "colors-settings.org")
 (literate-elisp-load "term-settings.org")
 (literate-elisp-load "global-settings.org")
 (literate-elisp-load "config-modes-settings.org")
@@ -39,6 +38,7 @@
 (literate-elisp-load "lua-settings.org")
 (literate-elisp-load "tree-sitter-settings.org")
 (literate-elisp-load "modeline-settings.org")
+(literate-elisp-load "colors-settings.org")
 
 (setq custom-file (concat user-emacs-directory "custom.el"))
 (if (not (file-exists-p custom-file))

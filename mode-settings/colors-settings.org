@@ -39,13 +39,6 @@ I'm always changing my theme, but I tend to like light themes with yellow-ish ba
  ;; :after (centered-window-mode) :hook (centered-window-mode . cwm-update-fringe-background)
 )
 #+end_src
-** Catch if running centered-window-mode
-This may be needed to set the fringe to the new background color
-#+begin_src emacs-lisp :load yes
-; if cwm-update-fringe-background is defined, run this function
-(if (boundp 'cwm-update-fringe-background)
-    (cwm-update-fringe-background))
-#+end_src
 ** Nano
 #+begin_src emacs-lisp :load no
 (use-package
@@ -59,4 +52,12 @@ This may be needed to set the fringe to the new background color
 #+begin_src emacs-lisp :load yes
 (use-package rainbow-mode :hook (LaTeX-mode . rainbow-mode))
 (use-package dired-hacks :hook (emacs-lisp-mode . rainbow-mode))
+#+end_src
+** Catch if running centered-window-mode
+This may be needed to set the fringe to the new background color. Run it when startup is finished.
+#+begin_src emacs-lisp :load yes
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (when (fboundp 'cwm-update-fringe-background)
+              (cwm-update-fringe-background))))
 #+end_src

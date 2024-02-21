@@ -51,7 +51,6 @@ I love and rely heavily on ~straight.el~.
 
 #+include: "mode-settings/macos-settings.org" :minlevel 1
 #+include: "mode-settings/path-settings.org" :minlevel 1
-#+include: "mode-settings/colors-settings.org" :minlevel 1
 #+include: "mode-settings/global-settings.org" :minlevel 1
 #+include: "mode-settings/config-modes-settings.org" :minlevel 1
 #+include: "mode-settings/parens-settings.org" :minlevel 1
@@ -86,3 +85,4 @@ I love and rely heavily on ~straight.el~.
 #+include: "mode-settings/lua-settings.org" :minlevel 1
 #+include: "mode-settings/tree-sitter-settings.org" :minlevel 1
 #+include: "mode-settings/modeline-settings.org" :minlevel 1
+#+include: "mode-settings/colors-settings.org" :minlevel 1
