@@ -2,13 +2,19 @@
 #+begin_src emacs-lisp :load yes
 (defun org-src-format-and-save ()
   (interactive)
-  (when (eq major-mode 'python-base-mode)
-    (apheleia-format-buffer 'black))
+  (when (provided-mode-derived-p major-mode 'python-base-mode)
+    (if (and (boundp 'apheleia-formatter)
+             (seq-contains-p apheleia-formatter 'ruff))
+        (apheleia-format-buffer 'ruff)
+      (apheleia-format-buffer 'black)))
   (when (eq major-mode 'emacs-lisp-mode)
     (elisp-autofmt-buffer))
   (sit-for 0.100)
   (org-edit-src-save))
+#+end_src
 
+
+#+begin_src emacs-lisp :load yes
 (use-package
  org
  :defer t
@@ -56,7 +62,17 @@
  ;; fontify code in code blocks
  (setq org-src-fontify-natively t)
  (setq org-confirm-babel-evaluate nil) ;don't prompt me to confirm everytime I want to evaluate a block
- (setq org-src-preserve-indentation t))
+ (setq org-src-preserve-indentation t)
+
+ (defun my-update-direnv-in-org-src ()
+   "Update direnv environment variables for org-src buffers."
+   (when (and (bound-and-true-p direnv-mode)
+              (eq major-mode 'org-mode))
+     (let ((org-file-path (buffer-file-name (buffer-base-buffer))))
+       (when org-file-path
+         (direnv-update-environment org-file-path)))))
+
+ (add-hook 'org-src-mode-hook 'my-update-direnv-in-org-src))
 #+end_src
 ** Org Babel
 #+begin_src emacs-lisp :load yes
@@ -203,7 +219,25 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
        (require 'zmq)))) ;; set the variable back to its original value
    (setq noninteractive original-noninteractive-value)))
 
-(use-package jupyter :defer t :custom (jupyter-repl-echo-eval-p t))
+(use-package
+ jupyter
+ :defer t
+ :custom (jupyter-repl-echo-eval-p t)
+ :config
+ (defun my-switch-to-python-ts-mode-if-jupyter ()
+   "Switches to python-ts-mode if the org source block is of type jupyter-python."
+   (when (and (eq major-mode 'python-mode)
+              (string=
+               (org-element-property
+                :language (org-element-at-point))
+               "jupyter-python"))
+     (python-ts-mode)))
+
+ (add-hook
+  'org-src-mode-hook 'my-switch-to-python-ts-mode-if-jupyter)
+
+ ;; (add-to-list 'org-src-lang-modes '("python" . python-ts))
+)
 #+end_src
 
 ** Org Markdown
