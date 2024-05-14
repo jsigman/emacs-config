@@ -114,7 +114,10 @@ I think this is a little too aggressive right now, but it's a cool idea.
  :config (direnv-mode 't)
 )
 #+end_src
-
+** Fish
+#+begin_src emacs-lisp :load yes
+(use-package fish-mode)
+#+end_src
 
 ** Window movement keybindings
 #+begin_src emacs-lisp :load yes

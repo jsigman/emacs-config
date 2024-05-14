@@ -58,7 +58,7 @@ BUFFER may be either a buffer or its name (a string)."
   (lambda ()
     (interactive)
     (kill-buffer-and-its-windows (current-buffer))))
- ;; Add goto-address-mode to vterm-mode-hook
+ ;; Add goto-address-mode to vterm-mode-hook for clickable links
  (add-hook 'vterm-mode-hook 'goto-address-mode))
 #+end_src
 
