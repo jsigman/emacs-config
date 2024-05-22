@@ -538,3 +538,83 @@ This really improves use with local variables. You get a highly visible warning 
  'hack-dir-local-variables
  :around #'my/dir-local-error-warning)
 #+end_src
+* Unison mode
+
+#+begin_src emacs-lisp :load yes
+(defvar-local unison-root1 nil
+  "The first root directory for Unison sync.")
+
+(defvar-local unison-root2 nil
+  "The second root directory for Unison sync.")
+
+(defvar-local unison-excluded nil
+  "List of patterns to exclude in Unison sync.")
+
+(defvar-local unison-force-root nil
+  "Specify which root to force for one-way sync. Should be either 1 or 2.")
+
+(defun build-unison-command ()
+  "Build the Unison command based on custom variables."
+  (when (and unison-root1 unison-root2)
+    (let ((command
+           (concat "unison -batch " unison-root1 " " unison-root2)))
+      (when unison-force-root
+        (setq command
+              (concat
+               command " -force "
+               (if (equal unison-force-root 1)
+                   unison-root1
+                 unison-root2))))
+      (dolist (pattern unison-excluded)
+        (setq command (concat command " -ignore 'Name " pattern "'")))
+      command)))
+
+(defun unison-sync-start-sync ()
+  "Start Unison sync process."
+  (interactive)
+  (let ((unison-command (build-unison-command)))
+    (when unison-command
+      (let ((output-buffer (get-buffer-create "*Unison Sync*")))
+        (with-current-buffer output-buffer
+          (read-only-mode -1)
+          (erase-buffer)
+          (insert (format "Running command: %s\n\n" unison-command)))
+        (let ((process
+               (start-process-shell-command
+                "unison-sync" output-buffer unison-command)))
+          (set-process-sentinel
+           process
+           (lambda (process event)
+             (with-current-buffer (process-buffer process)
+               (goto-char (point-max))
+               (insert (format "\nProcess %s %s" process event)))
+             (if (string-match-p "finished" event)
+                 (if (zerop (process-exit-status process))
+                     (message
+                      (propertize "Unison sync completed successfully"
+                                  'face '(:foreground "green")))
+                   (message
+                    (propertize
+                     (format "Unison sync failed with error: %s"
+                             event)
+                     'face '(:foreground "red"))))
+               (message
+                (propertize
+                 (format "Unison sync failed with error: %s" event)
+                 'face '(:foreground "red")))))))))))
+
+(define-minor-mode unison-sync-mode
+  "Minor mode to sync project with Unison."
+  :lighter
+  " Unison-Sync"
+  (if unison-sync-mode
+      (add-hook 'after-save-hook #'unison-sync-start-sync nil t)
+    (remove-hook 'after-save-hook #'unison-sync-start-sync t)))
+
+(defun maybe-enable-unison-sync-mode ()
+  "Enable `unison-sync-mode` if `unison-root1` and `unison-root2` are set."
+  (when (and unison-root1 unison-root2)
+    (unison-sync-mode 1)))
+
+(add-hook 'hack-local-variables-hook 'maybe-enable-unison-sync-mode)
+#+end_src
