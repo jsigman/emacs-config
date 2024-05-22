@@ -541,62 +541,81 @@ This really improves use with local variables. You get a highly visible warning 
 * Unison mode
 
 #+begin_src emacs-lisp :load yes
-(defvar-local unison-sync-queue nil
-  "Queue of Unison commands to be processed.")
+(defvar unison-sync-queue nil
+  "Queue of Unison sync commands to run.")
 
-(defvar unison-sync-process nil
-  "Current Unison process, if any.")
+(defvar unison-sync-running nil
+  "Flag to check if a Unison sync is currently running.")
 
-(defun unison-sync-enqueue ()
-  "Enqueue a Unison sync command, if not already enqueued."
-  (unless (member (build-unison-command) unison-sync-queue)
-    (push (build-unison-command) unison-sync-queue)
-    (unless unison-sync-process
-      (unison-sync-dequeue))))
+(defvar-local unison-root1 nil
+  "The first root directory for Unison sync.")
 
-(defun unison-sync-dequeue ()
-  "Dequeue the next Unison sync command and execute it."
-  (when unison-sync-queue
-    (let ((cmd (pop unison-sync-queue)))
-      (unison-sync-start-sync cmd))))
+(defvar-local unison-root2 nil
+  "The second root directory for Unison sync.")
 
-(defun unison-sync-start-sync (unison-command)
-  "Start Unison sync process using the given command."
+(defvar-local unison-excluded nil
+  "List of patterns to exclude in Unison sync.")
+
+(defun unison-build-command ()
+  "Build the Unison command based on directory local variables."
+  (when (and unison-root1 unison-root2)
+    (let ((command
+           (concat
+            "unison -batch " unison-root1 " " unison-root2 " -auto")))
+      (dolist (pattern unison-excluded)
+        (setq command (concat command " -ignore 'Name " pattern "'")))
+      command)))
+
+(defun unison-process-next-command ()
+  "Process the next command in the queue if not currently running."
+  (when (and (not unison-sync-running) unison-sync-queue)
+    (let ((command (pop unison-sync-queue)))
+      (unison-run-command command))))
+
+(defun unison-run-command (command)
+  "Run a Unison command."
   (let ((output-buffer (get-buffer-create "*Unison Sync*")))
     (with-current-buffer output-buffer
       (read-only-mode -1)
       (erase-buffer)
-      (insert (format "Running command: %s\n\n" unison-command)))
-    (setq unison-sync-process
-          (start-process-shell-command
-           "unison-sync" output-buffer unison-command))
-    (set-process-sentinel unison-sync-process 'unison-sync-sentinel)))
+      (insert (format "Running command: %s\n\n" command)))
+    (setq unison-sync-running t)
+    (let ((process
+           (start-process-shell-command
+            "unison-sync" output-buffer command)))
+      (set-process-sentinel process 'unison-sync-sentinel))))
 
 (defun unison-sync-sentinel (process event)
-  "Handle completion of a Unison sync process."
-  (let ((exit-status (process-exit-status process)))
-    (with-current-buffer (process-buffer process)
-      (goto-char (point-max))
-      (insert (format "\nProcess %s %s" process event))
-      (insert (format "\nExit status: %s" exit-status)))
-    (if (zerop exit-status)
+  "Handle completion of a Unison process."
+  (setq unison-sync-running nil)
+  (unison-process-next-command) ; Process next command in the queue
+  (with-current-buffer (process-buffer process)
+    (goto-char (point-max))
+    (insert (format "\nProcess %s %s" process event))
+    (if (zerop (process-exit-status process))
         (message
          (propertize "Unison sync completed successfully"
                      'face
                      '(:foreground "green")))
       (message
-       (propertize (format "Unison sync failed with error: %s" event)
-                   'face '(:foreground "red"))))
-    (setq unison-sync-process nil)
-    (unison-sync-dequeue)))
+       (propertize (format "Unison sync failed: %s" event)
+                   'face
+                   '(:foreground "red"))))))
+
+(defun unison-sync-on-save ()
+  "Queue Unison sync command on file save."
+  (let ((command (unison-build-command)))
+    (when command
+      (push command unison-sync-queue)
+      (unison-process-next-command))))
 
 (define-minor-mode unison-sync-mode
-  "Minor mode to sync project with Unison."
+  "Minor mode to sync the current project using Unison on file save."
   :lighter
   " Unison-Sync"
   (if unison-sync-mode
-      (add-hook 'after-save-hook 'unison-sync-enqueue nil t)
-    (remove-hook 'after-save-hook 'unison-sync-enqueue t)))
+      (add-hook 'after-save-hook 'unison-sync-on-save nil t)
+    (remove-hook 'after-save-hook 'unison-sync-on-save t)))
 
 (defun maybe-enable-unison-sync-mode ()
   "Enable `unison-sync-mode` if `unison-root1` and `unison-root2` are set."
