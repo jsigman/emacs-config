@@ -95,10 +95,6 @@ I think this is a little too aggressive right now, but it's a cool idea.
 
 (use-package eldoc :hook (prog-mode . eldoc-mode))
 
-(use-package
- expand-region
- :config (global-set-key (kbd "M-J") 'er/expand-region))
-
 (use-package which-key :config (which-key-mode 1))
 
 (use-package
@@ -107,6 +103,23 @@ I think this is a little too aggressive right now, but it's a cool idea.
  (global-set-key (kbd "C-x C-b") 'ibuffer)
  (define-key ibuffer-mode-map (kbd "M-o") nil))
 #+END_SRC
+
+** Expand Region
+
+*** Vanilla
+#+begin_src emacs-lisp :load no
+(use-package
+ expand-region
+ :config (global-set-key (kbd "M-J") 'er/expand-region))
+#+end_src
+
+*** With Tree Sitter Support
+#+begin_src emacs-lisp :load yes
+(use-package
+ expreg
+ :config (global-set-key (kbd "M-J") 'expreg-expand))
+#+end_src
+
 ** Direnv
 #+begin_src emacs-lisp :load yes
 (use-package
