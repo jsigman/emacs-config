@@ -96,3 +96,13 @@ environment."
    'tramp-sh-handle-start-file-process
    :filter-args #'tramp-sh-handle-start-file-process@my-direnv))
 #+end_src
+** Sudo editing shortcut
+#+begin_src emacs-lisp :load yes
+(defun edit-current-file-as-root ()
+  "Reopen the current file as root."
+  (interactive)
+  (let ((file (buffer-file-name)))
+    (if (not (file-writable-p file))
+        (find-file (concat "/sudo::" file))
+      (message "File is already writable"))))
+#+end_src
