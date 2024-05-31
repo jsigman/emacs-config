@@ -4,21 +4,10 @@
 #+begin_src emacs-lisp :load yes
 (use-package
  magit
- :after (projectile)
  :demand t
  :init
  (setq magit-delete-by-moving-to-trash nil)
  (setq vc-handled-backends nil)
-
- (eval-after-load 'magit-branch
-   '(progn
-      (advice-add
-       'magit-checkout
-       :after (lambda (&rest args) (projectile-invalidate-cache nil)))
-      (advice-add
-       'magit-branch-and-checkout
-       :after
-       (lambda (&rest args) (projectile-invalidate-cache nil)))))
  :bind
  (:map
   magit-mode-map

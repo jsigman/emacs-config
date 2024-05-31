@@ -39,3 +39,32 @@
   'magit-section-post-command-hook 'projectile-invalidate-cache)
 )
 #+end_src
+* Project.el
+I'm trying migrating from ~projectile~ onto ~project.el~ for its purported benefits.
+#+begin_src emacs-lisp :load yes
+;; Configure project.el settings
+(use-package
+ project
+ ;; :init
+ ;; ;; Set the file where bookmarks are saved
+ ;; (setq bookmark-default-file "~/.emacs.d/bookmarks")
+ ;; ;; Load bookmarks at startup
+ ;; (setq bookmark-save-flag 1) ; Automatically save bookmarks to the file on change
+ ;; :bind
+ ;; (("C-c p p" . project-switch-project)
+ ;;  ("C-c p f" . project-find-file)
+ ;;  ;; Add a custom binding for bookmarking the current project
+ ;;  ("C-c p b" . my-project-bookmark-current))
+ ;; :config
+ ;; (defun my-project-bookmark-current ()
+ ;;   "Bookmark the current project."
+ ;;   (interactive)
+ ;;   (let ((project-root (project-current)))
+ ;;     (if project-root
+ ;;         (bookmark-set
+ ;;          (format "project-%s"
+ ;;                  (file-name-nondirectory
+ ;;                   (directory-file-name project-root))))
+ ;;       (message "No project is active right now."))))
+ )
+#+end_src

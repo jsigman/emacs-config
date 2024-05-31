@@ -6,7 +6,7 @@
  :init
  (setq vterm-always-compile-module t)
  (setq vterm-timer-delay 0.01)
- :config (define-key vterm-mode-map (kbd "M-k") 'kill-this-buffer)
+ :config (define-key vterm-mode-map (kbd "M-k") (lambda () (interactive) (kill-this-buffer nil)))
  ;; (define-key vterm-mode-map (kbd "M-i") 'previous-multiframe-window)
  ;; (define-key vterm-mode-map (kbd "M-o") 'next-multiframe-window)
  (define-key vterm-mode-map (kbd "M-0") 'delete-window)
@@ -65,13 +65,18 @@ BUFFER may be either a buffer or its name (a string)."
 ** Vterm Toggle
 #+begin_src emacs-lisp :load yes
 ;; Special overrides of vterm toggle functions to work better with projectile
+(defun my/projectile-or-project-root ()
+  (if (fboundp 'project-root)
+      (project-root)
+    (ignore-errors
+      (projectile-project-root))))
 (defun vterm-toggle--new (&optional buffer-name)
   "New vterm buffer."
   (let* ((buffer-name (or buffer-name vterm-buffer-name))
          (project-root
           (when vterm-toggle-project-root
             (ignore-errors
-              (projectile-project-root))))
+              (my/projectile-or-project-root))))
          (default-directory (or project-root default-directory)))
     (if vterm-toggle-fullscreen-p
         (vterm buffer-name)

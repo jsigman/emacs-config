@@ -3,8 +3,7 @@
 #+begin_src emacs-lisp :load yes
 (use-package
  copilot
- :straight
- (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+ :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
  :bind
  (:map
   copilot-completion-map (("M-<return>" . copilot-accept-completion)))
@@ -16,6 +15,13 @@
  :config
  (setq copilot-max-char -1)
  (setq copilot-indent-offset-warning-disable t)
+ ;; Check if Copilot server is installed and install if necessary
+ (let ((copilot-server-path
+        (expand-file-name
+         "~/.emacs.d/.cache/copilot/bin/copilot-node-server")))
+   (unless (file-exists-p copilot-server-path)
+     (copilot-install-server)))
+
  :ensure t)
 #+end_src
 ** Codeium

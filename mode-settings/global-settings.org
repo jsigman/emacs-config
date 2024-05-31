@@ -214,7 +214,7 @@ I find this breaks browsing of long json files, more than it helps me out.
    :host github
    :repo "emacs-dashboard/emacs-dashboard"
    :files ("banners" :defaults))
- :config
+ :config (setq dashboard-projects-backend 'project-el)
  ;; Set the title
  (setq dashboard-banner-logo-title "Welcome to Emacs!")
  ;; Set the banner
@@ -468,7 +468,7 @@ I find this breaks browsing of long json files, more than it helps me out.
 #+end_src
 * Global Keybindings
 #+begin_src emacs-lisp :load yes
-(global-set-key (kbd "M-k") 'kill-this-buffer)
+(global-set-key (kbd "M-k") (lambda () (interactive) (kill-this-buffer nil)))
 (global-set-key (kbd "C-c C-b") 'compile)
 (global-set-key (kbd "M-0") 'delete-window)
 (global-set-key (kbd "M-1") 'delete-other-windows)
