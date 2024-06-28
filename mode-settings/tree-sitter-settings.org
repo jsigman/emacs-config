@@ -39,6 +39,11 @@ Combobulate seems like a cool idea, but I've found it to be more frustrating tha
        (define-key dest-map (vector binding) value)))
    source-map))
 
+(defun merge-mode-hooks (source-hook dest-hook)
+  "Merge hooks from SOURCE-HOOK to DEST-HOOK without duplicates."
+  (dolist (hook (symbol-value source-hook))
+    (unless (memq hook (symbol-value dest-hook))
+      (add-hook dest-hook hook))))
 
 (use-package
  treesit-auto
@@ -70,14 +75,16 @@ Combobulate seems like a cool idea, but I've found it to be more frustrating tha
          typescript
          yaml))
  :config (global-treesit-auto-mode)
- ;; set up treesit mode hooks for relevant modes
- (setq python-ts-mode-hook python-mode-hook)
- (setq yaml-ts-mode-hook yaml-mode-hook)
- (setq json-ts-mode-hook json-mode-hook)
- ;; (setq js-ts-mode-hook js-mode-hook)
- (setq markdown-ts-mode-hook markdown-mode-hook)
- (setq bash-ts-mode-hook sh-mode-hook)
- ;; Then call the function like this:
+
+ ;; Merge hooks for relevant modes
+ (merge-mode-hooks 'python-mode-hook 'python-ts-mode-hook)
+ (merge-mode-hooks 'yaml-mode-hook 'yaml-ts-mode-hook)
+ ;; (merge-mode-hooks 'json-mode-hook 'json-ts-mode-hook)
+ ;; (merge-mode-hooks 'js-mode-hook 'js-ts-mode-hook)
+ ;; (merge-mode-hooks 'markdown-mode-hook 'markdown-ts-mode-hook)
+ (merge-mode-hooks 'sh-mode-hook 'bash-ts-mode-hook)
+
+ ;; Copy different key bindings
  (copy-different-key-bindings python-mode-map python-ts-mode-map)
  ;; (copy-different-key-bindings yaml-mode-map yaml-ts-mode-map)
  ;; (copy-different-key-bindings json-mode-map json-ts-mode-map)

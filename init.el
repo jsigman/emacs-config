@@ -25,7 +25,7 @@
 (literate-elisp-load "eglot-settings.org")
 (literate-elisp-load "python-settings.org")
 (literate-elisp-load "copilot-settings.org")
-(literate-elisp-load "flycheck-settings.org")
+(literate-elisp-load "lint-settings.org")
 (literate-elisp-load "tramp-settings.org")
 (literate-elisp-load "java-settings.org")
 (literate-elisp-load "org-settings.org")

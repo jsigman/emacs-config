@@ -86,6 +86,7 @@
 ;; Optionally use the `orderless' completion style.
 (use-package
  orderless
+ :after vertico
  :init
  ;; Tune the global completion style settings to your liking!
  ;; This affects the minibuffer and non-lsp completion at point.
@@ -112,7 +113,12 @@
  ;; (setq read-extended-command-predicate
  ;;       #'command-completion-default-include-p)
  )
+#+end_src
 
+** Vertico
+
+*** Basic Setup
+#+begin_src emacs-lisp :load yes
 ;; Enable vertico
 (use-package
  vertico

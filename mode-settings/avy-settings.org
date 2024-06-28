@@ -22,5 +22,5 @@
 #+begin_src emacs-lisp :load yes
 (use-package casual-avy
   :ensure t
-  :bind ("M-g" . casual-avy-tmenu))
+  :bind ("M-'" . casual-avy-tmenu))
 #+end_src

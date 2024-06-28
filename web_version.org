@@ -72,7 +72,7 @@ I love and rely heavily on ~straight.el~.
 #+include: "mode-settings/eglot-settings.org" :minlevel 1
 #+include: "mode-settings/python-settings.org" :minlevel 1
 #+include: "mode-settings/copilot-settings.org" :minlevel 1
-#+include: "mode-settings/flycheck-settings.org" :minlevel 1
+#+include: "mode-settings/lint-settings.org" :minlevel 1
 #+include: "mode-settings/tramp-settings.org" :minlevel 1
 #+include: "mode-settings/java-settings.org" :minlevel 1
 #+include: "mode-settings/org-settings.org" :minlevel 1

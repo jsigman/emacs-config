@@ -12,3 +12,32 @@
 
   (use-package osx-plist :straight '(osx-plist :type git :host github :repo "gonewest818/osx-plist")))
 #+end_src
+** Window size
+#+begin_src emacs-lisp :load yes
+(add-to-list 'default-frame-alist '(width . 130))  ; Set width to 80 columns
+(add-to-list 'default-frame-alist '(height . 46)) ; Set height to 24 lines
+
+(defun center-frame ()
+  "Center the frame on the screen, respecting the size set in default-frame-alist."
+  (interactive)
+  (let* ((desired-width (or (cdr (assq 'width default-frame-alist)) 80))
+         (desired-height (or (cdr (assq 'height default-frame-alist)) 24))
+         (screen-width (x-display-pixel-width))
+         (screen-height (x-display-pixel-height))
+         (char-width (frame-char-width))
+         (char-height (frame-char-height))
+         (frame-pixel-width (* desired-width char-width))
+         (frame-pixel-height (* desired-height char-height))
+         (left (max 0 (/ (- screen-width frame-pixel-width) 2)))
+         (top (max 0 (/ (- screen-height frame-pixel-height) 2))))
+    (message "Screen size: %dx%d, Desired frame size: %dx%d, Position: (%d, %d)"
+             screen-width screen-height desired-width desired-height left top)
+    (set-frame-size (selected-frame) desired-width desired-height)
+    (set-frame-position (selected-frame) left top)
+    (message "Frame set to %dx%d at (%d, %d)"
+             (frame-width) (frame-height)
+             (frame-parameter nil 'left) (frame-parameter nil 'top))))
+
+;; Call this function when Emacs starts
+(add-hook 'window-setup-hook #'center-frame)
+#+end_src

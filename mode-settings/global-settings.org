@@ -495,6 +495,10 @@ I find this breaks browsing of long json files, more than it helps me out.
        :host github
        :repo "Lindydancer/highlight2clipboard")))
 #+end_src
+* Dotenv Mode
+#+begin_src emacs-lisp :load yes
+(use-package dotenv-mode)
+#+end_src
 * Breadcrumb mode
 Because I'm trying this out, I'm going to disable LSP's breadcrumb mode, which I've been disappointed with.
 #+begin_src emacs-lisp :load no
@@ -569,6 +573,12 @@ This really improves use with local variables. You get a highly visible warning 
 (defvar-local unison-excluded nil
   "List of patterns to exclude in Unison sync.")
 
+(defcustom unison-one-way-sync nil
+  "Specify whether to perform one-way synchronization.
+If non-nil, Unison will only propagate changes from `unison-root1` to `unison-root2`."
+  :type 'boolean
+  :group 'unison)
+
 (defun unison-build-command ()
   "Build the Unison command based on directory local variables."
   (when (and unison-root1 unison-root2)
@@ -577,6 +587,8 @@ This really improves use with local variables. You get a highly visible warning 
             "unison -batch " unison-root1 " " unison-root2 " -auto")))
       (dolist (pattern unison-excluded)
         (setq command (concat command " -ignore 'Name " pattern "'")))
+      (when unison-one-way-sync
+        (setq command (concat command " -force " unison-root1)))
       command)))
 
 (defun unison-process-next-command ()

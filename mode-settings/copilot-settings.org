@@ -1,28 +1,50 @@
 * Large Language Models in Emacs
 ** Github Copilot
 #+begin_src emacs-lisp :load yes
-(use-package
- copilot
- :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
- :bind
- (:map
-  copilot-completion-map (("M-<return>" . copilot-accept-completion)))
- :hook (prog-mode . copilot-mode)
- :hook (yaml-mode . copilot-mode)
- :hook (org-mode . copilot-mode)
- :hook (direnv-envrc-mode . copilot-mode)
- :hook (conf-mode . copilot-mode)
- :config
- (setq copilot-max-char -1)
- (setq copilot-indent-offset-warning-disable t)
- ;; Check if Copilot server is installed and install if necessary
- (let ((copilot-server-path
-        (expand-file-name
-         "~/.emacs.d/.cache/copilot/bin/copilot-node-server")))
-   (unless (file-exists-p copilot-server-path)
-     (copilot-install-server)))
+    (defcustom my-copilot-server-executable nil
+      "Path to the Copilot server executable."
+      :type 'string
+      :group 'my-customizations)
 
- :ensure t)
+    (defcustom my-copilot-install-dir nil
+      "Directory in which the Copilot server is installed."
+      :type 'string
+      :group 'my-customizations)
+
+    (defun set-copilot-server-path ()
+      "Set the path to the Copilot server executable."
+      (let ((global-copilot-server-path "/opt/homebrew/lib/node_modules/copilot-node-server/copilot/dist/language-server.js"))
+        (if (file-exists-p global-copilot-server-path)
+            (progn
+              (setq my-copilot-server-executable global-copilot-server-path)
+              (setq my-copilot-install-dir "/opt/homebrew/lib/node_modules/copilot-node-server"))
+          ;; Fallback to local installation if global server is not found
+          (let ((local-copilot-server-path
+                 (expand-file-name "~/.emacs.d/.cache/copilot/bin/copilot-node-server")))
+            (unless (file-exists-p local-copilot-server-path)
+              (copilot-install-server))
+            (setq my-copilot-server-executable local-copilot-server-path)
+            (setq my-copilot-install-dir (expand-file-name "~/.emacs.d/.cache/copilot"))))))
+
+    ;; (set-copilot-server-path)
+
+    (use-package copilot
+      :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+      :bind (:map copilot-completion-map (("M-<return>" . copilot-accept-completion)))
+      :hook (prog-mode . copilot-mode)
+      :hook (yaml-mode . copilot-mode)
+      :hook (org-mode . copilot-mode)
+      :hook (direnv-envrc-mode . copilot-mode)
+      :hook (conf-mode . copilot-mode)
+      ;; :init
+      ;; (setq copilot--server-executable my-copilot-server-executable)
+      ;; (setq copilot-install-dir my-copilot-install-dir)
+      :config
+      (setq copilot-max-char -1)
+      (setq copilot-indent-offset-warning-disable t)
+      ;; (setq copilot-log-level 'debug)
+      ;;
+      :ensure t)
 #+end_src
 ** Codeium
 #+begin_src emacs-lisp :load no
