@@ -1,11 +1,10 @@
 * Language Server Protocol (LSP)
 ** LSP Mode
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (setq my/lsp-package "lsp")
 ;------------------------LSP---------------------------;
 ; PATCH BELOW
 (setenv "LSP_USE_PLISTS" "true")
-(literate-elisp-load "corfu-vertico-settings.org")
 (use-package
  lsp-mode
  :custom (lsp-completion-provider :none) ; We use corfu
@@ -98,7 +97,6 @@ For right now, I don't really like LSP UI, let's not load this config
  (setq lsp-ui-flycheck-enable nil)
  (add-hook 'flycheck-mode-hook 'lsp-ui-sideline-mode)
 
- (literate-elisp-load "flycheck-settings.org")
  (require 'lsp-ui-flycheck)
  (define-key
   lsp-ui-flycheck-list-mode-map
@@ -128,7 +126,7 @@ For right now, I don't really like LSP UI, let's not load this config
 
 ** LSP with iedit
 I'm now using iedit instead of my hand-crafted [[https://github.com/jsigman/lsp-mc][lsp-mc]] mode. It is integrated and works slightly better.
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 ;---Multiple cursors------;
 (literate-elisp-load "multiple-cursors-settings.org")
 
@@ -158,7 +156,7 @@ I'm now using iedit instead of my hand-crafted [[https://github.com/jsigman/lsp-
 #+end_src
 ** Modes for LSP
 Configure here the modes for which you'd like to run LSP mode.
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
   (add-hook 'LaTeX-mode-hook #'lsp-deferred)
   (add-hook 'yaml-base-mode-hook #'lsp-deferred)
   (add-hook 'json-mode-hook #'lsp-deferred)
@@ -192,9 +190,9 @@ This mode is used to run language servers in a docker container. At some point I
 #+end_src
 
 ** LSP File Watchers
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\venv\\'")
-(add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\.dvc\\'")
+(add-to-lis 'lsp-file-watch-ignored-directories "[/\\\\]\\.dvc\\'")
 (add-to-list
  'lsp-file-watch-ignored-directories "[/\\\\]\\kubernetes\\'")
 (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\notes\\'")
@@ -207,3 +205,128 @@ This mode is used to run language servers in a docker container. At some point I
 (add-to-list
  'lsp-file-watch-ignored-directories "[/\\\\]\\.pytest_cache\\'")
 #+END_SRC
+
+* Eglot
+#+begin_src emacs-lisp :load yes
+(use-package
+ eglot
+ :ensure t
+ :init
+ (defun file-is-remote-p ()
+   "Return non-nil if the current file is remote."
+   (and (buffer-file-name) (file-remote-p (buffer-file-name))))
+
+ (defun maybe-start-eglot ()
+   "Start Eglot if the current file is not remote."
+   (unless (file-is-remote-p)
+     (when (fboundp 'eglot-ensure)
+       (eglot-ensure))))
+
+ (defun disable-eglot-if-remote ()
+   "Disable Eglot if the current file is remote."
+   (when (and (file-is-remote-p)
+              (fboundp 'eglot-managed-p)
+              (fboundp 'eglot-shutdown)
+              (eglot-managed-p))
+     (eglot-shutdown)))
+
+ :hook
+ ((python-mode
+   markdown-mode
+   sh-mode
+   yaml-mode
+   json-mode
+   dockerfile-mode
+   LaTeX-mode
+   org-mode)
+  . maybe-start-eglot)
+ :hook (find-file . disable-eglot-if-remote)
+ :config
+ (add-to-list
+  'eglot-server-programs
+  '(python-mode . ("pyright-langserver" "--stdio")))
+ (add-to-list
+  'eglot-server-programs
+  '(markdown-mode . ("vscode-markdown-language-server" "--stdio")))
+ (add-to-list
+  'eglot-server-programs
+  '(sh-mode . ("bash-language-server" "start")))
+ (add-to-list
+  'eglot-server-programs
+  '(yaml-mode . ("yaml-language-server" "--stdio")))
+ (add-to-list
+  'eglot-server-programs
+  '(json-mode . ("vscode-json-languageserver" "--stdio")))
+ (add-to-list
+  'eglot-server-programs
+  '(dockerfile-mode . ("docker-langserver" "--stdio")))
+ (add-to-list 'eglot-server-programs '(LaTeX-mode . ("texlab")))
+ (add-to-list 'eglot-server-programs '(org-mode . ("texlab")))
+ (custom-set-faces
+  '(eglot-highlight-symbol-face
+    ((t (:inherit highlight :underline t)))))
+
+ ;; Basic settings
+ (setq eglot-autoshutdown t)
+ (setq eglot-extend-to-xref t)
+
+ ;; Configure completion
+ (setq completion-category-defaults nil)
+ (setq completion-cycle-threshold 3)
+ (setq tab-always-indent 'complete)
+
+ ;; Increase read-process-output-max
+ (setq read-process-output-max (* 1024 1024))
+
+ ;; Ignore certain directories for file watching
+ (setq eglot-ignored-server-capabilities
+       '(:documentOnTypeFormattingProvider))
+
+ ;; Key bindings (optional)
+ :bind
+ (:map
+  eglot-mode-map
+  ("C-c l a" . eglot-code-actions)
+  ("C-c l r" . eglot-rename)
+  ("C-c l f" . eglot-format)
+  ("C-c l d" . eglot-find-declaration)))
+#+end_src
+** Eglot-iedit
+#+begin_src emacs-lisp :load yes
+(use-package
+ iedit
+ :custom-face (iedit-occurrence ((t (:background "Red"))))
+ :bind (:map eglot-mode-map ("M-S" . eglot-iedit-highlights))
+ :init
+ (defun eglot-iedit-highlights ()
+   "Start an `iedit' operation on the documentHighlights at point.
+This can be used as a primitive `eglot-rename' replacement if the
+language server doesn't support renaming.
+
+See also `eglot-server-capable' for :documentHighlightProvider."
+   (interactive)
+   (unless (eglot-server-capable :documentHighlightProvider)
+     (error "Server does not support documentHighlights"))
+   (let
+       ((highlights
+         (eglot--request
+          (eglot--current-server-or-lose)
+          :textDocument/documentHighlight (eglot--TextDocumentPositionParams)))
+        (-compare-fn
+         (lambda (hl1 hl2)
+           (and (equal
+                 (plist-get (plist-get hl1 :range) :start)
+                 (plist-get (plist-get hl2 :range) :start))
+                (equal
+                 (plist-get (plist-get hl1 :range) :end)
+                 (plist-get (plist-get hl2 :range) :end))))))
+     (iedit-mode)
+     (dolist (highlight (-distinct highlights))
+       (let* ((range (plist-get highlight :range))
+              (start
+               (eglot--lsp-position-to-point
+                (plist-get range :start)))
+              (end
+               (eglot--lsp-position-to-point (plist-get range :end))))
+         (iedit-add-occurrence-overlay start end))))))
+#+end_src

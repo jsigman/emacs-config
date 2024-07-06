@@ -22,7 +22,6 @@
 (literate-elisp-load "rg-settings.org")
 (literate-elisp-load "avy-settings.org")
 (literate-elisp-load "lsp-settings.org")
-(literate-elisp-load "eglot-settings.org")
 (literate-elisp-load "python-settings.org")
 (literate-elisp-load "copilot-settings.org")
 (literate-elisp-load "lint-settings.org")

@@ -46,6 +46,13 @@
  (add-to-list 'savehist-additional-variables 'corfu-history)
  ;; (corfu-mode-hook . corfu-doc-mode)
  )
+
+(advice-add 'corfu--candidates :around
+            (lambda (orig-fun &rest args)
+              (message "corfu--candidates called with args: %S" args)
+              (let ((result (apply orig-fun args)))
+                (message "corfu--candidates returned: %S" result)
+                result)))
 #+end_src
 ** Cape
 #+begin_src emacs-lisp :load yes
@@ -80,6 +87,33 @@
 ;; A few more useful configurations...
 (setq completion-cycle-threshold 3)
 #+end_src
+*** Corfu/Eglot integration
+From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this source]].
+#+begin_src emacs-lisp :load yes
+(advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
+
+;; Option 1: Specify explicitly to use Orderless for Eglot
+(setq completion-category-overrides '((eglot (styles orderless))
+                                      (eglot-capf (styles orderless))))
+
+;; Option 2: Undo the Eglot modification of completion-category-defaults
+(with-eval-after-load 'eglot
+   (setq completion-category-defaults nil))
+
+;; Enable cache busting, depending on if your server returns
+;; sufficiently many candidates in the first place.
+(advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
+
+(defun my/eglot-capf ()
+  (setq-local completion-at-point-functions
+              (list (cape-capf-super
+                     #'eglot-completion-at-point
+                     ;; #'yas-expand
+                     #'cape-file))))
+
+(add-hook 'eglot-managed-mode-hook #'my/eglot-capf)
+#+end_src
+
 
 ** Orderless
 #+begin_src emacs-lisp :load yes

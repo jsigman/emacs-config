@@ -69,7 +69,6 @@ I love and rely heavily on ~straight.el~.
 #+include: "mode-settings/rg-settings.org" :minlevel 1
 #+include: "mode-settings/avy-settings.org" :minlevel 1
 #+include: "mode-settings/lsp-settings.org" :minlevel 1
-#+include: "mode-settings/eglot-settings.org" :minlevel 1
 #+include: "mode-settings/python-settings.org" :minlevel 1
 #+include: "mode-settings/copilot-settings.org" :minlevel 1
 #+include: "mode-settings/lint-settings.org" :minlevel 1
