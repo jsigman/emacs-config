@@ -10,5 +10,16 @@ npm -g install bash-language-server
 npm -g install prettier-plugin-toml
 npm -g install remark-language-server
 
-npm -g install copilot-node-server
-ln -s /opt/homebrew/lib/node_modules/copilot-node-server/bin/copilot-node-server /opt/homebrew/bin/copilot-node-server
+# Detect the operating system and install TexLab
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS
+    echo "Installing TexLab using Homebrew..."
+    brew install texlab
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    # Linux
+    echo "Installing TexLab using Cargo..."
+    cargo install texlab
+else
+    echo "Unsupported operating system: $OSTYPE"
+    exit 1
+fi

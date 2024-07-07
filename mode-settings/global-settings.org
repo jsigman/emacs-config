@@ -1,3 +1,9 @@
+* Utilities
+** Elisp code libraries
+#+begin_src emacs-lisp :load yes
+(use-package dash)
+(use-package ht)
+#+end_src
 * Window management
 ** Zoom
 I think this is a little too aggressive right now, but it's a cool idea.
@@ -24,11 +30,71 @@ I think this is a little too aggressive right now, but it's a cool idea.
  ; reload the fringe color after loading the theme
  (cwm-update-fringe-background))
 #+end_src
-
-#+RESULTS:
-: #s(hash-table size 65 test eql rehash-size 1.5 rehash-threshold 0.8125 data (:use-package (26060 51299 622076 0) :init (26060 51299 622073 0) :config (26060 51299 622066 0) :config-secs (0 0 184 0) :init-secs (0 0 14077 0) :use-package-secs (0 0 954450 0)))
-
 * Miscellaneous
+** Ctrl-F
+#+begin_src emacs-lisp :load yes
+(use-package
+ ctrlf
+ :config
+ (add-to-list
+  'ctrlf-minibuffer-bindings '("C-r" . ctrlf-backward-default))
+ (setq ctrlf-default-search-style 'fuzzy-regexp)
+ (setq ctrlf-default-search-style 'literal)
+ (ctrlf-mode t))
+#+end_src
+** Whole line or region
+#+begin_src emacs-lisp :load yes
+(use-package
+ whole-line-or-region
+ :config (whole-line-or-region-global-mode t))
+#+end_src
+** Popper
+#+begin_src emacs-lisp :load yes
+(use-package
+ popper
+ :bind
+ (("C-`" . popper-toggle-latest)
+  ("M-`" . popper-cycle)
+  ("C-M-`" . popper-toggle-type))
+ :init
+ (setq popper-reference-buffers
+       '("\\*Messages\\*"
+         "Output\\*$"
+         "\\*Async Shell Command\\*"
+         help-mode
+         compilation-mode))
+ (popper-mode +1) (popper-echo-mode +1))
+#+end_src
+** Page break lines
+#+begin_src emacs-lisp :load yes
+(use-package page-break-lines :config (global-page-break-lines-mode))
+#+end_src
+** Eldoc
+#+begin_src emacs-lisp :load yes
+(use-package eldoc :hook (prog-mode . eldoc-mode))
+#+end_src
+** Which Key
+#+begin_src emacs-lisp :load yes
+(use-package which-key :config (which-key-mode 1))
+#+end_src
+** Ibuffer
+#+begin_src emacs-lisp :load yes
+(use-package
+ ibuffer
+ :config
+ (global-set-key (kbd "C-x C-b") 'ibuffer)
+ (define-key ibuffer-mode-map (kbd "M-o") nil))
+#+end_src
+** Ace popup
+#+begin_src emacs-lisp :load yes
+;; Use ace-popup-menu for completions
+(use-package
+ ace-popup-menu
+ :config
+ (ace-popup-menu-mode 1)
+ (setq ace-popup-menu-show-pane-header t))
+#+end_src
+** Line Numbers in Code
 #+begin_src emacs-lisp :load yes
 (setq require-final-newline t)
 (setq show-trailing-whitespace t)
@@ -62,64 +128,20 @@ I think this is a little too aggressive right now, but it's a cool idea.
 (setq column-number-mode t)
 (setq blink-paren-function nil)
 (setq inhibit-startup-screen t)
-
-(use-package
- ctrlf
- :config
- (add-to-list
-  'ctrlf-minibuffer-bindings '("C-r" . ctrlf-backward-default))
- (setq ctrlf-default-search-style 'fuzzy-regexp)
- (setq ctrlf-default-search-style 'literal)
- (ctrlf-mode t))
-
-(use-package
- whole-line-or-region
- :config (whole-line-or-region-global-mode t))
-
-(use-package
- popper
- :bind
- (("C-`" . popper-toggle-latest)
-  ("M-`" . popper-cycle)
-  ("C-M-`" . popper-toggle-type))
- :init
- (setq popper-reference-buffers
-       '("\\*Messages\\*"
-         "Output\\*$"
-         "\\*Async Shell Command\\*"
-         help-mode
-         compilation-mode))
- (popper-mode +1) (popper-echo-mode +1))
-
-(use-package page-break-lines :config (global-page-break-lines-mode))
-
-(use-package eldoc :hook (prog-mode . eldoc-mode))
-
-(use-package which-key :config (which-key-mode 1))
-
-(use-package
- ibuffer
- :config
- (global-set-key (kbd "C-x C-b") 'ibuffer)
- (define-key ibuffer-mode-map (kbd "M-o") nil))
 #+END_SRC
-
 ** Expand Region
-
 *** Vanilla
 #+begin_src emacs-lisp :load no
 (use-package
  expand-region
  :config (global-set-key (kbd "M-J") 'er/expand-region))
 #+end_src
-
 *** With Tree Sitter Support
 #+begin_src emacs-lisp :load yes
 (use-package
  expreg
  :config (global-set-key (kbd "M-J") 'expreg-expand))
 #+end_src
-
 ** Direnv
 #+begin_src emacs-lisp :load yes
 (use-package
@@ -131,7 +153,6 @@ I think this is a little too aggressive right now, but it's a cool idea.
 #+begin_src emacs-lisp :load yes
 (use-package fish-mode)
 #+end_src
-
 ** Window movement keybindings
 #+begin_src emacs-lisp :load yes
 (define-key term-raw-map (kbd "M-o") 'next-multiframe-window)
@@ -169,7 +190,6 @@ So far, I am unable to find a way to compile sqlite3 on my own, but I would love
    ([remap query-replace-regexp] . #'anzu-query-replace-regexp))
   :config (global-anzu-mode +1))
 #+end_src
-
 ** Line Highlighting
 #+begin_src emacs-lisp :load yes
 (use-package lin :init (lin-global-mode t))
@@ -185,15 +205,9 @@ So far, I am unable to find a way to compile sqlite3 on my own, but I would love
   'vterm-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
  (global-hl-line-mode t))
 
-(literate-elisp-load "term-settings.org")
-
-(use-package dash)
-(use-package ht)
-
 ;; Replace the text of selections
 (pending-delete-mode t)
 #+end_src
-
 ** Undo Tree
 I haven't found a great way to use undo-tree, but everyone seems to love it.
 #+begin_src emacs-lisp :load no
@@ -262,6 +276,7 @@ I find this breaks browsing of long json files, more than it helps me out.
  (dashboard-setup-startup-hook))
 #+end_src
 * Icons
+** All the icons
 #+begin_src emacs-lisp :load yes
 (use-package all-the-icons)
 (use-package
@@ -274,9 +289,9 @@ I find this breaks browsing of long json files, more than it helps me out.
 
  :config (all-the-icons-completion-mode)
  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup))
-
-(literate-elisp-load "projectile-settings.org")
-
+#+end_src
+** SVG Support
+#+begin_src emacs-lisp :load yes
 ; Re-enable with SVG support
 (use-package
  svg-lib
@@ -326,23 +341,10 @@ I find this breaks browsing of long json files, more than it helps me out.
     ;; else
     ))
 #+end_src
-
-** Ace popup
-#+begin_src emacs-lisp :load yes
-;; Use ace-popup-menu for completions
-(use-package
- ace-popup-menu
- :config
- (ace-popup-menu-mode 1)
- (setq ace-popup-menu-show-pane-header t))
-
-#+end_src
-
 ** Emacs startup profiler
 #+begin_src emacs-lisp :load yes
 (use-package esup)
 #+end_src
-
 ** Scratch
 #+begin_src emacs-lisp :load yes
 (use-package
@@ -412,7 +414,6 @@ I find this breaks browsing of long json files, more than it helps me out.
 
 (use-package hl-todo :init (global-hl-todo-mode))
 #+end_src
-
 * Indentation
 #+begin_src emacs-lisp :load yes
 (electric-indent-mode 0)
@@ -420,8 +421,8 @@ I find this breaks browsing of long json files, more than it helps me out.
 ;;  aggressive-indent
 ;;  :config (aggressive-indent-global-mode nil))
 #+end_src
-
 * Autoformatting
+** Aphelia
 #+begin_src emacs-lisp :load yes
 (use-package
  apheleia
@@ -445,8 +446,9 @@ I find this breaks browsing of long json files, more than it helps me out.
  (setq apheleia-mode-alist
        (assq-delete-all 'emacs-lisp-mode apheleia-mode-alist))
  (apheleia-global-mode t))
-
-(literate-elisp-load "elisp-settings.org")
+#+end_src
+** Elisp Autofmt
+#+begin_src emacs-lisp :load yes
 (use-package
  elisp-autofmt
  :commands (elisp-autofmt-mode elisp-autofmt-buffer)
@@ -477,23 +479,10 @@ I find this breaks browsing of long json files, more than it helps me out.
 
 ; Unbind reverse search because we'll use swiper
 (global-unset-key (kbd "C-r"))
-
 (global-set-key (kbd "M-u") 'upcase-dwim)
 (global-set-key (kbd "M-l") 'downcase-dwim)
-
 (global-set-key (kbd "C-.") 'xref-find-definitions-other-window)
 (define-key global-map (kbd "RET") 'newline-and-indent)
-#+end_src
-* Copying syntax highlighting to the clipboard
-#+begin_src  emacs-lisp :load yes
-  (when (eq system-type 'darwin)
-    (use-package
-     highlight2clipboard
-     :straight
-     '(highlight2clipboard
-       :type git
-       :host github
-       :repo "Lindydancer/highlight2clipboard")))
 #+end_src
 * Dotenv Mode
 #+begin_src emacs-lisp :load yes
@@ -508,8 +497,8 @@ Because I'm trying this out, I'm going to disable LSP's breadcrumb mode, which I
  :config (breadcrumb-mode t))
 #+end_src
 * Rsync-mode
-Loving use of my old colleague [[https://github.com/r-zip][Ryan Pilgrim]]'s package to sync accross our secure environments.
-#+begin_src emacs-lisp :load yes
+Loving use of my old colleague [[https://github.com/r-zip][Ryan Pilgrim]]'s package to sync accross our secure environments. Edit: Now trying out handcrafted Unison mode.
+#+begin_src emacs-lisp :load no
 (use-package
  rsync-mode
  :straight '(rsync-mode :type git :host github :repo "jsigman/rsync-mode"))
@@ -556,7 +545,6 @@ This really improves use with local variables. You get a highly visible warning 
  :around #'my/dir-local-error-warning)
 #+end_src
 * Unison mode
-
 #+begin_src emacs-lisp :load yes
 (defvar unison-sync-queue nil
   "Queue of Unison sync commands to run.")

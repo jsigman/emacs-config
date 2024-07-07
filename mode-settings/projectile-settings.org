@@ -4,6 +4,8 @@ I'm trying migrating from ~projectile~ onto ~project.el~ for its purported benef
 ;; Configure project.el settings
 (use-package
  project
+  :demand t
+  :straight nil
  ;; :init
  ;; ;; Set the file where bookmarks are saved
  ;; (setq bookmark-default-file "~/.emacs.d/bookmarks")

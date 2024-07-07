@@ -127,13 +127,9 @@ For right now, I don't really like LSP UI, let's not load this config
 ** LSP with iedit
 I'm now using iedit instead of my hand-crafted [[https://github.com/jsigman/lsp-mc][lsp-mc]] mode. It is integrated and works slightly better.
 #+begin_src emacs-lisp :load no
-;---Multiple cursors------;
-(literate-elisp-load "multiple-cursors-settings.org")
-
 (use-package iedit :init (setq iedit-toggle-key-default (kbd "C-,")))
 (defun my/lsp-iedit ()
   (lsp-iedit-highlights)
-  ;; (iedit-switch-to-mc-mode)
   )
 
 (setq my/lsp-highlight-setup "iedit")
@@ -208,9 +204,15 @@ This mode is used to run language servers in a docker container. At some point I
 
 * Eglot
 #+begin_src emacs-lisp :load yes
+;; (use-package project
+;;   :ensure t
+;;   :demand t)
+
 (use-package
  eglot
  :ensure t
+ :demand t
+ :straight nil
  :init
  (defun file-is-remote-p ()
    "Return non-nil if the current file is remote."

@@ -1,4 +1,5 @@
 * MacOS specific settings
+** Command key as control
 #+begin_src emacs-lisp :load yes
 (when (eq system-type 'darwin)
   (setq mac-command-modifier 'control)
@@ -40,4 +41,15 @@
 
 ;; Call this function when Emacs starts
 (add-hook 'window-setup-hook #'center-frame)
+#+end_src
+** Copying syntax highlighting to the clipboard
+#+begin_src  emacs-lisp :load yes
+  (when (eq system-type 'darwin)
+    (use-package
+     highlight2clipboard
+     :straight
+     '(highlight2clipboard
+       :type git
+       :host github
+       :repo "Lindydancer/highlight2clipboard")))
 #+end_src
