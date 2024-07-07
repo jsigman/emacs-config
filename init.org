@@ -1,3 +1,4 @@
+#+PROPERTY: header-args:emacs-lisp :load yes
 * MacOS specific settings
 ** Command key as control
 #+begin_src emacs-lisp :load yes
@@ -825,7 +826,6 @@ If non-nil, Unison will only propagate changes from `unison-root1` to `unison-ro
 (add-hook 'hack-local-variables-hook 'maybe-enable-unison-sync-mode)
 #+end_src
 * Config Modes
-#+PROPERTY: header-args:emacs-lisp :load yes
 ** Yaml
 #+begin_src emacs-lisp :load yes
 (use-package yaml-mode)
@@ -1603,7 +1603,6 @@ Company was a great package, but I'm currently not using it. I migrated over to 
 #+END_SRC
 * Snippets
 ** Yasnippet
-#+PROPERTY: header-args:emacs-lisp
 #+begin_src emacs-lisp :load yes
 (use-package
  yasnippet
@@ -1645,7 +1644,6 @@ Company was a great package, but I'm currently not using it. I migrated over to 
 #+END_SRC
 * Avy
 ** Main Package
-#+PROPERTY: header-args:emacs-lisp :load yes
 #+begin_src emacs-lisp :load yes
 (use-package
  avy
