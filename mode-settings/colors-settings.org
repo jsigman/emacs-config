@@ -10,8 +10,12 @@ Leuven is always a nice option, beautiful with Org Mode.
 #+begin_src emacs-lisp :load no
 (use-package leuven-theme
   :config
-  (load-theme 'leuven-dark))
+  (load-theme 'leuven-dark t))
 #+end_src
+
+#+RESULTS:
+: #s(hash-table data (:use-package (26250 43063 586916 0) :init (26250 43063 586914 0) :config (26250 43063 586907 0) :config-secs (0 0 6391 0) :init-secs (0 0 8900 0) :use-package-secs (0 2 807731 0)))
+
 *** [[https://github.com/catppuccin/emacs][Catpuccin Theme]]
 Trying this theme out for a little bit.
 #+begin_src emacs-lisp :load yes
@@ -20,9 +24,6 @@ Trying this theme out for a little bit.
  :config
  (load-theme 'catppuccin :no-confirm)
  (setq catppuccin-flavor 'frappe)
- ;; (setq catppuccin-flavor 'latte)
- ;; (setq catppuccin-flavor 'macchiato)
- ;; (setq catppuccin-flavor 'mocha)
  (catppuccin-reload))
 #+end_src
 *** ef-day
@@ -47,9 +48,8 @@ I'm always changing my theme, but I tend to like light themes with yellow-ish ba
  (nano-emacs :type git :host github :repo "rougier/nano-emacs")
  :config (require 'nano))
 #+end_src
-
 ** Colors in Dired
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package rainbow-mode :hook (LaTeX-mode . rainbow-mode))
 (use-package dired-hacks :hook (emacs-lisp-mode . rainbow-mode))
 #+end_src

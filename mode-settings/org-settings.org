@@ -100,7 +100,6 @@
  org-bullets
  :after org
  :hook (org-mode-hook . org-bullets-mode))
-
 ;;nil means to wrap lines in org mode
 (setq org-startup-truncated nil)
 #+end_src

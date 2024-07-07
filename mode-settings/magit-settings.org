@@ -30,6 +30,8 @@ Haven't yet found a great use for this.
  :config
  ; This is so we can access forge information
  (setq auth-sources '("~/.authinfo")))
+
+(use-package ghub :defer t)
 #+end_src
 
 ** Magit Todos mode
@@ -58,8 +60,6 @@ This is currently broken for me.
 (use-package hl-todo)
 (use-package rg)
 (use-package ag)
-
-(use-package ghub :defer t)
 
 ; add this so that git gutter plus does not screw up tramp sessions
 ; it disables GGP during tramp

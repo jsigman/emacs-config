@@ -7,10 +7,8 @@
  :config (setq treemacs-persist-file "treemacs-persist"))
 #+end_src
 ** Addons
-#+begin_src emacs-lisp :load yes
-(use-package treemacs-projectile
- ;; :after treemacs
-)
+#+begin_src emacs-lisp :load no
+(use-package treemacs-projectile)
 #+end_src
 #+begin_src emacs-lisp :load yes
 (use-package

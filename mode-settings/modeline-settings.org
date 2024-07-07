@@ -78,6 +78,7 @@ Return nil if no project was found."
 #+end_src
 
 ** Diminish/Blackout
+I find these frustrating as I have to manually include every mode which might appear in the modeline. I'm not sure if there's a better way to do this.
 #+begin_src emacs-lisp :load no
 (use-package diminish)
 (diminish 'anzu-mode)

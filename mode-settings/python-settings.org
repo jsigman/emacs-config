@@ -44,12 +44,6 @@
 (define-key python-mode-map (kbd "C-c C-p") nil)
 
 (use-package
- py-isort
- :config
- (define-key python-mode-map (kbd "M-I") 'py-isort-buffer)
- (define-key python-ts-mode-map (kbd "M-I") 'py-isort-buffer))
-
-(use-package
  pip-requirements
  :init
  (add-to-list
@@ -59,7 +53,7 @@
 #+end_src
 
 ** Python Docstrings
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package
  buftra
  :straight

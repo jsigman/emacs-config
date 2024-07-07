@@ -6,6 +6,5 @@
    :type git
    :repo "https://git.code.sf.net/p/matlab-emacs/src"))
 (require 'matlab)
-
 (setq matlab-shell-command-switches '("-nodesktop" "-nosplash"))
 #+end_src

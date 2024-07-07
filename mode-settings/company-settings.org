@@ -1,5 +1,4 @@
 * Company Settings
-
 Company was a great package, but I'm currently not using it. I migrated over to the simpler and more flexible Corfu.
 #+begin_src emacs-lisp :load no
 (use-package

@@ -422,7 +422,7 @@ I find this breaks browsing of long json files, more than it helps me out.
 ;;  :config (aggressive-indent-global-mode nil))
 #+end_src
 * Autoformatting
-** Aphelia
+** Apheleia
 #+begin_src emacs-lisp :load yes
 (use-package
  apheleia
