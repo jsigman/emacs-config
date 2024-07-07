@@ -11,4 +11,4 @@ These configs rely heavily on [[https://github.com/radian-software/straight.el][
 
 * Content
 
-The configuration content is in elisp code blocks of the ~.org~ files in the [[mode-settings/][mode-settings]] folder.
+The configuration content is in elisp code blocks of ~init.org~.
