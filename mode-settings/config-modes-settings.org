@@ -1,6 +1,0 @@
-* Config Modes
-#+PROPERTY: header-args:emacs-lisp :load yes
-** Yaml
-#+begin_src emacs-lisp :load yes
-(use-package yaml-mode)
-#+end_src

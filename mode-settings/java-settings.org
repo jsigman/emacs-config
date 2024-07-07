@@ -1,7 +1,0 @@
-* Java/Javascript/JSON
-#+begin_src emacs-lisp :load yes
-  (use-package jq-mode)
-  (use-package
-   jsonian
-   :straight '(jsonian :type git :host github :repo "iwahbe/jsonian" :build (:not autoloads)))
-#+end_src

@@ -1,9 +1,0 @@
-* Docker
-#+begin_src emacs-lisp :load yes
-(use-package
- dockerfile-mode
- :config (setq dockerfile-mode-command "docker"))
-(use-package docker
-  :ensure t
-  :bind ("C-c d" . docker))
-#+END_SRC
