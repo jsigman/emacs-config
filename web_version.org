@@ -37,51 +37,25 @@ If a code block is active, then it will appear with ~emacs-lisp~ syntax highligh
 
 Whether a code block is run at load time is controlled by the ~:load yes~ block argument of ~literate-elisp~.
 
-* Package Management
-
+* ~init.el~
+This is the main init file that wraps all the other code
 I love and rely heavily on ~straight.el~.
-
 #+BEGIN_EXPORT markdown
 {% highlight emacs-lisp %}
 #+END_EXPORT
-#+include: "mode-settings/packages-settings.el" :minlevel 1
+#+include: "init.el" :minlevel 1
 #+BEGIN_EXPORT markdown
 {% endhighlight %}
 #+END_EXPORT
 
-#+include: "mode-settings/macos-settings.org" :minlevel 1
-#+include: "mode-settings/path-settings.org" :minlevel 1
-#+include: "mode-settings/global-settings.org" :minlevel 1
-#+include: "mode-settings/config-modes-settings.org" :minlevel 1
-#+include: "mode-settings/parens-settings.org" :minlevel 1
-#+include: "mode-settings/elisp-settings.org" :minlevel 1
-#+include: "mode-settings/dired-settings.org" :minlevel 1
-#+include: "mode-settings/projectile-settings.org" :minlevel 1
-#+include: "mode-settings/corfu-vertico-settings.org" :minlevel 1
-#+include: "mode-settings/selectrum-settings.org" :minlevel 1
-#+include: "mode-settings/ivy-counsel-swiper-settings.org" :minlevel 1
-#+include: "mode-settings/company-settings.org" :minlevel 1
-#+include: "mode-settings/matlab-settings.org" :minlevel 1
-#+include: "mode-settings/consult-embark-marginalia-settings.org" :minlevel 1
-#+include: "mode-settings/latex-settings.org" :minlevel 1
-#+include: "mode-settings/snippets-settings.org" :minlevel 1
-#+include: "mode-settings/term-settings.org" :minlevel 1
-#+include: "mode-settings/rg-settings.org" :minlevel 1
-#+include: "mode-settings/avy-settings.org" :minlevel 1
-#+include: "mode-settings/lsp-settings.org" :minlevel 1
-#+include: "mode-settings/python-settings.org" :minlevel 1
-#+include: "mode-settings/copilot-settings.org" :minlevel 1
-#+include: "mode-settings/lint-settings.org" :minlevel 1
-#+include: "mode-settings/tramp-settings.org" :minlevel 1
-#+include: "mode-settings/java-settings.org" :minlevel 1
-#+include: "mode-settings/org-settings.org" :minlevel 1
-#+include: "mode-settings/magit-settings.org" :minlevel 1
-#+include: "mode-settings/multiple-cursors-settings.org" :minlevel 1
-#+include: "mode-settings/docker-settings.org" :minlevel 1
-#+include: "mode-settings/dap-settings.org" :minlevel 1
-#+include: "mode-settings/treemacs-settings.org" :minlevel 1
-#+include: "mode-settings/markdown-settings.org" :minlevel 1
-#+include: "mode-settings/lua-settings.org" :minlevel 1
-#+include: "mode-settings/tree-sitter-settings.org" :minlevel 1
-#+include: "mode-settings/modeline-settings.org" :minlevel 1
-#+include: "mode-settings/colors-settings.org" :minlevel 1
+* Package Management
+I love and rely heavily on ~straight.el~.
+#+BEGIN_EXPORT markdown
+{% highlight emacs-lisp %}
+#+END_EXPORT
+#+include: "packages-settings.el" :minlevel 1
+#+BEGIN_EXPORT markdown
+{% endhighlight %}
+#+END_EXPORT
+
+#+include: "init.org" :minlevel 1
