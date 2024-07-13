@@ -186,12 +186,6 @@ BUFFER may be either a buffer or its name (a string)."
  (defun vterm-toggle--project-root ()
    (projectile-project-root)))
 #+END_SRC
-* Utilities
-** Elisp code libraries
-#+begin_src emacs-lisp :load yes
-(use-package dash)
-(use-package ht)
-#+end_src
 * Window management
 ** Zoom
 I think this is a little too aggressive right now, but it's a cool idea.
@@ -412,6 +406,33 @@ I find this breaks browsing of long json files, more than it helps me out.
 #+begin_src emacs-lisp :load no
 (global-so-long-mode t)
 #+end_src
+** Emacs startup profiler
+#+begin_src emacs-lisp :load yes
+(use-package esup)
+#+end_src
+** Scratch
+#+begin_src emacs-lisp :load yes
+(use-package
+ scratch
+ :defer t
+ :straight
+ '(scratch
+   :host nil
+   :type git
+   :repo "https://codeberg.org/emacs-weirdware/scratch.git")
+ :config (scratch--create 'emacs-lisp-mode "*scratch*"))
+#+end_src
+** Multiple Cursors (MC)
+#+begin_src emacs-lisp :load yes
+(use-package
+ multiple-cursors
+ :config
+ (global-set-key (kbd "C-M-j") 'mc/edit-lines)
+ (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+ (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+ (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+ (global-set-key (kbd "C-M-=") 'mc/mark-all-symbols-like-this))
+#+END_SRC
 * Dashboard
 #+begin_src emacs-lisp :load yes
 (use-package
@@ -510,58 +531,28 @@ I find this breaks browsing of long json files, more than it helps me out.
  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
  :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 #+end_src
-* Fonts
+** Fuzzy
 #+begin_src emacs-lisp :load yes
-;; Font settings
-(if (eq system-type 'darwin)
-    (if (and (display-graphic-p) (> (x-display-pixel-width) 1440))
-        ;; Set default font larger if on a big screen
-        (set-face-font 'default "roboto mono-15")
-      ;; (set-face-font 'default "arial-15")
-
-      ;; else
-      (set-face-font 'default "roboto mono-14")
-      ;; (set-fontset-font "fontset-default" "Menlo 12")
-      )
-  ;; else
-  (if (not (eq window-system nil))
-      (if (and (display-graphic-p) (> (x-display-pixel-width) 1440))
-          ;; Set default font larger if on a big screen
-          (set-face-font 'default "roboto mono-12")
-        ;; else
-        (set-face-font 'default "roboto mono-12")
-        ;; (set-fontset-font "fontset-default" "Menlo 12")
-        )
-    ;; else
-    ))
-#+end_src
-** Emacs startup profiler
-#+begin_src emacs-lisp :load yes
-(use-package esup)
-#+end_src
-** Scratch
-#+begin_src emacs-lisp :load yes
-(use-package
- scratch
- :defer t
- :straight
- '(scratch
-   :host nil
-   :type git
-   :repo "https://codeberg.org/emacs-weirdware/scratch.git")
- :config (scratch--create 'emacs-lisp-mode "*scratch*"))
-
 (use-package fuzzy)
 (use-package fuzzy-match)
+#+end_src
+
+** Free keys
+#+begin_src emacs-lisp :load yes
 
 (use-package free-keys)
 (use-package restart-emacs)
-
 ; ---- Auto Revert Modes ----- ;
+#+end_src
+** Auto Revert on Images
+#+begin_src emacs-lisp :load yes
 (autoload 'eimp-mode "eimp" "Emacs Image Manipulation Package." t)
 (add-hook 'image-mode-hook 'auto-revert-mode)
 
 ; --- CSV --- ;
+#+end_src
+** CSV Mode
+#+begin_src emacs-lisp :load yes
 (use-package
  csv-mode
  :straight
@@ -607,13 +598,6 @@ I find this breaks browsing of long json files, more than it helps me out.
  :config (volatile-highlights-mode t))
 
 (use-package hl-todo :init (global-hl-todo-mode))
-#+end_src
-* Indentation
-#+begin_src emacs-lisp :load yes
-(electric-indent-mode 0)
-;; (use-package
-;;  aggressive-indent
-;;  :config (aggressive-indent-global-mode nil))
 #+end_src
 * Autoformatting
 ** Apheleia
@@ -661,6 +645,13 @@ I find this breaks browsing of long json files, more than it helps me out.
 (use-package ws-butler
 :hook (prog-mode . ws-butler-mode)
 :hook (org-mode . ws-butler-mode))
+#+end_src
+** Indentation
+#+begin_src emacs-lisp :load yes
+(electric-indent-mode 0)
+;; (use-package
+;;  aggressive-indent
+;;  :config (aggressive-indent-global-mode nil))
 #+end_src
 * Global Keybindings
 #+begin_src emacs-lisp :load yes
@@ -719,24 +710,6 @@ Loving use of my old colleague [[https://github.com/r-zip][Ryan Pilgrim]]'s pack
 
 ;; Bind the function to M-R globally
 (global-set-key (kbd "M-R") 'open-remote-dired)
-#+end_src
-* Local Variables Settings
-This really improves use with local variables. You get a highly visible warning when a dir-local file is unreadable or misconfigured.
-#+begin_src  emacs-lisp :load yes
-(defun my/dir-local-error-warning (orig-fun &rest args)
-  "Advice to display a warning on directory local variable read errors."
-  (condition-case err
-      (apply orig-fun args)
-    (error
-     (display-warning
-      'dir-locals
-      (format "Error reading .dir-locals.el: %s"
-              (error-message-string err))
-      :error))))
-
-(advice-add
- 'hack-dir-local-variables
- :around #'my/dir-local-error-warning)
 #+end_src
 * Unison mode
 #+begin_src emacs-lisp :load yes
@@ -870,6 +843,12 @@ If non-nil, Unison will only propagate changes from `unison-root1` to `unison-ro
 (show-paren-mode t)
 #+end_src
 * Elisp
+** Elisp code libraries
+#+begin_src emacs-lisp :load yes
+(use-package dash)
+(use-package ht)
+#+end_src
+** Elisp UI
 #+begin_src emacs-lisp :load yes
 (use-package eros :config (eros-mode t))
 (use-package
@@ -894,7 +873,7 @@ If non-nil, Unison will only propagate changes from `unison-root1` to `unison-ro
  'auto-mode-alist
  '("\\.dir-locals\\(?:-2\\)?\\.el\\'" . emacs-lisp-mode))
 #+end_src
-* Dired Mode
+* Dired
 #+begin_src emacs-lisp :load yes
 (setq
  dired-omit-files
@@ -1673,7 +1652,8 @@ Company was a great package, but I'm currently not using it. I migrated over to 
   :ensure t
   :bind ("M-'" . casual-avy-tmenu))
 #+end_src
-* Language Server Protocol (LSP)
+* LSP Server Support
+** Language Server Protocol (LSP)
 ** LSP Mode
 #+begin_src emacs-lisp :load no
 (setq my/lsp-package "lsp")
@@ -1840,7 +1820,7 @@ Configure here the modes for which you'd like to run LSP mode.
 
   (use-package lsp-mssql  :hook (sql-mode . lsp))
   ;; (use-package
-  ;;  lsp-markdown 
+  ;;  lsp-markdown
   ;;  :config (add-hook 'markdown-mode-hook 'lsp-markdown))
 
   ;; ;; Automatically install lsp servers
@@ -1877,7 +1857,7 @@ This mode is used to run language servers in a docker container. At some point I
  'lsp-file-watch-ignored-directories "[/\\\\]\\.pytest_cache\\'")
 #+END_SRC
 
-* Eglot
+** Eglot
 #+begin_src emacs-lisp :load yes
 ;; (use-package project
 ;;   :ensure t
@@ -2007,7 +1987,9 @@ See also `eglot-server-capable' for :documentHighlightProvider."
                (eglot--lsp-position-to-point (plist-get range :end))))
          (iedit-add-occurrence-overlay start end))))))
 #+end_src
-* Python
+** Debug Adapter Protocal (DAP)
+* Programming Modes
+** Python
 #+begin_src emacs-lisp :load yes
 (require 'python)
 
@@ -2061,7 +2043,7 @@ See also `eglot-server-capable' for :documentHighlightProvider."
     . pip-requirements-mode)))
 #+end_src
 
-** Python Docstrings
+*** Python Docstrings
 #+begin_src emacs-lisp :load no
 (use-package
  buftra
@@ -2079,25 +2061,7 @@ See also `eglot-server-capable' for :documentHighlightProvider."
  :config (setq py-pyment-options '("--output=google")))
 #+end_src
 
-** MsPyls LSP
-Not using this in favor of Pyright
-#+begin_src emacs-lisp :load no
-(use-package
- lsp-python-ms
- :config
- (setq lsp-python-ms-cache "System")
- (setq lsp-python-ms-completion-add-brackets t)
- (setq lsp-python-ms-nupkg-channel "beta")
- (setq lsp-python-ms-log-level "Warning")
- (setq lsp-document-sync-method nil)
- (setq lsp-auto-execute-action nil)
-
- (setq lsp-python-ms-auto-install-server t)
-
- (add-to-list 'company-lsp-filter-candidates '(mspyls . t)))
-#+end_src
-
-** Pyright LSP
+*** Pyright LSP
 #+begin_src emacs-lisp :load no
 (add-hook 'python-mode-hook #'lsp-deferred)
 (setq lsp-diagnostics-disabled-modes
@@ -2114,7 +2078,7 @@ Not using this in favor of Pyright
   :config (setq lsp-pyright-log-level "trace"))
 #+end_src
 
-** Copying lines as a single line for pasting into the pdbpp debugger
+*** Copying lines as a single line for pasting into the pdbpp debugger
 #+begin_src emacs-lisp :load yes
 (defun python-multiline-to-singleline ()
   "Convert multi-line Python code in the current region to a single line with single spaces."
@@ -2292,7 +2256,8 @@ This one didn't work very well
  (setopt
   ellama-provider (make-llm-ollama :chat-model "codellama:34b")))
 #+end_src
-* Flycheck
+* Linting
+** Flycheck
 #+begin_src emacs-lisp :load no
 (use-package
  flycheck
@@ -2408,7 +2373,7 @@ I have my own little hook to open the flycheck buffer with ~M-C~, and close it a
 
 (define-key flycheck-mode-map (kbd "M-C") 'my/flycheck-list-errors)
 #+end_src
-* Flymake
+** Flymake
 ** Setup
 #+begin_src emacs-lisp :load yes
 (defun my-python-mode-setup ()
@@ -2584,6 +2549,24 @@ environment."
 ;;             (cons
 ;;              'tramp-completion-file-name-handler
 ;;              'my-filtered-tramp-ssh-completions))))))
+#+end_src
+* Dir Locals
+This really improves use with local variables. You get a highly visible warning when a dir-local file is unreadable or misconfigured.
+#+begin_src  emacs-lisp :load yes
+(defun my/dir-local-error-warning (orig-fun &rest args)
+  "Advice to display a warning on directory local variable read errors."
+  (condition-case err
+      (apply orig-fun args)
+    (error
+     (display-warning
+      'dir-locals
+      (format "Error reading .dir-locals.el: %s"
+              (error-message-string err))
+      :error))))
+
+(advice-add
+ 'hack-dir-local-variables
+ :around #'my/dir-local-error-warning)
 #+end_src
 * Java/Javascript/JSON
 #+begin_src emacs-lisp :load yes
@@ -2860,7 +2843,7 @@ This is really only used in the publishing script of my emacs config, I don't ne
  :after org
  :hook (org-mode-hook . org-appear-mode))
 #+end_src
-* Org Ref
+** Org Ref
 #+begin_src emacs-lisp :load no
 (use-package request)
 (use-package
@@ -2968,17 +2951,6 @@ This is currently broken for me.
        'ediff-setup-windows-plain)
  (setq ediff-diff-options "-w"))
 #+end_src
-* Multiple Cursors (MC)
-#+begin_src emacs-lisp :load yes
-(use-package
- multiple-cursors
- :config
- (global-set-key (kbd "C-M-j") 'mc/edit-lines)
- (global-set-key (kbd "C->") 'mc/mark-next-like-this)
- (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
- (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
- (global-set-key (kbd "C-M-=") 'mc/mark-all-symbols-like-this))
-#+END_SRC
 * Docker
 #+begin_src emacs-lisp :load yes
 (use-package
@@ -2988,7 +2960,6 @@ This is currently broken for me.
   :ensure t
   :bind ("C-c d" . docker))
 #+END_SRC
-* Debug Adapter Protocal (DAP)
 I'm currently not using DAP mode, and prefer to use python from the command line (vterm) with ~pdb~. Some day I'd like to learn this.
 #+begin_src emacs-lisp :load no
 (use-package
@@ -3181,142 +3152,7 @@ Combobulate seems like a cool idea, but I've found it to be more frustrating tha
  ;; (copy-different-key-bindings markdown-mode-map markdown-ts-mode-map)
  (copy-different-key-bindings sh-mode-map bash-ts-mode-map))
 #+end_src
-* Modeline
-** Telephone Line
-#+begin_src emacs-lisp :load no
-(use-package
- telephone-line
- :config
- (setq telephone-line-lhs
-       '((evil . (telephone-line-evil-tag-segment))
-         (accent
-          .
-          (telephone-line-vc-segment
-           telephone-line-erc-modified-channels-segment
-           telephone-line-process-segment))
-         (nil
-          .
-          (telephone-line-minor-mode-segment
-           telephone-line-buffer-segment))))
- (setq telephone-line-rhs
-       '((nil . (telephone-line-misc-info-segment))
-         (accent . (telephone-line-major-mode-segment))
-         (evil . (telephone-line-airline-position-segment))))
- (telephone-line-mode t))
-#+end_src
-
-** Doom Modeline
-Bugfix: Requires installing shrink path manually on linux. Not sure why.
-#+begin_src emacs-lisp :load no
-(use-package
- shrink-path
- :straight
- '(shrink-path :type git :host github :repo "zbelial/shrink-path.el"))
-(use-package
- doom-modeline
- :config
- (doom-modeline-mode 1)
- (setq doom-modeline-unicode-fallback t)
- (defun doom-modeline--project-root ()
-   "Get the path to the project root.
-Return nil if no project was found."
-   (or doom-modeline--project-root
-       (setq doom-modeline--project-root
-             (cond
-              ((and (memq
-                     doom-modeline-project-detection '(auto ffip))
-                    (fboundp 'ffip-project-root))
-               (let ((inhibit-message t))
-                 (ffip-project-root)))
-              ((and (memq
-                     doom-modeline-project-detection
-                     '(auto projectile))
-                    (bound-and-true-p projectile-mode))
-               (projectile-project-root))
-              ((and (memq
-                     doom-modeline-project-detection '(auto project))
-                    (fboundp 'project-current))
-               (when-let ((project (project-current)))
-                 (expand-file-name
-                  (if (fboundp 'project-root)
-                      (project-root project)
-                    (car
-                     (with-no-warnings
-                       (project-roots project))))))))))))
-#+end_src
-
-** Awesome Tray
-#+begin_src emacs-lisp :load no
-(use-package
- awesome-tray
- :straight
- '(awesome-tray
-   :type git
-   :host github
-   :repo "manateelazycat/awesome-tray")
- :init
- (setq awesome-tray-active-modules
-       '("buffer-name" "mode-name" "belong")) ;TODO: add "belong" back in after treesit
- :config (awesome-tray-mode 1) awesome-tray-active-modules)
-#+end_src
-
-** Diminish/Blackout
-I find these frustrating as I have to manually include every mode which might appear in the modeline. I'm not sure if there's a better way to do this.
-#+begin_src emacs-lisp :load no
-(use-package diminish)
-(diminish 'anzu-mode)
-(diminish 'ivy-mode)
-(diminish 'rainbow-mode)
-(diminish 'eldoc-mode)
-(diminish 'projectile-mode)
-(diminish 'blacken-mode)
-(diminish 'python-black-on-save-mode)
-(diminish 'which-key-mode)
-(diminish 'flycheck-mode)
-(add-hook 'undo-tree-mode-hook (lambda () (diminish 'undo-tree-mode)))
-(diminish 'auto-revert-mode)
-(diminish 'beacon-mode)
-(diminish 'all-the-icons-dired-mode)
-(diminish 'tree-sitter-hl-mode)
-
-(use-package blackout)
-(blackout 'ivy-mode)
-(blackout 'company-posframe-mode)
-(blackout 'company-mode)
-(diminish 'yas-mode)
-(blackout 'yas-minor-mode)
-(blackout 'rainbow-mode)
-(blackout 'which-key-mode)
-(blackout 'projectile-mode)
-(blackout 'git-gutter-mode)
-(blackout 'git-gutter+-mode)
-(blackout 'goggles-mode)
-(blackout 'org-roam-mode)
-(blackout 'polymode)
-(blackout 'poly-org-mode)
-(blackout 'smartparens-mode)
-(blackout 'visual-line-mode)
-(blackout 'anzu-mode)
-(blackout 'apheleia-mode)
-(blackout 'explain-pause-mode)
-(blackout 'volatile-highlights-mode)
-(blackout 'all-the-icons-dired-mode)
-(blackout 'jupyter-repl-interaction-mode)
-(blackout 'page-break-lines-mode)
-(blackout 'org-src-mode)
-(blackout 'whole-line-or-region-local-mode)
-(blackout 'smartparens-mode)
-(blackout 'tree-sitter-hl-mode)
-(blackout 'tree-sitter-mode)
-(blackout 'highlight-indent-guides-mode)
-(blackout 'copilot-mode)
-
-(diminish 'jupyter-repl-interaction-mode)
-(diminish 'page-break-lines-mode)
-(diminish 'org-src-mode)
-(diminish 'highlight-indent-guides)
-#+end_src
-* Colors and Theme
+* Appearance
 #+begin_src emacs-lisp :load yes
 ;; Treat all themes as safe; no query before use.
 (setf custom-safe-themes 't)
@@ -3378,4 +3214,163 @@ This may be needed to set the fringe to the new background color. Run it when st
           (lambda ()
             (when (fboundp 'cwm-update-fringe-background)
               (cwm-update-fringe-background))))
+#+end_src
+** Fonts
+#+begin_src emacs-lisp :load yes
+;; Font settings
+(if (eq system-type 'darwin)
+    (if (and (display-graphic-p) (> (x-display-pixel-width) 1440))
+        ;; Set default font larger if on a big screen
+        (set-face-font 'default "roboto mono-15")
+      ;; (set-face-font 'default "arial-15")
+
+      ;; else
+      (set-face-font 'default "roboto mono-14")
+      ;; (set-fontset-font "fontset-default" "Menlo 12")
+      )
+  ;; else
+  (if (not (eq window-system nil))
+      (if (and (display-graphic-p) (> (x-display-pixel-width) 1440))
+          ;; Set default font larger if on a big screen
+          (set-face-font 'default "roboto mono-12")
+        ;; else
+        (set-face-font 'default "roboto mono-12")
+        ;; (set-fontset-font "fontset-default" "Menlo 12")
+        )
+    ;; else
+    ))
+#+end_src
+** Diminish/Blackout
+I find these frustrating as I have to manually include every mode which might appear in the modeline. I'm not sure if there's a better way to do this.
+#+begin_src emacs-lisp :load no
+(use-package diminish)
+(diminish 'anzu-mode)
+(diminish 'ivy-mode)
+(diminish 'rainbow-mode)
+(diminish 'eldoc-mode)
+(diminish 'projectile-mode)
+(diminish 'blacken-mode)
+(diminish 'python-black-on-save-mode)
+(diminish 'which-key-mode)
+(diminish 'flycheck-mode)
+(add-hook 'undo-tree-mode-hook (lambda () (diminish 'undo-tree-mode)))
+(diminish 'auto-revert-mode)
+(diminish 'beacon-mode)
+(diminish 'all-the-icons-dired-mode)
+(diminish 'tree-sitter-hl-mode)
+
+(use-package blackout)
+(blackout 'ivy-mode)
+(blackout 'company-posframe-mode)
+(blackout 'company-mode)
+(diminish 'yas-mode)
+(blackout 'yas-minor-mode)
+(blackout 'rainbow-mode)
+(blackout 'which-key-mode)
+(blackout 'projectile-mode)
+(blackout 'git-gutter-mode)
+(blackout 'git-gutter+-mode)
+(blackout 'goggles-mode)
+(blackout 'org-roam-mode)
+(blackout 'polymode)
+(blackout 'poly-org-mode)
+(blackout 'smartparens-mode)
+(blackout 'visual-line-mode)
+(blackout 'anzu-mode)
+(blackout 'apheleia-mode)
+(blackout 'explain-pause-mode)
+(blackout 'volatile-highlights-mode)
+(blackout 'all-the-icons-dired-mode)
+(blackout 'jupyter-repl-interaction-mode)
+(blackout 'page-break-lines-mode)
+(blackout 'org-src-mode)
+(blackout 'whole-line-or-region-local-mode)
+(blackout 'smartparens-mode)
+(blackout 'tree-sitter-hl-mode)
+(blackout 'tree-sitter-mode)
+(blackout 'highlight-indent-guides-mode)
+(blackout 'copilot-mode)
+
+(diminish 'jupyter-repl-interaction-mode)
+(diminish 'page-break-lines-mode)
+(diminish 'org-src-mode)
+(diminish 'highlight-indent-guides)
+#+end_src
+** Modeline
+*** Telephone Line
+#+begin_src emacs-lisp :load no
+(use-package
+ telephone-line
+ :config
+ (setq telephone-line-lhs
+       '((evil . (telephone-line-evil-tag-segment))
+         (accent
+          .
+          (telephone-line-vc-segment
+           telephone-line-erc-modified-channels-segment
+           telephone-line-process-segment))
+         (nil
+          .
+          (telephone-line-minor-mode-segment
+           telephone-line-buffer-segment))))
+ (setq telephone-line-rhs
+       '((nil . (telephone-line-misc-info-segment))
+         (accent . (telephone-line-major-mode-segment))
+         (evil . (telephone-line-airline-position-segment))))
+ (telephone-line-mode t))
+#+end_src
+
+*** Doom Modeline
+Bugfix: Requires installing shrink path manually on linux. Not sure why.
+#+begin_src emacs-lisp :load no
+(use-package
+ shrink-path
+ :straight
+ '(shrink-path :type git :host github :repo "zbelial/shrink-path.el"))
+(use-package
+ doom-modeline
+ :config
+ (doom-modeline-mode 1)
+ (setq doom-modeline-unicode-fallback t)
+ (defun doom-modeline--project-root ()
+   "Get the path to the project root.
+Return nil if no project was found."
+   (or doom-modeline--project-root
+       (setq doom-modeline--project-root
+             (cond
+              ((and (memq
+                     doom-modeline-project-detection '(auto ffip))
+                    (fboundp 'ffip-project-root))
+               (let ((inhibit-message t))
+                 (ffip-project-root)))
+              ((and (memq
+                     doom-modeline-project-detection
+                     '(auto projectile))
+                    (bound-and-true-p projectile-mode))
+               (projectile-project-root))
+              ((and (memq
+                     doom-modeline-project-detection '(auto project))
+                    (fboundp 'project-current))
+               (when-let ((project (project-current)))
+                 (expand-file-name
+                  (if (fboundp 'project-root)
+                      (project-root project)
+                    (car
+                     (with-no-warnings
+                       (project-roots project))))))))))))
+#+end_src
+
+*** Awesome Tray
+#+begin_src emacs-lisp :load no
+(use-package
+ awesome-tray
+ :straight
+ '(awesome-tray
+   :type git
+   :host github
+   :repo "manateelazycat/awesome-tray")
+ :init
+ (setq awesome-tray-active-modules
+       '("buffer-name" "mode-name" "belong")) ;TODO: add "belong" back in after treesit
+ :config (awesome-tray-mode 1) awesome-tray-active-modules)
 #+end_src

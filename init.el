@@ -42,8 +42,6 @@
       'helpful--find-by-macroexpanding
       :around #'literate-elisp-helpful--find-by-macroexpanding)))
 
-(require 'org-element) ; TODO: until org-element--cache-active-p autoload fixed in literate-elisp upstream
-
 ; Start literate load
 (literate-elisp-load (expand-file-name "init.org" user-emacs-directory))
 
