@@ -16,14 +16,16 @@
 #+end_src
 ** Window size
 #+begin_src emacs-lisp :load yes
-(add-to-list 'default-frame-alist '(width . 130))  ; Set width to 80 columns
-(add-to-list 'default-frame-alist '(height . 46)) ; Set height to 24 lines
+(add-to-list 'default-frame-alist '(width . 130)) ; Set width to 80 columns
+(add-to-list 'default-frame-alist '(height . 40)) ; Set height to 24 lines
 
 (defun center-frame ()
   "Center the frame on the screen, respecting the size set in default-frame-alist."
   (interactive)
-  (let* ((desired-width (or (cdr (assq 'width default-frame-alist)) 80))
-         (desired-height (or (cdr (assq 'height default-frame-alist)) 24))
+  (let* ((desired-width
+          (or (cdr (assq 'width default-frame-alist)) 80))
+         (desired-height
+          (or (cdr (assq 'height default-frame-alist)) 24))
          (screen-width (x-display-pixel-width))
          (screen-height (x-display-pixel-height))
          (char-width (frame-char-width))
@@ -32,13 +34,16 @@
          (frame-pixel-height (* desired-height char-height))
          (left (max 0 (/ (- screen-width frame-pixel-width) 2)))
          (top (max 0 (/ (- screen-height frame-pixel-height) 2))))
-    (message "Screen size: %dx%d, Desired frame size: %dx%d, Position: (%d, %d)"
-             screen-width screen-height desired-width desired-height left top)
+    (message
+     "Screen size: %dx%d, Desired frame size: %dx%d, Position: (%d, %d)"
+     screen-width screen-height desired-width desired-height left top)
     (set-frame-size (selected-frame) desired-width desired-height)
     (set-frame-position (selected-frame) left top)
     (message "Frame set to %dx%d at (%d, %d)"
-             (frame-width) (frame-height)
-             (frame-parameter nil 'left) (frame-parameter nil 'top))))
+             (frame-width)
+             (frame-height)
+             (frame-parameter nil 'left)
+             (frame-parameter nil 'top))))
 
 ;; Call this function when Emacs starts
 (add-hook 'window-setup-hook #'center-frame)
@@ -131,9 +136,8 @@ BUFFER may be either a buffer or its name (a string)."
  ;; Add goto-address-mode to vterm-mode-hook for clickable links
  (add-hook 'vterm-mode-hook 'goto-address-mode))
 #+end_src
-
 ** Vterm Toggle
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package
  vterm-toggle
  :after vterm
@@ -843,12 +847,7 @@ I'm trying migrating from ~projectile~ onto ~project.el~ for its purported benef
    (split-string
     (shell-command-to-string
      "fd . -t f -H -E .git -E .gitignore -E '**/venv/**' -E '**/node_modules/**'")
-    "\n" t))
-
- ;; Ensure project list is saved after adding new projects
- (advice-add
-  'project-remember-project
-  :after #'project--write-project-list))
+    "\n" t)))
 #+end_src
 ** Projectile
 #+begin_src emacs-lisp :load no
