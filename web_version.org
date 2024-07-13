@@ -48,14 +48,4 @@ I love and rely heavily on ~straight.el~.
 {% endhighlight %}
 #+END_EXPORT
 
-* Package Management
-I love and rely heavily on ~straight.el~.
-#+BEGIN_EXPORT markdown
-{% highlight emacs-lisp %}
-#+END_EXPORT
-#+include: "packages-settings.el" :minlevel 1
-#+BEGIN_EXPORT markdown
-{% endhighlight %}
-#+END_EXPORT
-
 #+include: "init.org" :minlevel 1
