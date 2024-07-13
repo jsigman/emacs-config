@@ -280,7 +280,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
  :config (whole-line-or-region-global-mode t))
 #+end_src
 ** Popper
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package
  popper
  :bind
@@ -317,7 +317,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
  (define-key ibuffer-mode-map (kbd "M-o") nil))
 #+end_src
 ** Ace popup
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 ;; Use ace-popup-menu for completions
 (use-package
  ace-popup-menu
@@ -332,6 +332,9 @@ I think this is a little too aggressive right now, but it's a cool idea.
 (setq native-comp-async-report-warnings-errors nil)
 ;; Show the line number of the cursor in the mode bar at the bottom of each buffer
 (setq line-number-mode t)
+#+end_src
+** Bells
+#+begin_src emacs-lisp :load yes
 ;; Disable the loud bell
 (setq ring-bell-function
       (lambda ()
@@ -341,7 +344,9 @@ I think this is a little too aggressive right now, but it's a cool idea.
                                (lambda (fg)
                                  (set-face-foreground 'mode-line fg))
                                orig-fg))))
-
+#+end_src
+** Backups
+#+begin_src emacs-lisp :load yes
 ;; Make sure all backup files only live in one place
 (setq backup-directory-alist `((".*" . ,temporary-file-directory)))
 (setq auto-save-file-name-transforms
@@ -381,7 +386,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
 )
 #+end_src
 ** Fish
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package fish-mode)
 #+end_src
 ** Window movement keybindings
@@ -393,29 +398,10 @@ I think this is a little too aggressive right now, but it's a cool idea.
 
 (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
 #+END_SRC
-** Sqlite
-So far, I am unable to find a way to compile sqlite3 on my own, but I would love to be able to do this with straight package management.
-#+begin_src emacs-lisp :load yes
-;; Override the 'yes-or-no-p' temporarily
-(let ((original-yes-or-no-p (symbol-function 'yes-or-no-p)))
-  (fset 'yes-or-no-p (lambda (&rest args) t))
-
-  ;; Load the sqlite3 package
-  (use-package sqlite3
-    :straight (sqlite3
-               :type git
-               :host github
-               :repo "pekingduck/emacs-sqlite3-api"
-               :files ("*.c" "*.h" "*.el" "Makefile")))
-
-  ;; Restore the original function
-  (fset 'yes-or-no-p original-yes-or-no-p))
-#+END_SRC
 ** Anzu
 #+begin_src emacs-lisp :load yes
 (use-package
   anzu
-  
   :bind
   (([remap query-replace] . #'anzu-query-replace)
    ([remap query-replace-regexp] . #'anzu-query-replace-regexp))
@@ -424,7 +410,6 @@ So far, I am unable to find a way to compile sqlite3 on my own, but I would love
 ** Line Highlighting
 #+begin_src emacs-lisp :load yes
 (use-package lin :init (lin-global-mode t))
-
 (use-package
  hl-line
  :config
@@ -574,38 +559,12 @@ Because I'm trying this out, I'm going to disable LSP's breadcrumb mode, which I
 (setq show-paren-delay 0)
 (show-paren-mode t)
 #+end_src
-** Dotenv Mode
-#+begin_src emacs-lisp :load yes
-(use-package dotenv-mode)
-#+end_src
 ** Rsync-mode
 Loving use of my old colleague [[https://github.com/r-zip][Ryan Pilgrim]]'s package to sync accross our secure environments. Edit: Now trying out handcrafted Unison mode.
 #+begin_src emacs-lisp :load no
 (use-package
  rsync-mode
  :straight '(rsync-mode :type git :host github :repo "jsigman/rsync-mode"))
-#+end_src
-** Shortcuts
-#+begin_src emacs-lisp :load yes
-(defun open-remote-dired ()
-  "Opens a Dired buffer at the path specified by REMOTE_HOST and REMOTE_PATH environment variables."
-  (interactive)
-  (condition-case nil
-      (let ((remote-host (getenv "REMOTE_HOST"))
-            (remote-path (getenv "REMOTE_PATH")))
-        (if (and remote-host remote-path)
-            (progn
-              (message "Attempting to open remote directory...")
-              (dired (concat "/ssh:" remote-host ":" remote-path))
-              (message "Remote directory opened."))
-          (message
-           "Error: REMOTE_HOST or REMOTE_PATH environment variables not set.")))
-    (error
-     (message
-      "Error: Unable to open remote directory. Check your connection and environment variables."))))
-
-;; Bind the function to M-R globally
-(global-set-key (kbd "M-R") 'open-remote-dired)
 #+end_src
 ** Unison mode
 #+begin_src emacs-lisp :load yes
@@ -790,9 +749,6 @@ If non-nil, Unison will only propagate changes from `unison-root1` to `unison-ro
 ** Indentation
 #+begin_src emacs-lisp :load yes
 (electric-indent-mode 0)
-;; (use-package
-;;  aggressive-indent
-;;  :config (aggressive-indent-global-mode nil))
 #+end_src
 * Dired
 #+begin_src emacs-lisp :load yes
@@ -1092,7 +1048,6 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
  ;;       #'command-completion-default-include-p)
  )
 #+end_src
-
 ** Vertico
 #+begin_src emacs-lisp :load yes
 ;; Enable vertico
@@ -1370,8 +1325,8 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
  :config (add-to-list 'completion-at-point-functions #'yasnippet-capf))
 #+END_SRC
 * LSP Server Support
-** Language Server Protocol (LSP)
 ** LSP Mode
+*** lsp package setup
 #+begin_src emacs-lisp :load no
 (setq my/lsp-package "lsp")
 ;------------------------LSP---------------------------;
@@ -1430,8 +1385,36 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
  (lsp-completion-mode . my/lsp-mode-setup-completion)
  ;; (lsp-mode . lsp-ui-mode)
  )
+
+(add-hook 'LaTeX-mode-hook #'lsp-deferred)
+(add-hook 'yaml-base-mode-hook #'lsp-deferred)
+(add-hook 'json-mode-hook #'lsp-deferred)
+(add-hook 'dockerfile-mode-hook #'lsp-deferred)
+
+(setq lsp-enable-on-type-formatting t)
+(setq lsp-enable-indentation t)
+
+(add-hook 'sh-mode-hook #'lsp-deferred)
+
+(use-package lsp-mssql :hook (sql-mode . lsp))
+;; (use-package
+;;  lsp-markdown
+;;  :config (add-hook 'markdown-mode-hook 'lsp-markdown))
+(add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\venv\\'")
+(add-to-lis 'lsp-file-watch-ignored-directories "[/\\\\]\\.dvc\\'")
+(add-to-list
+ 'lsp-file-watch-ignored-directories "[/\\\\]\\kubernetes\\'")
+(add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\notes\\'")
+(add-to-list
+ 'lsp-file-watch-ignored-directories "[/\\\\]\\checkpoints\\'")
+(add-to-list
+ 'lsp-file-watch-ignored-directories "[/\\\\]\\experiments\\'")
+(add-to-list
+ 'lsp-file-watch-ignored-directories "[/\\\\]\\.mypy_cache\\'")
+(add-to-list
+ 'lsp-file-watch-ignored-directories "[/\\\\]\\.pytest_cache\\'")
 #+end_src
-** LSP UI
+*** lsp-ui
 For right now, I don't really like LSP UI, let's not load this config
 #+begin_src emacs-lisp :load no
 (use-package
@@ -1495,8 +1478,7 @@ For right now, I don't really like LSP UI, let's not load this config
   ("<return" . lsp-ui-imenu--view)
   ("RET" . lsp-ui-imenu--view)))
 #+end_src
-
-** LSP with iedit
+*** lsp-iedit
 I'm now using iedit instead of my hand-crafted [[https://github.com/jsigman/lsp-mc][lsp-mc]] mode. It is integrated and works slightly better.
 #+begin_src emacs-lisp :load no
 (use-package iedit :init (setq iedit-toggle-key-default (kbd "C-,")))
@@ -1522,64 +1504,30 @@ I'm now using iedit instead of my hand-crafted [[https://github.com/jsigman/lsp-
     '(lsp-mc :type git :host github :repo "jsigman/lsp-mc"))
    (require 'lsp-mc) (add-hook 'lsp-mode-hook 'lsp-mc-mode)))
 #+end_src
-** Modes for LSP
-Configure here the modes for which you'd like to run LSP mode.
-#+begin_src emacs-lisp :load no
-  (add-hook 'LaTeX-mode-hook #'lsp-deferred)
-  (add-hook 'yaml-base-mode-hook #'lsp-deferred)
-  (add-hook 'json-mode-hook #'lsp-deferred)
-  (add-hook 'dockerfile-mode-hook #'lsp-deferred)
-
-  (setq lsp-enable-on-type-formatting t)
-  (setq lsp-enable-indentation t)
-
-  (add-hook 'sh-mode-hook #'lsp-deferred)
-
-  (use-package lsp-mssql  :hook (sql-mode . lsp))
-  ;; (use-package
-  ;;  lsp-markdown
-  ;;  :config (add-hook 'markdown-mode-hook 'lsp-markdown))
-
-  ;; ;; Automatically install lsp servers
-  (defun my/install-lsp-servers ()
-    (interactive)
-    (lsp-install-server t 'pyright)
-    (lsp-install-server t 'xmlls)
-    (lsp-install-server t 'yamlls)
-    (lsp-install-server t 'html-ls)
-    (lsp-install-server t 'json-ls)
-    (lsp-install-server t 'dockerfile-ls)
-    (lsp-install-server t 'bash-ls))
-#+end_src
-** LSP Docker
+*** LSP Docker
 This mode is used to run language servers in a docker container. At some point I'd like to use this.
 #+begin_src emacs-lisp :load no
 (use-package lsp-docker)
 #+end_src
-
-** LSP File Watchers
+*** Pyright LSP
 #+begin_src emacs-lisp :load no
-(add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\venv\\'")
-(add-to-lis 'lsp-file-watch-ignored-directories "[/\\\\]\\.dvc\\'")
-(add-to-list
- 'lsp-file-watch-ignored-directories "[/\\\\]\\kubernetes\\'")
-(add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\notes\\'")
-(add-to-list
- 'lsp-file-watch-ignored-directories "[/\\\\]\\checkpoints\\'")
-(add-to-list
- 'lsp-file-watch-ignored-directories "[/\\\\]\\experiments\\'")
-(add-to-list
- 'lsp-file-watch-ignored-directories "[/\\\\]\\.mypy_cache\\'")
-(add-to-list
- 'lsp-file-watch-ignored-directories "[/\\\\]\\.pytest_cache\\'")
-#+END_SRC
+(add-hook 'python-mode-hook #'lsp-deferred)
+(setq lsp-diagnostics-disabled-modes
+      '(python-mode python-mode python-ts-mode))
+(use-package
+  lsp-pyright
+  :straight
+  '(lsp-pyright :type git :host github :repo "emacs-lsp/lsp-pyright")
+  :init (setq lsp-pyright-multi-root nil)
+  (setq lsp-pyright-auto-import-completions nil)
+  (setq lsp-pyright-diagnostic-mode "workspace")
+  (setq lsp-pyright-typechecking-mode "basic")
+  (setq lsp-pyright-disable-organize-imports t)
+  :config (setq lsp-pyright-log-level "trace"))
+#+end_src
 
 ** Eglot
 #+begin_src emacs-lisp :load yes
-;; (use-package project
-;;   :ensure t
-;;   :demand t)
-
 (use-package
  eglot
  :ensure t
@@ -1665,7 +1613,7 @@ This mode is used to run language servers in a docker container. At some point I
   ("C-c l f" . eglot-format)
   ("C-c l d" . eglot-find-declaration)))
 #+end_src
-** Eglot-iedit
+*** Eglot-iedit
 #+begin_src emacs-lisp :load yes
 (use-package
  iedit
@@ -1717,30 +1665,27 @@ See also `eglot-server-capable' for :documentHighlightProvider."
 (use-package
  lisp-extra-font-lock
  :config (lisp-extra-font-lock-global-mode 1))
-
 (use-package elisp-docstring-mode)
 (use-package
  highlight-function-calls
  :hook (emacs-lisp-mode . highlight-function-calls-mode))
-
-(use-package format-all :hook (elisp-mode . format-all-mode))
 (use-package
  inspector
  :straight
  '(inspector :type git :host github :repo "mmontone/emacs-inspector"))
-
 (setq eval-expression-print-length nil)
 (setq eval-expression-print-level nil)
 #+end_src
 ** Python
 #+begin_src emacs-lisp :load yes
-(require 'python)
-
-(setq
- python-shell-interpreter "python3"
- python-shell-interpreter-args "-i")
-
-(define-key python-mode-map (kbd "C-c C-c") nil)
+(use-package
+ python
+ :init
+ (setq python-shell-interpreter "python3")
+ (setq python-shell-interpreter-args "-i")
+ :config
+ (define-key python-mode-map (kbd "C-c C-c") nil)
+ (define-key python-mode-map (kbd "C-c C-p") nil))
 
 (use-package
  highlight-indent-guides
@@ -1773,10 +1718,6 @@ See also `eglot-server-capable' for :documentHighlightProvider."
       ;; ("Any" .      #x2754)
       ;; ("Union" .    #x22c3)
       ))))
-
-;; python mode keymap
-(define-key python-mode-map (kbd "C-c C-p") nil)
-
 (use-package
  pip-requirements
  :init
@@ -1785,8 +1726,7 @@ See also `eglot-server-capable' for :documentHighlightProvider."
   `(,(rx "requirements" (zero-or-more anything) ".in" string-end)
     . pip-requirements-mode)))
 #+end_src
-
-*** Python Docstrings
+*** Docstrings
 #+begin_src emacs-lisp :load no
 (use-package
  buftra
@@ -1803,24 +1743,6 @@ See also `eglot-server-capable' for :documentHighlightProvider."
  :after python
  :config (setq py-pyment-options '("--output=google")))
 #+end_src
-
-*** Pyright LSP
-#+begin_src emacs-lisp :load no
-(add-hook 'python-mode-hook #'lsp-deferred)
-(setq lsp-diagnostics-disabled-modes
-      '(python-mode python-mode python-ts-mode))
-(use-package
-  lsp-pyright
-  :straight
-  '(lsp-pyright :type git :host github :repo "emacs-lsp/lsp-pyright")
-  :init (setq lsp-pyright-multi-root nil)
-  (setq lsp-pyright-auto-import-completions nil)
-  (setq lsp-pyright-diagnostic-mode "workspace")
-  (setq lsp-pyright-typechecking-mode "basic")
-  (setq lsp-pyright-disable-organize-imports t)
-  :config (setq lsp-pyright-log-level "trace"))
-#+end_src
-
 *** Copying lines as a single line for pasting into the pdbpp debugger
 #+begin_src emacs-lisp :load yes
 (defun python-multiline-to-singleline ()
@@ -1893,6 +1815,10 @@ See also `eglot-server-capable' for :documentHighlightProvider."
  ;; Any additional configuration you might want goes here
  )
 #+END_SRC
+** Dotenv Mode
+#+begin_src emacs-lisp :load yes
+(use-package dotenv-mode :defer t)
+#+end_src
 ** Latex
 #+begin_src emacs-lisp :load yes
 (use-package
@@ -1923,10 +1849,29 @@ See also `eglot-server-capable' for :documentHighlightProvider."
  matlab-mode
  '(matlab-mode
    :type git
-   :repo "https://git.code.sf.net/p/matlab-emacs/src"))
+   :repo "https://git.code.sf.net/p/matlab-emacs/src")
+ :defer t)
 (require 'matlab)
 (setq matlab-shell-command-switches '("-nodesktop" "-nosplash"))
 #+end_src
+** SQL
+So far, I am unable to find a way to compile sqlite3 on my own, but I would love to be able to do this with straight package management.
+#+begin_src emacs-lisp :load yes
+;; Override the 'yes-or-no-p' temporarily
+(let ((original-yes-or-no-p (symbol-function 'yes-or-no-p)))
+  (fset 'yes-or-no-p (lambda (&rest args) t))
+
+  ;; Load the sqlite3 package
+  (use-package sqlite3
+    :straight (sqlite3
+               :type git
+               :host github
+               :repo "pekingduck/emacs-sqlite3-api"
+               :files ("*.c" "*.h" "*.el" "Makefile")))
+
+  ;; Restore the original function
+  (fset 'yes-or-no-p original-yes-or-no-p))
+#+END_SRC
 ** Yaml
 #+begin_src emacs-lisp :load yes
 (use-package yaml-mode)
@@ -2270,6 +2215,25 @@ I have my own little hook to open the flycheck buffer with ~M-C~, and close it a
 (setq vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
                                    vc-ignore-dir-regexp
                                    tramp-file-name-regexp))
+(defun open-remote-dired ()
+  "Opens a Dired buffer at the path specified by REMOTE_HOST and REMOTE_PATH environment variables."
+  (interactive)
+  (condition-case nil
+      (let ((remote-host (getenv "REMOTE_HOST"))
+            (remote-path (getenv "REMOTE_PATH")))
+        (if (and remote-host remote-path)
+            (progn
+              (message "Attempting to open remote directory...")
+              (dired (concat "/ssh:" remote-host ":" remote-path))
+              (message "Remote directory opened."))
+          (message
+           "Error: REMOTE_HOST or REMOTE_PATH environment variables not set.")))
+    (error
+     (message
+      "Error: Unable to open remote directory. Check your connection and environment variables."))))
+
+;; Bind the function to M-R globally
+(global-set-key (kbd "M-R") 'open-remote-dired)
 #+end_src
 ** Local PATH
 #+begin_src emacs-lisp :load yes
