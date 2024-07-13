@@ -213,6 +213,22 @@ I think this is a little too aggressive right now, but it's a cool idea.
  (cwm-update-fringe-background))
 #+end_src
 * Miscellaneous
+** Global Keybindings
+#+begin_src emacs-lisp :load yes
+(global-set-key (kbd "M-k") (lambda () (interactive) (kill-this-buffer nil)))
+(global-set-key (kbd "C-c C-b") 'compile)
+(global-set-key (kbd "M-0") 'delete-window)
+(global-set-key (kbd "M-1") 'delete-other-windows)
+(global-set-key (kbd "M-2") 'split-window-below)
+(global-set-key (kbd "M-3") 'split-window-right)
+
+; Unbind reverse search because we'll use swiper
+(global-unset-key (kbd "C-r"))
+(global-set-key (kbd "M-u") 'upcase-dwim)
+(global-set-key (kbd "M-l") 'downcase-dwim)
+(global-set-key (kbd "C-.") 'xref-find-definitions-other-window)
+(define-key global-map (kbd "RET") 'newline-and-indent)
+#+end_src
 ** Font Lock
 #+begin_src emacs-lisp :load no
 (setq font-lock-support-mode 'jit-lock-mode)
@@ -433,7 +449,7 @@ I find this breaks browsing of long json files, more than it helps me out.
  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
  (global-set-key (kbd "C-M-=") 'mc/mark-all-symbols-like-this))
 #+END_SRC
-* Dashboard
+** Dashboard
 #+begin_src emacs-lisp :load yes
 (use-package
  dashboard
@@ -490,190 +506,7 @@ I find this breaks browsing of long json files, more than it helps me out.
 
  (dashboard-setup-startup-hook))
 #+end_src
-* Icons
-** All the icons
-#+begin_src emacs-lisp :load yes
-(use-package all-the-icons)
-(use-package
- all-the-icons-ibuffer
- :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
-
-;; I don't think I like buffer expose after all
-(use-package
- all-the-icons-completion
-
- :config (all-the-icons-completion-mode)
- :hook (marginalia-mode . all-the-icons-completion-marginalia-setup))
-#+end_src
-** SVG Support
-#+begin_src emacs-lisp :load yes
-; Re-enable with SVG support
-(use-package
- svg-lib
- :straight '(svg-lib :host github :repo "emacs-straight/svg-lib"))
-(use-package
- kind-icon
- :straight '(kind-icon :host github :repo "jdtsmith/kind-icon")
- :ensure t
- :after corfu
- :config
- ; On my linux machine, I need to use smaller icons like this due to the 4k display
- (when (eq system-type 'gnu/linux)
-   (setq kind-icon-default-style
-         '(:padding
-           -1
-           :stroke 0
-           :margin 0
-           :radius 0
-           :height 0.5
-           :scale 1.0)))
- :custom
- (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
- :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
-#+end_src
-** Fuzzy
-#+begin_src emacs-lisp :load yes
-(use-package fuzzy)
-(use-package fuzzy-match)
-#+end_src
-
-** Free keys
-#+begin_src emacs-lisp :load yes
-
-(use-package free-keys)
-(use-package restart-emacs)
-; ---- Auto Revert Modes ----- ;
-#+end_src
-** Auto Revert on Images
-#+begin_src emacs-lisp :load yes
-(autoload 'eimp-mode "eimp" "Emacs Image Manipulation Package." t)
-(add-hook 'image-mode-hook 'auto-revert-mode)
-
-; --- CSV --- ;
-#+end_src
-** CSV Mode
-#+begin_src emacs-lisp :load yes
-(use-package
- csv-mode
- :straight
- '(csv-mode :type git :host github :repo "emacsmirror/csv-mode"))
-
-(use-package
- explain-pause-mode
- :straight
- '(explain-pause-mode
-   :type git
-   :host github
-   :repo "lastquestion/explain-pause-mode"))
-
-;; use helpful instead of the normal help buffers
-;; Note that the built-in `describe-function' includes both functions
-;; and macros. `helpful-function' is functions only, so we provide
-;; `helpful-callable' as a drop-in replacement.
-(use-package
- helpful
- :defer t
- ;; TODO: Add these back in when helpful plays nicely with literate-elisp
- ;; :bind
- ;; ("C-h f" . helpful-callable)
- ;; ("C-h v" . helpful-variable)
- ;; ("C-h k" . helpful-key)
- )
-
-(use-package
- dimmer
- :config
- (dimmer-configure-which-key)
- (dimmer-configure-org)
- (dimmer-configure-posframe)
- (dimmer-configure-magit)
- (dimmer-configure-hydra)
-
- (setq dimmer-fraction 0.15)
- (dimmer-mode t))
-
-(use-package
- volatile-highlights
-
- :config (volatile-highlights-mode t))
-
-(use-package hl-todo :init (global-hl-todo-mode))
-#+end_src
-* Autoformatting
-** Apheleia
-#+begin_src emacs-lisp :load yes
-(use-package
- apheleia
- :config
- (setf (alist-get 'isort apheleia-formatters)
-       '("isort" "--stdout" "-"))
- (setf (alist-get 'python-ts-mode apheleia-mode-alist) '(isort black))
- (add-to-list
-  'apheleia-formatters
-  '(prettier-toml
-    npx "prettier" "--stdin-filepath" filepath "--parser=toml"))
- (add-to-list 'apheleia-mode-alist '(conf-toml-mode . prettier-toml))
- (defun apheleia-indent-region+ (orig scratch callback)
-   (with-current-buffer scratch
-     (setq-local indent-line-function
-                 (buffer-local-value 'indent-line-function orig))
-     (indent-region (point-min) (point-max))
-     (funcall callback scratch)))
-
- (push '(jsonian-mode . prettier-json) apheleia-mode-alist)
- (setq apheleia-mode-alist
-       (assq-delete-all 'emacs-lisp-mode apheleia-mode-alist))
- (apheleia-global-mode t))
-#+end_src
-** Elisp Autofmt
-#+begin_src emacs-lisp :load yes
-(use-package
- elisp-autofmt
- :commands (elisp-autofmt-mode elisp-autofmt-buffer)
- :hook (emacs-lisp-mode . elisp-autofmt-mode)
- :init (setq elisp-autofmt-check-elisp-autofmt-exists 'always)
- :straight
- '(elisp-autofmt
-   ;; :files (:defaults "elisp-autofmt")
-   :host nil
-   :type git
-   :repo "https://codeberg.org/ideasman42/emacs-elisp-autofmt.git")
- :config (setq elisp-autofmt-on-save-p nil))
-#+end_src
-** Whitespace butler
-#+begin_src emacs-lisp :load yes
-(use-package ws-butler
-:hook (prog-mode . ws-butler-mode)
-:hook (org-mode . ws-butler-mode))
-#+end_src
-** Indentation
-#+begin_src emacs-lisp :load yes
-(electric-indent-mode 0)
-;; (use-package
-;;  aggressive-indent
-;;  :config (aggressive-indent-global-mode nil))
-#+end_src
-* Global Keybindings
-#+begin_src emacs-lisp :load yes
-(global-set-key (kbd "M-k") (lambda () (interactive) (kill-this-buffer nil)))
-(global-set-key (kbd "C-c C-b") 'compile)
-(global-set-key (kbd "M-0") 'delete-window)
-(global-set-key (kbd "M-1") 'delete-other-windows)
-(global-set-key (kbd "M-2") 'split-window-below)
-(global-set-key (kbd "M-3") 'split-window-right)
-
-; Unbind reverse search because we'll use swiper
-(global-unset-key (kbd "C-r"))
-(global-set-key (kbd "M-u") 'upcase-dwim)
-(global-set-key (kbd "M-l") 'downcase-dwim)
-(global-set-key (kbd "C-.") 'xref-find-definitions-other-window)
-(define-key global-map (kbd "RET") 'newline-and-indent)
-#+end_src
-* Dotenv Mode
-#+begin_src emacs-lisp :load yes
-(use-package dotenv-mode)
-#+end_src
-* Breadcrumb mode
+** Breadcrumb mode
 Because I'm trying this out, I'm going to disable LSP's breadcrumb mode, which I've been disappointed with.
 #+begin_src emacs-lisp :load no
 (use-package
@@ -681,15 +514,51 @@ Because I'm trying this out, I'm going to disable LSP's breadcrumb mode, which I
  :straight '(breadcrumb :type git :host github :repo "joaotavora/breadcrumb")
  :config (breadcrumb-mode t))
 #+end_src
-* Rsync-mode
+** Parens
+#+begin_src emacs-lisp :load yes
+(setq show-paren-when-point-inside-paren 't)
+(setq show-paren-style 'mixed)
+(setq show-paren-context-when-offscreen 't)
+
+(use-package
+ elec-pair
+ :config ;; Disable electric pair in minibuffer
+ (defun my/inhibit-electric-pair-mode (char)
+   (or (minibufferp) (electric-pair-conservative-inhibit char)))
+ (setq electric-pair-inhibit-predicate
+       #'my/inhibit-electric-pair-mode)
+
+ (electric-pair-mode t)
+ ;; The ‘<’ and ‘>’ are not ‘parenthesis’, so give them no compleition.
+ (setq electric-pair-inhibit-predicate
+       (lambda (c)
+         (or (member c '(?< ?> ?~))
+             (electric-pair-default-inhibit c)))))
+
+(setq show-paren-context-when-offscreen t)
+(setq show-paren-style 'mixed)
+
+
+;; Treat ‘<’ and ‘>’ as if they were words, instead of ‘parenthesis’.
+(modify-syntax-entry ?< "w<")
+(modify-syntax-entry ?> "w>")
+
+;; Show matching parens
+(setq show-paren-delay 0)
+(show-paren-mode t)
+#+end_src
+** Dotenv Mode
+#+begin_src emacs-lisp :load yes
+(use-package dotenv-mode)
+#+end_src
+** Rsync-mode
 Loving use of my old colleague [[https://github.com/r-zip][Ryan Pilgrim]]'s package to sync accross our secure environments. Edit: Now trying out handcrafted Unison mode.
 #+begin_src emacs-lisp :load no
 (use-package
  rsync-mode
  :straight '(rsync-mode :type git :host github :repo "jsigman/rsync-mode"))
 #+end_src
-* Shortcuts
-** Jump to remote
+** Shortcuts
 #+begin_src emacs-lisp :load yes
 (defun open-remote-dired ()
   "Opens a Dired buffer at the path specified by REMOTE_HOST and REMOTE_PATH environment variables."
@@ -711,7 +580,7 @@ Loving use of my old colleague [[https://github.com/r-zip][Ryan Pilgrim]]'s pack
 ;; Bind the function to M-R globally
 (global-set-key (kbd "M-R") 'open-remote-dired)
 #+end_src
-* Unison mode
+** Unison mode
 #+begin_src emacs-lisp :load yes
 (defvar unison-sync-queue nil
   "Queue of Unison sync commands to run.")
@@ -804,43 +673,64 @@ If non-nil, Unison will only propagate changes from `unison-root1` to `unison-ro
 
 (add-hook 'hack-local-variables-hook 'maybe-enable-unison-sync-mode)
 #+end_src
+* Autoformatting
+** Apheleia
+#+begin_src emacs-lisp :load yes
+(use-package
+ apheleia
+ :config
+ (setf (alist-get 'isort apheleia-formatters)
+       '("isort" "--stdout" "-"))
+ (setf (alist-get 'python-ts-mode apheleia-mode-alist) '(isort black))
+ (add-to-list
+  'apheleia-formatters
+  '(prettier-toml
+    npx "prettier" "--stdin-filepath" filepath "--parser=toml"))
+ (add-to-list 'apheleia-mode-alist '(conf-toml-mode . prettier-toml))
+ (defun apheleia-indent-region+ (orig scratch callback)
+   (with-current-buffer scratch
+     (setq-local indent-line-function
+                 (buffer-local-value 'indent-line-function orig))
+     (indent-region (point-min) (point-max))
+     (funcall callback scratch)))
+
+ (push '(jsonian-mode . prettier-json) apheleia-mode-alist)
+ (setq apheleia-mode-alist
+       (assq-delete-all 'emacs-lisp-mode apheleia-mode-alist))
+ (apheleia-global-mode t))
+#+end_src
+** Elisp Autofmt
+#+begin_src emacs-lisp :load yes
+(use-package
+ elisp-autofmt
+ :commands (elisp-autofmt-mode elisp-autofmt-buffer)
+ :hook (emacs-lisp-mode . elisp-autofmt-mode)
+ :init (setq elisp-autofmt-check-elisp-autofmt-exists 'always)
+ :straight
+ '(elisp-autofmt
+   ;; :files (:defaults "elisp-autofmt")
+   :host nil
+   :type git
+   :repo "https://codeberg.org/ideasman42/emacs-elisp-autofmt.git")
+ :config (setq elisp-autofmt-on-save-p nil))
+#+end_src
+** Whitespace butler
+#+begin_src emacs-lisp :load yes
+(use-package ws-butler
+:hook (prog-mode . ws-butler-mode)
+:hook (org-mode . ws-butler-mode))
+#+end_src
+** Indentation
+#+begin_src emacs-lisp :load yes
+(electric-indent-mode 0)
+;; (use-package
+;;  aggressive-indent
+;;  :config (aggressive-indent-global-mode nil))
+#+end_src
 * Config Modes
 ** Yaml
 #+begin_src emacs-lisp :load yes
 (use-package yaml-mode)
-#+end_src
-* Parens
-#+begin_src emacs-lisp :load yes
-(setq show-paren-when-point-inside-paren 't)
-(setq show-paren-style 'mixed)
-(setq show-paren-context-when-offscreen 't)
-
-(use-package
- elec-pair
- :config ;; Disable electric pair in minibuffer
- (defun my/inhibit-electric-pair-mode (char)
-   (or (minibufferp) (electric-pair-conservative-inhibit char)))
- (setq electric-pair-inhibit-predicate
-       #'my/inhibit-electric-pair-mode)
-
- (electric-pair-mode t)
- ;; The ‘<’ and ‘>’ are not ‘parenthesis’, so give them no compleition.
- (setq electric-pair-inhibit-predicate
-       (lambda (c)
-         (or (member c '(?< ?> ?~))
-             (electric-pair-default-inhibit c)))))
-
-(setq show-paren-context-when-offscreen t)
-(setq show-paren-style 'mixed)
-
-
-;; Treat ‘<’ and ‘>’ as if they were words, instead of ‘parenthesis’.
-(modify-syntax-entry ?< "w<")
-(modify-syntax-entry ?> "w>")
-
-;; Show matching parens
-(setq show-paren-delay 0)
-(show-paren-mode t)
 #+end_src
 * Elisp
 ** Elisp code libraries
@@ -1354,16 +1244,6 @@ Company was a great package, but I'm currently not using it. I migrated over to 
       (mapcar #'company-mode/backend-with-yas company-backends))
 (use-package company-posframe :config (company-posframe-mode t))
 #+end_src
-* MATLAB
-#+begin_src emacs-lisp :load no
-(use-package
- matlab-mode
- '(matlab-mode
-   :type git
-   :repo "https://git.code.sf.net/p/matlab-emacs/src"))
-(require 'matlab)
-(setq matlab-shell-command-switches '("-nodesktop" "-nosplash"))
-#+end_src
 * Consult/Embark/Marginalia
 ** Marginalia
 #+begin_src emacs-lisp :load yes
@@ -1562,30 +1442,6 @@ Company was a great package, but I'm currently not using it. I migrated over to 
 ;; Enable Consult-Selectrum integration.
 ;; This package should be installed if Selectrum is used.
 #+end_src
-* Latex
-#+begin_src emacs-lisp :load yes
-(use-package
- tex
- :straight auctex
- :defer t
- :hook (LaTeX-mode . visual-line-mode)
- :hook (LaTeX-mode . flyspell-mode)
- :hook (LaTeX-mode . LaTeX-math-mode)
- :hook (LaTeX-mode . TeX-source-correlate-mode)
- :config
- (setq TeX-auto-save t)
- (setq TeX-parse-self t)
- (setq-default TeX-master nil)
-
- ;; (add-hook 'LaTeX-mode-hook 'company-auctex-init)
- ;; (add-hook 'LaTeX-mode-hook 'company-mode)
- (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
- (setq reftex-plug-into-AUCTeX t)
- (setq TeX-PDF-mode t))
-(use-package cdlatex)
-
-;; -------------------------/AucTex-------------------------------;;
-#+END_SRC
 * Snippets
 ** Yasnippet
 #+begin_src emacs-lisp :load yes
@@ -2093,6 +1949,96 @@ See also `eglot-server-capable' for :documentHighlightProvider."
 
 (with-eval-after-load 'python
   (define-key python-mode-map (kbd "C-c C-l") 'python-multiline-to-singleline))
+#+end_src
+** Markdown
+#+begin_src emacs-lisp :load yes
+(use-package
+ markdown-mode
+ :mode ("README\\.md\\'" . gfm-mode)
+ :init (setq markdown-command "multimarkdown")
+ :config)
+#+END_SRC
+** HTML
+#+begin_src emacs-lisp :load no
+(when (not (eq system-type 'gnu/linux))
+  (require 'html-ts-mode)
+  (define-key html-ts-mode-map (kbd "M-o M-o") nil)
+  (define-key html-mode-map (kbd "M-o M-o") nil)
+  (define-key sgml-mode-map (kbd "M-o M-o") nil)
+  (define-key html-mode-map (kbd "M-o") nil)
+  (define-key sgml-mode-map (kbd "M-o") nil)
+  (define-key html-mode-map (kbd "M-o") 'next-multiframe-window)
+  (define-key html-mode-map (kbd "M-i") 'previous-multiframe-window)
+
+  (define-key html-ts-mode-map (kbd "M-o M-o") nil)
+  (define-key html-ts-mode-map (kbd "M-o") nil)
+  (define-key html-ts-mode-map (kbd "M-o") 'next-multiframe-window)
+  (define-key
+   html-ts-mode-map (kbd "M-i") 'previous-multiframe-window))
+#+END_SRC
+** Web mode
+#+begin_src emacs-lisp :load yes
+(use-package
+ web-mode
+ :config
+ (add-to-list 'auto-mode-alist '("\\.liquid\\'" . web-mode)))
+#+end_src
+** Lua
+*** Non-gnu ELPA version
+#+begin_src emacs-lisp :load no
+(use-package
+ lua-mode
+ :ensure t
+ :mode ("\\.lsyncd\\.conf\\'" . lua-mode))
+#+END_SRC
+*** lua-ts-mode
+#+begin_src emacs-lisp :load no
+(use-package
+ lua-ts-mode
+ :straight
+ '(lua-ts-mode
+   :type git
+   :host nil
+   :repo "https://git.sr.ht/~johnmuhl/lua-ts-mode"
+   :files ("*.el"))
+ :mode (("\\.lua\\'" . lua-ts-mode) ("lsyncd\\.conf\\'" . lua-ts-mode))
+ :config
+ ;; Any additional configuration you might want goes here
+ )
+#+END_SRC
+** Latex
+#+begin_src emacs-lisp :load yes
+(use-package
+ tex
+ :straight auctex
+ :defer t
+ :hook (LaTeX-mode . visual-line-mode)
+ :hook (LaTeX-mode . flyspell-mode)
+ :hook (LaTeX-mode . LaTeX-math-mode)
+ :hook (LaTeX-mode . TeX-source-correlate-mode)
+ :config
+ (setq TeX-auto-save t)
+ (setq TeX-parse-self t)
+ (setq-default TeX-master nil)
+
+ ;; (add-hook 'LaTeX-mode-hook 'company-auctex-init)
+ ;; (add-hook 'LaTeX-mode-hook 'company-mode)
+ (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+ (setq reftex-plug-into-AUCTeX t)
+ (setq TeX-PDF-mode t))
+(use-package cdlatex)
+
+;; -------------------------/AucTex-------------------------------;;
+#+END_SRC
+** MATLAB
+#+begin_src emacs-lisp :load no
+(use-package
+ matlab-mode
+ '(matlab-mode
+   :type git
+   :repo "https://git.code.sf.net/p/matlab-emacs/src"))
+(require 'matlab)
+(setq matlab-shell-command-switches '("-nodesktop" "-nosplash"))
 #+end_src
 * Large Language Models in Emacs
 ** Github Copilot
@@ -3001,64 +2947,6 @@ I'm currently not using DAP mode, and prefer to use python from the command line
  treemacs-icons-dired
  :config (treemacs-icons-dired-mode))
 #+end_src
-* Markdown
-#+begin_src emacs-lisp :load yes
-(use-package
- markdown-mode
- :mode ("README\\.md\\'" . gfm-mode)
- :init (setq markdown-command "multimarkdown")
- :config)
-#+END_SRC
-
-* HTML
-#+begin_src emacs-lisp :load no
-(when (not (eq system-type 'gnu/linux))
-  (require 'html-ts-mode)
-  (define-key html-ts-mode-map (kbd "M-o M-o") nil)
-  (define-key html-mode-map (kbd "M-o M-o") nil)
-  (define-key sgml-mode-map (kbd "M-o M-o") nil)
-  (define-key html-mode-map (kbd "M-o") nil)
-  (define-key sgml-mode-map (kbd "M-o") nil)
-  (define-key html-mode-map (kbd "M-o") 'next-multiframe-window)
-  (define-key html-mode-map (kbd "M-i") 'previous-multiframe-window)
-
-  (define-key html-ts-mode-map (kbd "M-o M-o") nil)
-  (define-key html-ts-mode-map (kbd "M-o") nil)
-  (define-key html-ts-mode-map (kbd "M-o") 'next-multiframe-window)
-  (define-key
-   html-ts-mode-map (kbd "M-i") 'previous-multiframe-window))
-#+END_SRC
-
-* Web mode
-#+begin_src emacs-lisp :load yes
-(use-package
- web-mode
- :config
- (add-to-list 'auto-mode-alist '("\\.liquid\\'" . web-mode)))
-#+end_src
-* Lua
-** Non-gnu ELPA version
-#+begin_src emacs-lisp :load no
-(use-package
- lua-mode
- :ensure t
- :mode ("\\.lsyncd\\.conf\\'" . lua-mode))
-#+END_SRC
-** lua-ts-mode
-#+begin_src emacs-lisp :load no
-(use-package
- lua-ts-mode
- :straight
- '(lua-ts-mode
-   :type git
-   :host nil
-   :repo "https://git.sr.ht/~johnmuhl/lua-ts-mode"
-   :files ("*.el"))
- :mode (("\\.lua\\'" . lua-ts-mode) ("lsyncd\\.conf\\'" . lua-ts-mode))
- :config
- ;; Any additional configuration you might want goes here
- )
-#+END_SRC
 * Tree-Sitter
 ** Tree-Sitter mode
 This is the old way of using ~tree-sitter~ in emacs. In emacs 29, this moved to treesit.
@@ -3373,4 +3261,113 @@ Return nil if no project was found."
  (setq awesome-tray-active-modules
        '("buffer-name" "mode-name" "belong")) ;TODO: add "belong" back in after treesit
  :config (awesome-tray-mode 1) awesome-tray-active-modules)
+#+end_src
+** Icons
+** All the icons
+#+begin_src emacs-lisp :load yes
+(use-package all-the-icons)
+(use-package
+ all-the-icons-ibuffer
+ :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
+
+;; I don't think I like buffer expose after all
+(use-package
+ all-the-icons-completion
+
+ :config (all-the-icons-completion-mode)
+ :hook (marginalia-mode . all-the-icons-completion-marginalia-setup))
+#+end_src
+** SVG Support
+#+begin_src emacs-lisp :load yes
+; Re-enable with SVG support
+(use-package
+ svg-lib
+ :straight '(svg-lib :host github :repo "emacs-straight/svg-lib"))
+(use-package
+ kind-icon
+ :straight '(kind-icon :host github :repo "jdtsmith/kind-icon")
+ :ensure t
+ :after corfu
+ :config
+ ; On my linux machine, I need to use smaller icons like this due to the 4k display
+ (when (eq system-type 'gnu/linux)
+   (setq kind-icon-default-style
+         '(:padding
+           -1
+           :stroke 0
+           :margin 0
+           :radius 0
+           :height 0.5
+           :scale 1.0)))
+ :custom
+ (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
+ :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+#+end_src
+** Fuzzy
+#+begin_src emacs-lisp :load yes
+(use-package fuzzy)
+(use-package fuzzy-match)
+#+end_src
+
+** Free keys
+#+begin_src emacs-lisp :load yes
+
+(use-package free-keys)
+(use-package restart-emacs)
+; ---- Auto Revert Modes ----- ;
+#+end_src
+** Auto Revert on Images
+#+begin_src emacs-lisp :load yes
+(autoload 'eimp-mode "eimp" "Emacs Image Manipulation Package." t)
+(add-hook 'image-mode-hook 'auto-revert-mode)
+
+; --- CSV --- ;
+#+end_src
+** CSV Mode
+#+begin_src emacs-lisp :load yes
+(use-package
+ csv-mode
+ :straight
+ '(csv-mode :type git :host github :repo "emacsmirror/csv-mode"))
+
+(use-package
+ explain-pause-mode
+ :straight
+ '(explain-pause-mode
+   :type git
+   :host github
+   :repo "lastquestion/explain-pause-mode"))
+
+;; use helpful instead of the normal help buffers
+;; Note that the built-in `describe-function' includes both functions
+;; and macros. `helpful-function' is functions only, so we provide
+;; `helpful-callable' as a drop-in replacement.
+(use-package
+ helpful
+ :defer t
+ ;; TODO: Add these back in when helpful plays nicely with literate-elisp
+ ;; :bind
+ ;; ("C-h f" . helpful-callable)
+ ;; ("C-h v" . helpful-variable)
+ ;; ("C-h k" . helpful-key)
+ )
+
+(use-package
+ dimmer
+ :config
+ (dimmer-configure-which-key)
+ (dimmer-configure-org)
+ (dimmer-configure-posframe)
+ (dimmer-configure-magit)
+ (dimmer-configure-hydra)
+
+ (setq dimmer-fraction 0.15)
+ (dimmer-mode t))
+
+(use-package
+ volatile-highlights
+
+ :config (volatile-highlights-mode t))
+
+(use-package hl-todo :init (global-hl-todo-mode))
 #+end_src
