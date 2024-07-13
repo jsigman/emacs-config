@@ -166,7 +166,7 @@ BUFFER may be either a buffer or its name (a string)."
  ;; Special overrides of vterm toggle functions to work better with projectile
  (defun my/projectile-or-project-root ()
    (if (fboundp 'project-root)
-       (project-root)
+       (project-root (project-current t))
      (ignore-errors
        (projectile-project-root))))
  (defun vterm-toggle--new (&optional buffer-name)
@@ -219,6 +219,12 @@ I think this is a little too aggressive right now, but it's a cool idea.
  (cwm-update-fringe-background))
 #+end_src
 * Miscellaneous
+** Font Lock
+#+begin_src emacs-lisp :load no
+(setq font-lock-support-mode 'jit-lock-mode)
+(setq jit-lock-defer-time nil)
+(setq jit-lock-stealth-time 0)
+#+end_src
 ** Ctrl-F
 #+begin_src emacs-lisp :load yes
 (use-package
@@ -2402,46 +2408,6 @@ I have my own little hook to open the flycheck buffer with ~M-C~, and close it a
 
 (define-key flycheck-mode-map (kbd "M-C") 'my/flycheck-list-errors)
 #+end_src
-** Ruff in flycheck
-Credit to [[https://gist.github.com/abo-abo/277d1fe1e86f0e46d3161345f26e8f3a][abo-abo]]
-Update: Now supported as part of the official flycheck package.
-#+begin_src emacs-lisp :load no
-;; From https://github.com/flycheck/flycheck/issues/1974#issuecomment-1343495202
-(flycheck-define-checker
- python-ruff
- "A Python syntax and style checker using the ruff utility.
-  To override the path to the ruff executable, set
-  `flycheck-python-ruff-executable'.
-  See URL `http://pypi.python.org/pypi/ruff'."
- :command
- ("ruff" "check"
-  (eval
-   (when buffer-file-name
-     (concat "--stdin-filename=" buffer-file-name)))
-  "-")
- :standard-input t
- :error-filter
- (lambda (errors)
-   (let ((errors (flycheck-sanitize-errors errors)))
-     (seq-map #'flycheck-flake8-fix-error-level errors)))
- :error-patterns
- ((warning
-   line-start
-   (file-name)
-   ":"
-   line
-   ":"
-   (optional column ":")
-   " "
-   (id (one-or-more (any alpha)) (one-or-more digit))
-   " "
-   (message (one-or-more not-newline))
-   line-end))
- :modes (python-mode python-ts-mode))
-
-(eval-after-load 'flycheck
-  '(add-to-list 'flycheck-checkers 'python-ruff))
-#+end_src
 * Flymake
 ** Setup
 #+begin_src emacs-lisp :load yes
@@ -2450,12 +2416,8 @@ Update: Now supported as part of the official flycheck package.
   (interactive)
   (flymake-mode 1)
   (flymake-ruff-load))
-
 (use-package flymake :ensure t :defer t)
-
 (use-package flymake-ruff :ensure t :after flymake :defer t)
-
-;; (add-hook 'python-ts-mode-hook 'my-python-mode-setup)
 (add-hook 'python-ts-mode-hook #'my-python-mode-setup t)
 #+end_src
 * TRAMP
