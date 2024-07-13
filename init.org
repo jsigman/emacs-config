@@ -847,7 +847,28 @@ I'm trying migrating from ~projectile~ onto ~project.el~ for its purported benef
    (split-string
     (shell-command-to-string
      "fd . -t f -H -E .git -E .gitignore -E '**/venv/**' -E '**/node_modules/**'")
-    "\n" t)))
+    "\n" t))
+
+ (defun my-project-try-vc (dir)
+   (let* ((root (vc-call-backend 'Git 'root dir))
+          (check-submodule
+           (lambda (d)
+             (let ((default-directory d))
+               (and (file-exists-p ".git")
+                    (if (file-directory-p ".git")
+                        nil ; Regular repository
+                      (with-temp-buffer
+                        (insert-file-contents ".git")
+                        (goto-char (point-min))
+                        (looking-at-p "gitdir: "))))))))
+     (when root
+       (let ((project-root
+              (if (funcall check-submodule dir)
+                  dir
+                root)))
+         (list 'vc 'Git project-root)))))
+
+ (add-hook 'project-find-functions #'my-project-try-vc))
 #+end_src
 ** Projectile
 #+begin_src emacs-lisp :load no
