@@ -158,33 +158,38 @@ BUFFER may be either a buffer or its name (a string)."
                vterm-buffer-name (buffer-name buffer))))))
     (display-buffer-reuse-window display-buffer-in-direction)
     (direction . bottom)
-    (dedicated . t) ;dedicated is supported in emacs27
+    (dedicated . t)
     (reusable-frames . visible)
     (window-height . 0.3)
     (window-width . 0.3)))
 
- ;; Special overrides of vterm toggle functions to work better with projectile
- (defun my/projectile-or-project-root ()
-   (if (fboundp 'project-root)
-       (project-root (project-current t))
-     (ignore-errors
-       (projectile-project-root))))
+ ;; Function to get project root without prompting
+ (defun my/get-project-root ()
+   (or (when (fboundp 'project-root)
+         (when-let ((project (project-current nil)))
+           (project-root project)))
+       (when (fboundp 'projectile-project-root)
+         (projectile-project-root))
+       default-directory))
+
+ ;; Override vterm-toggle--new
  (defun vterm-toggle--new (&optional buffer-name)
    "New vterm buffer."
    (let* ((buffer-name (or buffer-name vterm-buffer-name))
-          (project-root
-           (when vterm-toggle-project-root
-             (ignore-errors
-               (my/projectile-or-project-root))))
-          (default-directory (or project-root default-directory)))
+          (default-directory
+           (if vterm-toggle-project-root
+               (my/get-project-root)
+             default-directory)))
      (if vterm-toggle-fullscreen-p
          (vterm buffer-name)
        (if (eq major-mode 'vterm-mode)
            (let ((display-buffer-alist nil))
              (vterm buffer-name))
          (vterm-other-window buffer-name)))))
+
+ ;; Override vterm-toggle--project-root
  (defun vterm-toggle--project-root ()
-   (my/projectile-or-project-root)))
+   (my/get-project-root)))
 #+END_SRC
 * Window management
 ** Zoom
@@ -780,31 +785,70 @@ If non-nil, Unison will only propagate changes from `unison-root1` to `unison-ro
 ** Project.el
 I'm trying migrating from ~projectile~ onto ~project.el~ for its purported benefits.
 #+begin_src emacs-lisp :load yes
-;; Configure project.el settings
 (use-package
  project
  :demand t
  :straight nil
  :init (global-set-key (kbd "C-c p") project-prefix-map)
- ;; ;; Load bookmarks at startup
- (setq bookmark-save-flag 1) ; Automatically save bookmarks to the file on change
- ;; :bind
- ;; (("C-c p p" . project-switch-project)
- ;;  ("C-c p f" . project-find-file)
- ;;  ;; Add a custom binding for bookmarking the current project
- ;;  ("C-c p b" . my-project-bookmark-current))
- ;; :config
- ;; (defun my-project-bookmark-current ()
- ;;   "Bookmark the current project."
- ;;   (interactive)
- ;;   (let ((project-root (project-current)))
- ;;     (if project-root
- ;;         (bookmark-set
- ;;          (format "project-%s"
- ;;                  (file-name-nondirectory
- ;;                   (directory-file-name project-root))))
- ;;       (message "No project is active right now."))))
- )
+ :config
+ (defun my-project-ignores (dir)
+   (let ((root (locate-dominating-file dir ".git")))
+     (when root
+       (append
+        (mapcar
+         (lambda (dir) (concat "**/" dir "/**")) ; Use glob patterns
+         '("venv"
+           "data"
+           "typings"
+           "node_modules"
+           ".mypy_cache"
+           ".pytest_cache"
+           ".cache"
+           ".dvc/cache"
+           ".dvc/tmp"
+           ".jekyll-cache"))
+        (project--value-in-dir 'project-vc-ignores root)))))
+
+ (cl-defmethod project-ignores ((project (head vc)) dir)
+   (let ((root (project-root project)))
+     (append
+      (project--value-in-dir 'project-vc-ignores root)
+      (my-project-ignores dir))))
+
+ ;; Use native indexing for faster performance
+ (setq project-vc-extra-root-markers '(".git"))
+ (setq project-vc-include-untracked nil)
+ (setq project-vc-merge-submodules nil)
+
+ ;; Use git-grep for faster searching
+ (setq project-vc-grep-function 'project--vc-git-grep)
+
+ ;; Optimize file indexing
+ (setq project-file-list-cache-time 30) ; Cache file list for 30 seconds
+
+ ;; Use fd for even faster file indexing if available
+ (when (executable-find "fd")
+   (setq project-find-functions '(project-try-vc project-try-fd)))
+
+ (defun project-try-fd (dir)
+   (let ((root (locate-dominating-file dir ".git")))
+     (when root
+       (cons 'fd root))))
+
+ (cl-defmethod project-files ((project (head fd)) &optional dirs)
+   (let ((default-directory (cdr project)))
+     (project--file-list-fd)))
+
+ (defun project--file-list-fd ()
+   (split-string
+    (shell-command-to-string
+     "fd . -t f -H -E .git -E .gitignore -E '**/venv/**' -E '**/node_modules/**'")
+    "\n" t))
+
+ ;; Ensure project list is saved after adding new projects
+ (advice-add
+  'project-remember-project
+  :after #'project--write-project-list))
 #+end_src
 ** Projectile
 #+begin_src emacs-lisp :load no
