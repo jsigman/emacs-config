@@ -786,8 +786,6 @@ I'm trying migrating from ~projectile~ onto ~project.el~ for its purported benef
  :demand t
  :straight nil
  :init (global-set-key (kbd "C-c p") project-prefix-map)
-
- (setq bookmark-default-file "~/.emacs.d/bookmarks")
  ;; ;; Load bookmarks at startup
  (setq bookmark-save-flag 1) ; Automatically save bookmarks to the file on change
  ;; :bind
