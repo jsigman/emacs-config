@@ -673,6 +673,36 @@ If non-nil, Unison will only propagate changes from `unison-root1` to `unison-ro
 
 (add-hook 'hack-local-variables-hook 'maybe-enable-unison-sync-mode)
 #+end_src
+** Ripgrep
+#+begin_src emacs-lisp :load yes
+(use-package wgrep :config (setq wgrep-auto-save-buffer t))
+(use-package rg :config (rg-enable-menu) (setq rg-executable "rg"))
+#+END_SRC
+** Avy
+*** Main Package
+#+begin_src emacs-lisp :load yes
+(use-package
+ avy
+ :config
+ ;; (global-set-key
+ ;;  (kbd "C-;")
+ ;;  'avy-goto-char-timer) ;; I use this most frequently
+ (global-set-key
+  (kbd "C-'")
+  'avy-goto-line) ;; Consistent with ivy-avy
+ (global-set-key
+  (kbd "C-M-'")
+  'avy-goto-end-of-line) ;; Consistent with ivy-avy
+
+ (setq avy-case-fold-search nil) ;; case sensitive makes selection easier
+ (setq avy-indent-line-overlay t))
+#+end_src
+*** Casual Avy
+#+begin_src emacs-lisp :load yes
+(use-package casual-avy
+  :ensure t
+  :bind ("M-'" . casual-avy-tmenu))
+#+end_src
 * Autoformatting
 ** Apheleia
 #+begin_src emacs-lisp :load yes
@@ -727,11 +757,6 @@ If non-nil, Unison will only propagate changes from `unison-root1` to `unison-ro
 ;;  aggressive-indent
 ;;  :config (aggressive-indent-global-mode nil))
 #+end_src
-* Config Modes
-** Yaml
-#+begin_src emacs-lisp :load yes
-(use-package yaml-mode)
-#+end_src
 * Elisp
 ** Elisp code libraries
 #+begin_src emacs-lisp :load yes
@@ -782,7 +807,8 @@ If non-nil, Unison will only propagate changes from `unison-root1` to `unison-ro
  (define-key dired-mode-map (kbd "e") 'wdired-change-to-wdired-mode)
  (define-key dired-mode-map (kbd "M-G") nil))
 #+end_src
-* Project.el
+* Project Packages
+** Project.el
 I'm trying migrating from ~projectile~ onto ~project.el~ for its purported benefits.
 #+begin_src emacs-lisp :load yes
 ;; Configure project.el settings
@@ -813,7 +839,7 @@ I'm trying migrating from ~projectile~ onto ~project.el~ for its purported benef
  ;;       (message "No project is active right now."))))
  )
 #+end_src
-* Projectile
+** Projectile
 #+begin_src emacs-lisp :load yes
 (use-package
  projectile
@@ -854,7 +880,7 @@ I'm trying migrating from ~projectile~ onto ~project.el~ for its purported benef
   'magit-section-post-command-hook 'projectile-invalidate-cache)
 )
 #+end_src
-* Corfu-Vertico-Orderless
+* Completions
 ** Corfu
 #+begin_src emacs-lisp :load yes
 (use-package
@@ -910,6 +936,33 @@ I'm trying migrating from ~projectile~ onto ~project.el~ for its purported benef
                 (message "corfu--candidates returned: %S" result)
                 result)))
 #+end_src
+*** Corfu/Eglot integration
+From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this source]].
+#+begin_src emacs-lisp :load yes
+(advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
+
+;; Option 1: Specify explicitly to use Orderless for Eglot
+(setq completion-category-overrides '((eglot (styles orderless))
+                                      (eglot-capf (styles orderless))))
+
+;; Option 2: Undo the Eglot modification of completion-category-defaults
+(with-eval-after-load 'eglot
+   (setq completion-category-defaults nil))
+
+;; Enable cache busting, depending on if your server returns
+;; sufficiently many candidates in the first place.
+(advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
+
+(defun my/eglot-capf ()
+  (setq-local completion-at-point-functions
+              (list (cape-capf-super
+                     #'eglot-completion-at-point
+                     ;; #'yas-expand
+                     #'cape-file))))
+
+(add-hook 'eglot-managed-mode-hook #'my/eglot-capf)
+#+end_src
+
 ** Cape
 #+begin_src emacs-lisp :load yes
 (defun add-cape-completions ()
@@ -943,34 +996,6 @@ I'm trying migrating from ~projectile~ onto ~project.el~ for its purported benef
 ;; A few more useful configurations...
 (setq completion-cycle-threshold 3)
 #+end_src
-*** Corfu/Eglot integration
-From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this source]].
-#+begin_src emacs-lisp :load yes
-(advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
-
-;; Option 1: Specify explicitly to use Orderless for Eglot
-(setq completion-category-overrides '((eglot (styles orderless))
-                                      (eglot-capf (styles orderless))))
-
-;; Option 2: Undo the Eglot modification of completion-category-defaults
-(with-eval-after-load 'eglot
-   (setq completion-category-defaults nil))
-
-;; Enable cache busting, depending on if your server returns
-;; sufficiently many candidates in the first place.
-(advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
-
-(defun my/eglot-capf ()
-  (setq-local completion-at-point-functions
-              (list (cape-capf-super
-                     #'eglot-completion-at-point
-                     ;; #'yas-expand
-                     #'cape-file))))
-
-(add-hook 'eglot-managed-mode-hook #'my/eglot-capf)
-#+end_src
-
-
 ** Orderless
 #+begin_src emacs-lisp :load yes
 ;; Optionally use the `orderless' completion style.
@@ -1006,8 +1031,6 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
 #+end_src
 
 ** Vertico
-
-*** Basic Setup
 #+begin_src emacs-lisp :load yes
 ;; Enable vertico
 (use-package
@@ -1059,7 +1082,7 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
  ;; Enable recursive minibuffers
  (setq enable-recursive-minibuffers t))
 #+END_SRC
-* Selectrum
+** Selectrum
 Currently using Vertico over this
 #+begin_src emacs-lisp :load no
 (setq projectile-completion-system 'default)
@@ -1082,7 +1105,7 @@ Currently using Vertico over this
  (setq selectrum-highlight-candidates-function
        #'orderless-highlight-matches))
 #+end_src
-* Ivy/Counsel/Swiper Settings
+** Ivy/Counsel/Swiper
 Currently not using this in favor of Vertico
 #+begin_src emacs-lisp  :load no
 (use-package ivy)
@@ -1177,7 +1200,7 @@ Currently not using this in favor of Vertico
  :config (all-the-icons-ivy-rich-mode t))
 (use-package ivy-rich :config (ivy-rich-mode t))
 #+END_SRC
-* Company Settings
+** Company Settings
 Company was a great package, but I'm currently not using it. I migrated over to the simpler and more flexible Corfu.
 #+begin_src emacs-lisp :load no
 (use-package
@@ -1244,7 +1267,6 @@ Company was a great package, but I'm currently not using it. I migrated over to 
       (mapcar #'company-mode/backend-with-yas company-backends))
 (use-package company-posframe :config (company-posframe-mode t))
 #+end_src
-* Consult/Embark/Marginalia
 ** Marginalia
 #+begin_src emacs-lisp :load yes
 (use-package marginalia
@@ -1478,36 +1500,6 @@ Company was a great package, but I'm currently not using it. I migrated over to 
  (setq yasnippet-capf-lookup-by 'key) ;; key or name
  :config (add-to-list 'completion-at-point-functions #'yasnippet-capf))
 #+END_SRC
-* Ripgrep
-#+begin_src emacs-lisp :load yes
-(use-package wgrep :config (setq wgrep-auto-save-buffer t))
-(use-package rg :config (rg-enable-menu) (setq rg-executable "rg"))
-#+END_SRC
-* Avy
-** Main Package
-#+begin_src emacs-lisp :load yes
-(use-package
- avy
- :config
- ;; (global-set-key
- ;;  (kbd "C-;")
- ;;  'avy-goto-char-timer) ;; I use this most frequently
- (global-set-key
-  (kbd "C-'")
-  'avy-goto-line) ;; Consistent with ivy-avy
- (global-set-key
-  (kbd "C-M-'")
-  'avy-goto-end-of-line) ;; Consistent with ivy-avy
-
- (setq avy-case-fold-search nil) ;; case sensitive makes selection easier
- (setq avy-indent-line-overlay t))
-#+end_src
-** Casual Avy
-#+begin_src emacs-lisp :load yes
-(use-package casual-avy
-  :ensure t
-  :bind ("M-'" . casual-avy-tmenu))
-#+end_src
 * LSP Server Support
 ** Language Server Protocol (LSP)
 ** LSP Mode
@@ -2040,6 +2032,50 @@ See also `eglot-server-capable' for :documentHighlightProvider."
 (require 'matlab)
 (setq matlab-shell-command-switches '("-nodesktop" "-nosplash"))
 #+end_src
+** Yaml
+#+begin_src emacs-lisp :load yes
+(use-package yaml-mode)
+#+end_src
+** Docker
+#+begin_src emacs-lisp :load yes
+(use-package
+ dockerfile-mode
+ :config (setq dockerfile-mode-command "docker"))
+(use-package docker
+  :ensure t
+  :bind ("C-c d" . docker))
+#+END_SRC
+I'm currently not using DAP mode, and prefer to use python from the command line (vterm) with ~pdb~. Some day I'd like to learn this.
+#+begin_src emacs-lisp :load no
+(use-package
+ dap-mode
+ :init
+ (if (eq system-type 'gnu/linux)
+     (add-to-list 'image-types 'svg))
+ :config
+ (add-hook
+  'dap-stopped-hook (lambda (arg) (call-interactively #'dap-hydra)))
+ ;; Enabling only some features
+ (setq dap-auto-configure-features
+       '(sessions locals controls tooltip))
+ (setq dap-python-debugger 'debugpy)
+ (require 'dap-mode)
+ (require 'dap-python)
+ (require 'dap-ui)
+
+ (add-hook 'python-mode-hook 'dap-mode)
+ (add-hook 'python-mode-hook 'dap-ui-mode)
+ (add-hook 'python-mode-hook 'dap-tooltip-mode)
+
+ (define-key python-mode-map (kbd "M-D") #'dap-hydra))
+#+end_src
+** Java/Javascript/JSON
+#+begin_src emacs-lisp :load yes
+  (use-package jq-mode)
+  (use-package
+   jsonian
+   :straight '(jsonian :type git :host github :repo "iwahbe/jsonian" :build (:not autoloads)))
+#+end_src
 * Large Language Models in Emacs
 ** Github Copilot
 #+begin_src emacs-lisp :load yes
@@ -2514,13 +2550,6 @@ This really improves use with local variables. You get a highly visible warning 
  'hack-dir-local-variables
  :around #'my/dir-local-error-warning)
 #+end_src
-* Java/Javascript/JSON
-#+begin_src emacs-lisp :load yes
-  (use-package jq-mode)
-  (use-package
-   jsonian
-   :straight '(jsonian :type git :host github :repo "iwahbe/jsonian" :build (:not autoloads)))
-#+end_src
 * Org Mode
 #+begin_src emacs-lisp :load yes
 (defun org-src-format-and-save ()
@@ -2897,39 +2926,6 @@ This is currently broken for me.
        'ediff-setup-windows-plain)
  (setq ediff-diff-options "-w"))
 #+end_src
-* Docker
-#+begin_src emacs-lisp :load yes
-(use-package
- dockerfile-mode
- :config (setq dockerfile-mode-command "docker"))
-(use-package docker
-  :ensure t
-  :bind ("C-c d" . docker))
-#+END_SRC
-I'm currently not using DAP mode, and prefer to use python from the command line (vterm) with ~pdb~. Some day I'd like to learn this.
-#+begin_src emacs-lisp :load no
-(use-package
- dap-mode
- :init
- (if (eq system-type 'gnu/linux)
-     (add-to-list 'image-types 'svg))
- :config
- (add-hook
-  'dap-stopped-hook (lambda (arg) (call-interactively #'dap-hydra)))
- ;; Enabling only some features
- (setq dap-auto-configure-features
-       '(sessions locals controls tooltip))
- (setq dap-python-debugger 'debugpy)
- (require 'dap-mode)
- (require 'dap-python)
- (require 'dap-ui)
-
- (add-hook 'python-mode-hook 'dap-mode)
- (add-hook 'python-mode-hook 'dap-ui-mode)
- (add-hook 'python-mode-hook 'dap-tooltip-mode)
-
- (define-key python-mode-map (kbd "M-D") #'dap-hydra))
-#+end_src
 * Treemacs
 ** Treemacs base packages
 #+begin_src emacs-lisp :load yes
@@ -2946,99 +2942,6 @@ I'm currently not using DAP mode, and prefer to use python from the command line
 (use-package
  treemacs-icons-dired
  :config (treemacs-icons-dired-mode))
-#+end_src
-* Tree-Sitter
-** Tree-Sitter mode
-This is the old way of using ~tree-sitter~ in emacs. In emacs 29, this moved to treesit.
-#+begin_src emacs-lisp :load no
-(use-package
- tree-sitter
- :config (global-tree-sitter-mode t)
- :hook ((tree-sitter-after-on-hook . tree-sitter-hl-mode) (python-mode . tree-sitter-hl-mode)))
-(use-package tree-sitter-langs)
-#+END_SRC
-** Combobulate
-Combobulate seems like a cool idea, but I've found it to be more frustrating than helpful in python.
-#+begin_src emacs-lisp :load yes
-(use-package
- combobulate
- :straight '(combobulate :type git :host github :repo "mickeynp/combobulate")
- ;; You can manually enable Combobulate with `M-x
- ;; combobulate-mode'.
- :hook
- ((python-ts-mode . combobulate-mode)
-  (js-ts-mode . combobulate-mode)
-  (css-ts-mode . combobulate-mode)
-  (yaml-ts-mode . combobulate-mode)
-  (typescript-ts-mode . combobulate-mode)
-  (tsx-ts-mode . combobulate-mode))
- ;; Amend this to the directory where you keep Combobulate's source
- ;; code.
- :bind
- (:map
-  combobulate-key-map (("C-;" . combobulate-avy-jump) ("M-k" . nil))))
-#+end_src
-** Treesit
-#+begin_src emacs-lisp :load yes
-(defun copy-different-key-bindings (source-map dest-map)
-  "Copy key bindings from SOURCE-MAP to DEST-MAP, but only where they differ."
-  (map-keymap
-   (lambda (binding value)
-     (unless (eq value (lookup-key dest-map (vector binding)))
-       (define-key dest-map (vector binding) value)))
-   source-map))
-
-(defun merge-mode-hooks (source-hook dest-hook)
-  "Merge hooks from SOURCE-HOOK to DEST-HOOK without duplicates."
-  (dolist (hook (symbol-value source-hook))
-    (unless (memq hook (symbol-value dest-hook))
-      (add-hook dest-hook hook))))
-
-(use-package
- treesit-auto
- :straight '(treesit-auto :type git :host github :repo "renzmann/treesit-auto")
- :demand t
- :init
- (setq treesit-auto-install t)
- (setq treesit-auto-langs
-       '(awk
-         bash
-         bibtex
-         c
-         cmake
-         commonlisp
-         cpp
-         css
-         dockerfile
-         html
-         java
-         javascript
-         json
-         latex
-         make
-         markdown
-         proto
-         python
-         ruby
-         toml
-         typescript
-         yaml))
- :config (global-treesit-auto-mode)
-
- ;; Merge hooks for relevant modes
- (merge-mode-hooks 'python-mode-hook 'python-ts-mode-hook)
- (merge-mode-hooks 'yaml-mode-hook 'yaml-ts-mode-hook)
- ;; (merge-mode-hooks 'json-mode-hook 'json-ts-mode-hook)
- ;; (merge-mode-hooks 'js-mode-hook 'js-ts-mode-hook)
- ;; (merge-mode-hooks 'markdown-mode-hook 'markdown-ts-mode-hook)
- (merge-mode-hooks 'sh-mode-hook 'bash-ts-mode-hook)
-
- ;; Copy different key bindings
- (copy-different-key-bindings python-mode-map python-ts-mode-map)
- ;; (copy-different-key-bindings yaml-mode-map yaml-ts-mode-map)
- ;; (copy-different-key-bindings json-mode-map json-ts-mode-map)
- ;; (copy-different-key-bindings markdown-mode-map markdown-ts-mode-map)
- (copy-different-key-bindings sh-mode-map bash-ts-mode-map))
 #+end_src
 * Appearance
 #+begin_src emacs-lisp :load yes
@@ -3370,4 +3273,97 @@ Return nil if no project was found."
  :config (volatile-highlights-mode t))
 
 (use-package hl-todo :init (global-hl-todo-mode))
+#+end_src
+** Tree-Sitter
+*** Tree-Sitter mode
+This is the old way of using ~tree-sitter~ in emacs. In emacs 29, this moved to treesit.
+#+begin_src emacs-lisp :load no
+(use-package
+ tree-sitter
+ :config (global-tree-sitter-mode t)
+ :hook ((tree-sitter-after-on-hook . tree-sitter-hl-mode) (python-mode . tree-sitter-hl-mode)))
+(use-package tree-sitter-langs)
+#+END_SRC
+*** Combobulate
+Combobulate seems like a cool idea, but I've found it to be more frustrating than helpful in python.
+#+begin_src emacs-lisp :load yes
+(use-package
+ combobulate
+ :straight '(combobulate :type git :host github :repo "mickeynp/combobulate")
+ ;; You can manually enable Combobulate with `M-x
+ ;; combobulate-mode'.
+ :hook
+ ((python-ts-mode . combobulate-mode)
+  (js-ts-mode . combobulate-mode)
+  (css-ts-mode . combobulate-mode)
+  (yaml-ts-mode . combobulate-mode)
+  (typescript-ts-mode . combobulate-mode)
+  (tsx-ts-mode . combobulate-mode))
+ ;; Amend this to the directory where you keep Combobulate's source
+ ;; code.
+ :bind
+ (:map
+  combobulate-key-map (("C-;" . combobulate-avy-jump) ("M-k" . nil))))
+#+end_src
+*** Treesit
+#+begin_src emacs-lisp :load yes
+(defun copy-different-key-bindings (source-map dest-map)
+  "Copy key bindings from SOURCE-MAP to DEST-MAP, but only where they differ."
+  (map-keymap
+   (lambda (binding value)
+     (unless (eq value (lookup-key dest-map (vector binding)))
+       (define-key dest-map (vector binding) value)))
+   source-map))
+
+(defun merge-mode-hooks (source-hook dest-hook)
+  "Merge hooks from SOURCE-HOOK to DEST-HOOK without duplicates."
+  (dolist (hook (symbol-value source-hook))
+    (unless (memq hook (symbol-value dest-hook))
+      (add-hook dest-hook hook))))
+
+(use-package
+ treesit-auto
+ :straight '(treesit-auto :type git :host github :repo "renzmann/treesit-auto")
+ :demand t
+ :init
+ (setq treesit-auto-install t)
+ (setq treesit-auto-langs
+       '(awk
+         bash
+         bibtex
+         c
+         cmake
+         commonlisp
+         cpp
+         css
+         dockerfile
+         html
+         java
+         javascript
+         json
+         latex
+         make
+         markdown
+         proto
+         python
+         ruby
+         toml
+         typescript
+         yaml))
+ :config (global-treesit-auto-mode)
+
+ ;; Merge hooks for relevant modes
+ (merge-mode-hooks 'python-mode-hook 'python-ts-mode-hook)
+ (merge-mode-hooks 'yaml-mode-hook 'yaml-ts-mode-hook)
+ ;; (merge-mode-hooks 'json-mode-hook 'json-ts-mode-hook)
+ ;; (merge-mode-hooks 'js-mode-hook 'js-ts-mode-hook)
+ ;; (merge-mode-hooks 'markdown-mode-hook 'markdown-ts-mode-hook)
+ (merge-mode-hooks 'sh-mode-hook 'bash-ts-mode-hook)
+
+ ;; Copy different key bindings
+ (copy-different-key-bindings python-mode-map python-ts-mode-map)
+ ;; (copy-different-key-bindings yaml-mode-map yaml-ts-mode-map)
+ ;; (copy-different-key-bindings json-mode-map json-ts-mode-map)
+ ;; (copy-different-key-bindings markdown-mode-map markdown-ts-mode-map)
+ (copy-different-key-bindings sh-mode-map bash-ts-mode-map))
 #+end_src
