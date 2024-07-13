@@ -184,7 +184,7 @@ BUFFER may be either a buffer or its name (a string)."
              (vterm buffer-name))
          (vterm-other-window buffer-name)))))
  (defun vterm-toggle--project-root ()
-   (projectile-project-root)))
+   (my/projectile-or-project-root)))
 #+END_SRC
 * Window management
 ** Zoom
@@ -783,13 +783,13 @@ I'm trying migrating from ~projectile~ onto ~project.el~ for its purported benef
 ;; Configure project.el settings
 (use-package
  project
-  :demand t
-  :straight nil
- ;; :init
- ;; ;; Set the file where bookmarks are saved
- ;; (setq bookmark-default-file "~/.emacs.d/bookmarks")
+ :demand t
+ :straight nil
+ :init (global-set-key (kbd "C-c p") project-prefix-map)
+
+ (setq bookmark-default-file "~/.emacs.d/bookmarks")
  ;; ;; Load bookmarks at startup
- ;; (setq bookmark-save-flag 1) ; Automatically save bookmarks to the file on change
+ (setq bookmark-save-flag 1) ; Automatically save bookmarks to the file on change
  ;; :bind
  ;; (("C-c p p" . project-switch-project)
  ;;  ("C-c p f" . project-find-file)
@@ -1230,7 +1230,7 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
  ;; By default `consult-project-function' uses `project-root' from project.el.
  ;; Optionally configure a different project root function.
  ;;;; 1. project.el (the default)
- (setq consult-project-function #'consult--default-project--function)
+ ;; (setq consult-project-function #'project-root)
  ;;;; 2. vc.el (vc-root-dir)
  ;; (setq consult-project-function (lambda (_) (vc-root-dir)))
  ;;;; 3. locate-dominating-file
@@ -1622,7 +1622,6 @@ See also `eglot-server-capable' for :documentHighlightProvider."
                (eglot--lsp-position-to-point (plist-get range :end))))
          (iedit-add-occurrence-overlay start end))))))
 #+end_src
-** Debug Adapter Protocal (DAP)
 * Programming Modes
 ** Elisp
 *** Elisp code libraries
@@ -2149,7 +2148,7 @@ This one didn't work very well
  (setq flycheck-checker-error-threshold nil)
  (setq flycheck-debug t))
 #+end_src
-** Toggling flycheck buffer with "M-C"
+*** Toggling flycheck buffer with "M-C"
 I have my own little hook to open the flycheck buffer with ~M-C~, and close it again with another ~M-C~ keystroke.
 #+begin_src emacs-lisp :load no
 (defvar should-delete-flycheck-list-buffer nil)
@@ -2174,7 +2173,6 @@ I have my own little hook to open the flycheck buffer with ~M-C~, and close it a
 (define-key flycheck-mode-map (kbd "M-C") 'my/flycheck-list-errors)
 #+end_src
 ** Flymake
-** Setup
 #+begin_src emacs-lisp :load yes
 (defun my-python-mode-setup ()
   "Setup function for Python mode."
@@ -2204,7 +2202,7 @@ I have my own little hook to open the flycheck buffer with ~M-C~, and close it a
                    (concat "/sshx:your_username@remote_host:" local-path)))))
 (add-hook 'hack-dir-local-variables-hook #'my-setup-tramp-path)
 #+end_src
-** Eglot
+** Eglot in Tramp
 #+begin_src emacs-lisp :load yes
 (defun my/eglot-project-function (dir)
   "Custom project function for Eglot that avoids using Projectile for remote directories."
