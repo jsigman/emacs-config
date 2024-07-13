@@ -81,7 +81,12 @@
  :init
  (setq vterm-always-compile-module t)
  (setq vterm-timer-delay 0.01)
- :config (define-key vterm-mode-map (kbd "M-k") (lambda () (interactive) (kill-this-buffer nil)))
+ :config
+ (define-key
+  vterm-mode-map (kbd "M-k")
+  (lambda ()
+    (interactive)
+    (kill-this-buffer nil)))
  ;; (define-key vterm-mode-map (kbd "M-i") 'previous-multiframe-window)
  ;; (define-key vterm-mode-map (kbd "M-o") 'next-multiframe-window)
  (define-key vterm-mode-map (kbd "M-0") 'delete-window)
@@ -134,10 +139,21 @@ BUFFER may be either a buffer or its name (a string)."
     (interactive)
     (kill-buffer-and-its-windows (current-buffer))))
  ;; Add goto-address-mode to vterm-mode-hook for clickable links
- (add-hook 'vterm-mode-hook 'goto-address-mode))
+ (add-hook 'vterm-mode-hook 'goto-address-mode)
+ (defun my-vterm-scroll-to-top (orig-fun &rest args)
+   "Ensure vterm buffer is scrolled to the top after creation."
+   (let ((buf (apply orig-fun args)))
+     (with-current-buffer buf
+       (goto-char (point-min))
+       (vterm-clear-scrollback)
+       (recenter-top-bottom 0))
+     buf))
+
+ (advice-add 'vterm :around #'my-vterm-scroll-to-top)
+ (advice-add 'vterm-other-window :around #'my-vterm-scroll-to-top))
 #+end_src
 ** Vterm Toggle
-#+begin_src emacs-lisp :load no
+#+begin_src emacs-lisp :load yes
 (use-package
  vterm-toggle
  :after vterm
@@ -151,7 +167,8 @@ BUFFER may be either a buffer or its name (a string)."
   ("M-n" . vterm-toggle-forward)
   ("M-p" . vterm-toggle-backward))
  (:map global-map ("M-T" . vterm-toggle) ("M-R" . vterm-toggle-cd))
- :config (setq vterm-toggle-fullscreen-p nil)
+ :config
+ (setq vterm-toggle-fullscreen-p nil)
  (add-to-list
   'display-buffer-alist
   '((lambda (buffer-or-name _)
@@ -193,7 +210,8 @@ BUFFER may be either a buffer or its name (a string)."
 
  ;; Override vterm-toggle--project-root
  (defun vterm-toggle--project-root ()
-   (my/get-project-root)))
+   (my/get-project-root))
+)
 #+END_SRC
 * Window management
 ** Zoom
@@ -431,7 +449,7 @@ I find this breaks browsing of long json files, more than it helps me out.
 #+begin_src emacs-lisp :load no
 (global-so-long-mode t)
 #+end_src
-** Emacs startup profiler
+** Emacs startup profiler (esup)
 #+begin_src emacs-lisp :load yes
 (use-package esup)
 #+end_src
@@ -751,7 +769,17 @@ If non-nil, Unison will only propagate changes from `unison-root1` to `unison-ro
    :host nil
    :type git
    :repo "https://codeberg.org/ideasman42/emacs-elisp-autofmt.git")
- :config (setq elisp-autofmt-on-save-p nil))
+ :config
+ (setq elisp-autofmt-on-save-p
+       ; return t unless in "~/.emacs.d/straight"
+       (lambda ()
+         (not
+          (string-match-p
+           (concat
+            "^"
+            (regexp-quote
+             (expand-file-name "straight" user-emacs-directory)))
+           (buffer-file-name))))))
 #+end_src
 ** Whitespace butler
 #+begin_src emacs-lisp :load yes
@@ -1212,7 +1240,7 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
   ("M-s k" . consult-keep-lines)
   ("M-s u" . consult-focus-lines)
   ;; Isearch integration
-  ("M-s e" . consult-isearch-history)
+  ;; ("M-s e" . consult-isearch-history)
   :map
   isearch-mode-map
   ("M-e" . consult-isearch-history) ;; orig. isearch-edit-string
@@ -1304,14 +1332,6 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
  ;;;; 5. No project support
  ;; (setq consult-project-function nil)
  )
-
-;; Optionally add the `consult-flycheck' command.
-(use-package
- consult-flycheck
- :after consult
- :bind (:map flycheck-command-map ("!" . consult-flycheck)))
-;; Enable Consult-Selectrum integration.
-;; This package should be installed if Selectrum is used.
 #+end_src
 * Snippets
 ** Yasnippet
@@ -1711,10 +1731,6 @@ See also `eglot-server-capable' for :documentHighlightProvider."
 
 (setq eval-expression-print-length nil)
 (setq eval-expression-print-level nil)
-
-(add-to-list
- 'auto-mode-alist
- '("\\.dir-locals\\(?:-2\\)?\\.el\\'" . emacs-lisp-mode))
 #+end_src
 ** Python
 #+begin_src emacs-lisp :load yes
@@ -2404,7 +2420,12 @@ environment."
 ;;              'tramp-completion-file-name-handler
 ;;              'my-filtered-tramp-ssh-completions))))))
 #+end_src
-* Dir Locals
+* Dir-Locals
+#+begin_src emacs-lisp :load yes
+(add-to-list
+ 'auto-mode-alist
+ '("\\.dir-locals\\(?:-2\\)?\\.el\\'" . emacs-lisp-mode))
+#+end_src
 This really improves use with local variables. You get a highly visible warning when a dir-local file is unreadable or misconfigured.
 #+begin_src  emacs-lisp :load yes
 (defun my/dir-local-error-warning (orig-fun &rest args)
