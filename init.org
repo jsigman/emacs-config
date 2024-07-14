@@ -2638,8 +2638,79 @@ Haven't yet found a great use for this.
 ** Magit Todos mode
 This is currently broken for me.
 #+begin_src emacs-lisp :load no
-(use-package magit-todos :config (magit-todos-mode t))
+(use-package
+ magit-todos
+ :straight t
+ :after magit
+ :hook (magit-mode . magit-todos-mode)
+ :config
+ (setq magit-todos-scanner 'magit-todos--scan-with-rg)
+ (setq magit-todos-keywords '("TODO" "FIXME" "BUG" "HACK"))
+ (setq magit-todos-ignore-case t)
+ (setq magit-todos-search-regexp "\\b(TODO|FIXME|BUG|HACK)\\b")
+ (setq magit-todos-keyword-suffix "")
+
+ (defun my/magit-todos-safe-pcre-conversion (orig-fun &rest args)
+   (let ((search-regexp-elisp (plist-get args :search-regexp-elisp)))
+     (condition-case err
+         (apply orig-fun args)
+       (error
+        (message "Failed to convert regexp to PCRE: %S" err)
+        (let ((safe-regexp (regexp-opt magit-todos-keywords)))
+          (apply orig-fun
+                 (plist-put
+                  args
+                  :search-regexp-pcre safe-regexp)))))))
+
+ (advice-add
+  'magit-todos--scan-with-rg
+  :around #'my/magit-todos-safe-pcre-conversion)
+
+ (magit-todos-mode 1))
 #+end_src
+** Homegrown Magit TODOs
+#+begin_src emacs-lisp :load yes
+(defun magit-insert-todos ()
+  "Insert a section for TODOs found in comments."
+  (magit-insert-section (todos)
+    (magit-insert-heading "TODO:")
+    (let* ((root (magit-toplevel))
+           ;; Update regex to match common comment formats followed by TODO
+           (todos-output
+            (shell-command-to-string
+             (concat "rg --vimgrep '(#|//|;|<!--)\\s*TODO' " root))))
+      (dolist (line (split-string todos-output "\n" t))
+        (when (string-match
+               "\\([^:]+\\):\\([0-9]+\\):\\([0-9]+\\):\\(.*\\)" line)
+          (let ((file (match-string 1 line))
+                (line-number (string-to-number (match-string 2 line)))
+                (content (match-string 4 line)))
+            (magit-insert-section (todo)
+              (insert (format "%s:%d: %s\n" (file-relative-name file root) line-number content))
+              (magit-insert-heading))))))))
+
+;; Define the minor mode to integrate TODOs into Magit status buffer
+(define-minor-mode magit-todos-mode
+  "Display TODOs in Magit status using rg."
+  :lighter " Magit-Todos"
+  :global
+  t
+  (if magit-todos-mode
+      (magit-todos-mode-enable)
+    (magit-todos-mode-disable)))
+
+(defun magit-todos-mode-enable ()
+  "Enable Magit-Todos integration."
+  (add-hook 'magit-status-sections-hook 'magit-insert-todos t))
+
+(defun magit-todos-mode-disable ()
+  "Disable Magit-Todos integration."
+  (remove-hook 'magit-status-sections-hook 'magit-insert-todos))
+
+(provide 'magit-todos) ;; Optional: only if you plan to use this as a separate package or file.
+(magit-todos-mode 1)
+#+end_src
+
 ** Magit coloring
 *** ~git-gutter~
 #+begin_src emacs-lisp :load yes
