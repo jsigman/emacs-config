@@ -2673,7 +2673,7 @@ This is currently broken for me.
 (defun magit-insert-todos ()
   "Insert a section for TODOs found in comments."
   (magit-insert-section (todos)
-    (magit-insert-heading "TODO:")
+    (magit-insert-heading "TODOs:")
     (let* ((root (magit-toplevel))
            ;; Update regex to match common comment formats followed by TODO
            (todos-output
