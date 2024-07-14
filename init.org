@@ -777,82 +777,40 @@ I'm trying migrating from ~projectile~ onto ~project.el~ for its purported benef
  project
  :demand t
  :straight nil
- :init (global-set-key (kbd "C-c p") project-prefix-map)
+ :bind-keymap ("C-c p" . project-prefix-map)
  :config
- (defun my-project-ignores (dir)
-   (let ((root (locate-dominating-file dir ".git")))
-     (when root
-       (append
-        (mapcar
-         (lambda (dir) (concat "**/" dir "/**")) ; Use glob patterns
-         '("venv"
-           "data"
-           "typings"
-           "node_modules"
-           ".mypy_cache"
-           ".pytest_cache"
-           ".cache"
-           ".dvc/cache"
-           ".dvc/tmp"
-           ".jekyll-cache"))
-        (project--value-in-dir 'project-vc-ignores root)))))
+ (defun my-project-try-remote (dir)
+   "Recognize remote projects."
+   (when (file-remote-p dir)
+     (cons 'remote dir)))
 
- (cl-defmethod project-ignores ((project (head vc)) dir)
-   (let ((root (project-root project)))
-     (append
-      (project--value-in-dir 'project-vc-ignores root)
-      (my-project-ignores dir))))
+ (add-to-list 'project-find-functions #'my-project-try-remote)
 
- ;; Use native indexing for faster performance
- (setq project-vc-extra-root-markers '(".git"))
- (setq project-vc-include-untracked nil)
- (setq project-vc-merge-submodules nil)
+ (cl-defmethod project-root ((project (head remote)))
+   (cdr project))
 
- ;; Use git-grep for faster searching
- (setq project-vc-grep-function 'project--vc-git-grep)
+ (defun my-project-remember-remote (remote-dir)
+   "Remember a remote project without removing it if not found."
+   (project--ensure-read-project-list)
+   (let ((dir (abbreviate-file-name remote-dir)))
+     (unless (member (list dir) project--list)
+       (push (list dir) project--list)
+       (project--write-project-list))))
 
- ;; Optimize file indexing
- (setq project-file-list-cache-time 30) ; Cache file list for 30 seconds
+ (advice-add
+  'project-remember-project
+  :before
+  (lambda (pr &optional no-write)
+    (when (and pr (file-remote-p (project-root pr)))
+      (my-project-remember-remote (project-root pr)))))
 
- ;; Use fd for even faster file indexing if available
- (when (executable-find "fd")
-   (setq project-find-functions '(project-try-vc project-try-fd)))
-
- (defun project-try-fd (dir)
-   (let ((root (locate-dominating-file dir ".git")))
-     (when root
-       (cons 'fd root))))
-
- (cl-defmethod project-files ((project (head fd)) &optional dirs)
-   (let ((default-directory (cdr project)))
-     (project--file-list-fd)))
-
- (defun project--file-list-fd ()
-   (split-string
-    (shell-command-to-string
-     "fd . -t f -H -E .git -E .gitignore -E '**/venv/**' -E '**/node_modules/**'")
-    "\n" t))
-
- (defun my-project-try-vc (dir)
-   (let* ((root (vc-call-backend 'Git 'root dir))
-          (check-submodule
-           (lambda (d)
-             (let ((default-directory d))
-               (and (file-exists-p ".git")
-                    (if (file-directory-p ".git")
-                        nil ; Regular repository
-                      (with-temp-buffer
-                        (insert-file-contents ".git")
-                        (goto-char (point-min))
-                        (looking-at-p "gitdir: "))))))))
-     (when root
-       (let ((project-root
-              (if (funcall check-submodule dir)
-                  dir
-                root)))
-         (list 'vc 'Git project-root)))))
-
- (add-hook 'project-find-functions #'my-project-try-vc))
+ (advice-add
+  'project--remove-from-project-list
+  :around
+  (lambda (orig-fun project-root report-message)
+    (if (file-remote-p project-root)
+        (message "Remote project not found: %s" project-root)
+      (funcall orig-fun project-root report-message)))))
 #+end_src
 ** Projectile
 #+begin_src emacs-lisp :load no
@@ -2686,7 +2644,6 @@ This is really only used in the publishing script of my emacs config, I don't ne
        (list "latexmk -shell-escape -bibtex -f -pdf %f")))
 #+end_src
 * Magit and Version Control
-
 ** Magit
 #+begin_src emacs-lisp :load yes
 (use-package
@@ -2720,13 +2677,11 @@ Haven't yet found a great use for this.
 
 (use-package ghub :defer t)
 #+end_src
-
 ** Magit Todos mode
 This is currently broken for me.
 #+begin_src emacs-lisp :load no
 (use-package magit-todos :config (magit-todos-mode t))
 #+end_src
-
 ** Magit coloring
 *** ~git-gutter~
 #+begin_src emacs-lisp :load yes
