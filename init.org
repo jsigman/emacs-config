@@ -777,82 +777,44 @@ I'm trying migrating from ~projectile~ onto ~project.el~ for its purported benef
  project
  :demand t
  :straight nil
- :init (global-set-key (kbd "C-c p") project-prefix-map)
+ :bind-keymap ("C-c p" . project-prefix-map)
  :config
- (defun my-project-ignores (dir)
-   (let ((root (locate-dominating-file dir ".git")))
-     (when root
-       (append
-        (mapcar
-         (lambda (dir) (concat "**/" dir "/**")) ; Use glob patterns
-         '("venv"
-           "data"
-           "typings"
-           "node_modules"
-           ".mypy_cache"
-           ".pytest_cache"
-           ".cache"
-           ".dvc/cache"
-           ".dvc/tmp"
-           ".jekyll-cache"))
-        (project--value-in-dir 'project-vc-ignores root)))))
+ (setq project-vc-ignores
+       '("venv"
+         "data"
+         "typings"
+         "node_modules"
+         ".mypy_cache"
+         ".pytest_cache"
+         ".cache"
+         ".dvc/cache"
+         ".dvc/tmp"
+         ".jekyll-cache"))
 
- (cl-defmethod project-ignores ((project (head vc)) dir)
-   (let ((root (project-root project)))
-     (append
-      (project--value-in-dir 'project-vc-ignores root)
-      (my-project-ignores dir))))
+ ;; Function to add ignored directories to project-vc-ignores
+ (defun my/add-project-ignore (dir)
+   (add-to-list 'project-vc-ignores dir))
 
- ;; Use native indexing for faster performance
- (setq project-vc-extra-root-markers '(".git"))
- (setq project-vc-include-untracked nil)
- (setq project-vc-merge-submodules nil)
+ ;; Add each directory to project-vc-ignores
+ (dolist (dir
+          '("venv"
+            "data"
+            "typings"
+            "node_modules"
+            ".mypy_cache"
+            ".pytest_cache"
+            ".cache"
+            ".dvc/cache"
+            ".dvc/tmp"
+            ".jekyll-cache"))
+   (my/add-project-ignore dir))
 
- ;; Use git-grep for faster searching
- (setq project-vc-grep-function 'project--vc-git-grep)
+ ;; Disable automatic project remembering
+ (advice-add 'project-remember-project :override #'ignore)
 
- ;; Optimize file indexing
- (setq project-file-list-cache-time 30) ; Cache file list for 30 seconds
 
- ;; Use fd for even faster file indexing if available
- (when (executable-find "fd")
-   (setq project-find-functions '(project-try-vc project-try-fd)))
-
- (defun project-try-fd (dir)
-   (let ((root (locate-dominating-file dir ".git")))
-     (when root
-       (cons 'fd root))))
-
- (cl-defmethod project-files ((project (head fd)) &optional dirs)
-   (let ((default-directory (cdr project)))
-     (project--file-list-fd)))
-
- (defun project--file-list-fd ()
-   (split-string
-    (shell-command-to-string
-     "fd . -t f -H -E .git -E .gitignore -E '**/venv/**' -E '**/node_modules/**'")
-    "\n" t))
-
- (defun my-project-try-vc (dir)
-   (let* ((root (vc-call-backend 'Git 'root dir))
-          (check-submodule
-           (lambda (d)
-             (let ((default-directory d))
-               (and (file-exists-p ".git")
-                    (if (file-directory-p ".git")
-                        nil ; Regular repository
-                      (with-temp-buffer
-                        (insert-file-contents ".git")
-                        (goto-char (point-min))
-                        (looking-at-p "gitdir: "))))))))
-     (when root
-       (let ((project-root
-              (if (funcall check-submodule dir)
-                  dir
-                root)))
-         (list 'vc 'Git project-root)))))
-
- (add-hook 'project-find-functions #'my-project-try-vc))
+ ;; Prevent automatic removal of projects not found
+ (advice-add 'project--remove-from-project-list :override #'ignore))
 #+end_src
 ** Projectile
 #+begin_src emacs-lisp :load no
@@ -1529,89 +1491,43 @@ This mode is used to run language servers in a docker container. At some point I
 ** Eglot
 #+begin_src emacs-lisp :load yes
 (use-package
- eglot
- :ensure t
+ project
  :demand t
  :straight nil
- :init
- (defun file-is-remote-p ()
-   "Return non-nil if the current file is remote."
-   (and (buffer-file-name) (file-remote-p (buffer-file-name))))
-
- (defun maybe-start-eglot ()
-   "Start Eglot if the current file is not remote."
-   (unless (file-is-remote-p)
-     (when (fboundp 'eglot-ensure)
-       (eglot-ensure))))
-
- (defun disable-eglot-if-remote ()
-   "Disable Eglot if the current file is remote."
-   (when (and (file-is-remote-p)
-              (fboundp 'eglot-managed-p)
-              (fboundp 'eglot-shutdown)
-              (eglot-managed-p))
-     (eglot-shutdown)))
-
- :hook
- ((python-mode
-   markdown-mode
-   sh-mode
-   yaml-mode
-   json-mode
-   dockerfile-mode
-   LaTeX-mode
-   org-mode)
-  . maybe-start-eglot)
- :hook (find-file . disable-eglot-if-remote)
+ :bind-keymap ("C-c p" . project-prefix-map)
  :config
- (add-to-list
-  'eglot-server-programs
-  '(python-mode . ("pyright-langserver" "--stdio")))
- (add-to-list
-  'eglot-server-programs
-  '(markdown-mode . ("vscode-markdown-language-server" "--stdio")))
- (add-to-list
-  'eglot-server-programs
-  '(sh-mode . ("bash-language-server" "start")))
- (add-to-list
-  'eglot-server-programs
-  '(yaml-mode . ("yaml-language-server" "--stdio")))
- (add-to-list
-  'eglot-server-programs
-  '(json-mode . ("vscode-json-languageserver" "--stdio")))
- (add-to-list
-  'eglot-server-programs
-  '(dockerfile-mode . ("docker-langserver" "--stdio")))
- (add-to-list 'eglot-server-programs '(LaTeX-mode . ("texlab")))
- (add-to-list 'eglot-server-programs '(org-mode . ("texlab")))
- (custom-set-faces
-  '(eglot-highlight-symbol-face
-    ((t (:inherit highlight :underline t)))))
+ (defun my-project-try-remote (dir)
+   "Recognize remote projects."
+   (when (file-remote-p dir)
+     (cons 'remote dir)))
 
- ;; Basic settings
- (setq eglot-autoshutdown t)
- (setq eglot-extend-to-xref t)
+ (add-to-list 'project-find-functions #'my-project-try-remote)
 
- ;; Configure completion
- (setq completion-category-defaults nil)
- (setq completion-cycle-threshold 3)
- (setq tab-always-indent 'complete)
+ (cl-defmethod project-root ((project (head remote)))
+   (cdr project))
 
- ;; Increase read-process-output-max
- (setq read-process-output-max (* 1024 1024))
+ (defun my-project-remember-remote (remote-dir)
+   "Remember a remote project without removing it if not found."
+   (project--ensure-read-project-list)
+   (let ((dir (abbreviate-file-name remote-dir)))
+     (unless (member (list dir) project--list)
+       (push (list dir) project--list)
+       (project--write-project-list))))
 
- ;; Ignore certain directories for file watching
- (setq eglot-ignored-server-capabilities
-       '(:documentOnTypeFormattingProvider))
+ (advice-add
+  'project-remember-project
+  :before
+  (lambda (pr &optional no-write)
+    (when (and pr (file-remote-p (project-root pr)))
+      (my-project-remember-remote (project-root pr)))))
 
- ;; Key bindings (optional)
- :bind
- (:map
-  eglot-mode-map
-  ("C-c l a" . eglot-code-actions)
-  ("C-c l r" . eglot-rename)
-  ("C-c l f" . eglot-format)
-  ("C-c l d" . eglot-find-declaration)))
+ (advice-add
+  'project--remove-from-project-list
+  :around
+  (lambda (orig-fun project-root report-message)
+    (if (file-remote-p project-root)
+        (message "Remote project not found: %s" project-root)
+      (funcall orig-fun project-root report-message)))))
 #+end_src
 *** Eglot-iedit
 #+begin_src emacs-lisp :load yes
