@@ -771,12 +771,12 @@ If non-nil, Unison will only propagate changes from `unison-root1` to `unison-ro
 #+end_src
 * Project Packages
 ** Project.el
-I'm trying migrating from ~projectile~ onto ~project.el~ for its purported benefits.
+I'm trying migrating from ~projectile~ onto ~project.el~ for its purported benefits. ~project.el~ and ~eglot~ and ~Flymake~ don't like to play nice unless you use the built in. To do this with ~straight.el~, you have to give it a specific keyword.
 #+begin_src emacs-lisp :load yes
 (use-package
  project
  :demand t
- :straight nil
+ :straight (:type built-in)
  :bind-keymap ("C-c p" . project-prefix-map)
  :config
  (setq project-vc-ignores
@@ -1487,7 +1487,6 @@ This mode is used to run language servers in a docker container. At some point I
   (setq lsp-pyright-disable-organize-imports t)
   :config (setq lsp-pyright-log-level "trace"))
 #+end_src
-
 ** Eglot
 #+begin_src emacs-lisp :load yes
 (use-package
@@ -2117,7 +2116,8 @@ I have my own little hook to open the flycheck buffer with ~M-C~, and close it a
   "Setup function for Python mode."
   (interactive)
   (flymake-mode 1)
-  (flymake-ruff-load))
+  (flymake-ruff-load)
+  )
 (use-package flymake :ensure t :defer t)
 (use-package flymake-ruff :ensure t :after flymake :defer t)
 (add-hook 'python-ts-mode-hook #'my-python-mode-setup t)
