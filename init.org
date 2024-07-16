@@ -1490,43 +1490,89 @@ This mode is used to run language servers in a docker container. At some point I
 ** Eglot
 #+begin_src emacs-lisp :load yes
 (use-package
- project
+ eglot
+ :ensure t
  :demand t
  :straight nil
- :bind-keymap ("C-c p" . project-prefix-map)
+ :init
+ (defun file-is-remote-p ()
+   "Return non-nil if the current file is remote."
+   (and (buffer-file-name) (file-remote-p (buffer-file-name))))
+
+ (defun maybe-start-eglot ()
+   "Start Eglot if the current file is not remote."
+   (unless (file-is-remote-p)
+     (when (fboundp 'eglot-ensure)
+       (eglot-ensure))))
+
+ (defun disable-eglot-if-remote ()
+   "Disable Eglot if the current file is remote."
+   (when (and (file-is-remote-p)
+              (fboundp 'eglot-managed-p)
+              (fboundp 'eglot-shutdown)
+              (eglot-managed-p))
+     (eglot-shutdown)))
+
+ :hook
+ ((python-mode
+   markdown-mode
+   sh-mode
+   yaml-mode
+   json-mode
+   dockerfile-mode
+   LaTeX-mode
+   org-mode)
+  . maybe-start-eglot)
+ :hook (find-file . disable-eglot-if-remote)
  :config
- (defun my-project-try-remote (dir)
-   "Recognize remote projects."
-   (when (file-remote-p dir)
-     (cons 'remote dir)))
+ (add-to-list
+  'eglot-server-programs
+  '(python-mode . ("pyright-langserver" "--stdio")))
+ (add-to-list
+  'eglot-server-programs
+  '(markdown-mode . ("vscode-markdown-language-server" "--stdio")))
+ (add-to-list
+  'eglot-server-programs
+  '(sh-mode . ("bash-language-server" "start")))
+ (add-to-list
+  'eglot-server-programs
+  '(yaml-mode . ("yaml-language-server" "--stdio")))
+ (add-to-list
+  'eglot-server-programs
+  '(json-mode . ("vscode-json-languageserver" "--stdio")))
+ (add-to-list
+  'eglot-server-programs
+  '(dockerfile-mode . ("docker-langserver" "--stdio")))
+ (add-to-list 'eglot-server-programs '(LaTeX-mode . ("texlab")))
+ (add-to-list 'eglot-server-programs '(org-mode . ("texlab")))
+ (custom-set-faces
+  '(eglot-highlight-symbol-face
+    ((t (:inherit highlight :underline t)))))
 
- (add-to-list 'project-find-functions #'my-project-try-remote)
+ ;; Basic settings
+ (setq eglot-autoshutdown t)
+ (setq eglot-extend-to-xref t)
 
- (cl-defmethod project-root ((project (head remote)))
-   (cdr project))
+ ;; Configure completion
+ (setq completion-category-defaults nil)
+ (setq completion-cycle-threshold 3)
+ (setq tab-always-indent 'complete)
 
- (defun my-project-remember-remote (remote-dir)
-   "Remember a remote project without removing it if not found."
-   (project--ensure-read-project-list)
-   (let ((dir (abbreviate-file-name remote-dir)))
-     (unless (member (list dir) project--list)
-       (push (list dir) project--list)
-       (project--write-project-list))))
+ ;; Increase read-process-output-max
+ (setq read-process-output-max (* 1024 1024))
 
- (advice-add
-  'project-remember-project
-  :before
-  (lambda (pr &optional no-write)
-    (when (and pr (file-remote-p (project-root pr)))
-      (my-project-remember-remote (project-root pr)))))
+ ;; Ignore certain directories for file watching
+ (setq eglot-ignored-server-capabilities
+       '(:documentOnTypeFormattingProvider))
 
- (advice-add
-  'project--remove-from-project-list
-  :around
-  (lambda (orig-fun project-root report-message)
-    (if (file-remote-p project-root)
-        (message "Remote project not found: %s" project-root)
-      (funcall orig-fun project-root report-message)))))
+ ;; Key bindings (optional)
+ :bind
+ (:map
+  eglot-mode-map
+  ("C-c l a" . eglot-code-actions)
+  ("C-c l r" . eglot-rename)
+  ("C-c l f" . eglot-format)
+  ("C-c l d" . eglot-find-declaration)))
 #+end_src
 *** Eglot-iedit
 #+begin_src emacs-lisp :load yes
