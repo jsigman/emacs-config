@@ -3094,7 +3094,7 @@ Return nil if no project was found."
    :repo "manateelazycat/awesome-tray")
  :init
  (setq awesome-tray-active-modules
-       '("buffer-name" "mode-name" "belong")) ;TODO: add "belong" back in after treesit
+       '("buffer-name" "mode-name" "belong"))
  :config (awesome-tray-mode 1) awesome-tray-active-modules)
 #+end_src
 ** Icons
