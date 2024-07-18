@@ -1619,6 +1619,8 @@ See also `eglot-server-capable' for :documentHighlightProvider."
 #+begin_src emacs-lisp :load yes
 (use-package dash)
 (use-package ht)
+(use-package pcre2el)
+(use-package async)
 #+end_src
 *** Elisp UI
 #+begin_src emacs-lisp :load yes
@@ -2669,7 +2671,7 @@ This is really only used in the publishing script of my emacs config, I don't ne
 #+end_src
 *** org-jekyll-lite
 This is really only used in the publishing script of my emacs config, I don't need to load this on every startup.
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package
  ox-jekyll-lite
  :after org
@@ -2822,12 +2824,6 @@ This is currently broken for me.
  (set-face-foreground 'git-gutter+-modified "magenta")
  (set-face-foreground 'git-gutter+-added "dark green")
  (set-face-foreground 'git-gutter+-deleted "red"))
-
-(use-package pcre2el)
-(use-package async)
-(use-package hl-todo)
-(use-package rg)
-(use-package ag)
 
 ; add this so that git gutter plus does not screw up tramp sessions
 ; it disables GGP during tramp
@@ -3185,12 +3181,10 @@ Return nil if no project was found."
  helpful
  :defer t
  ;; TODO: Add these back in when helpful plays nicely with literate-elisp
- ;; :bind
- ;; ("C-h f" . helpful-callable)
- ;; ("C-h v" . helpful-variable)
- ;; ("C-h k" . helpful-key)
- )
-
+ :bind
+ ("C-h f" . helpful-callable)
+ ("C-h v" . helpful-variable)
+ ("C-h k" . helpful-key))
 #+end_src
 ** Dimmer
 #+begin_src emacs-lisp :load yes
