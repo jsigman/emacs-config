@@ -3164,7 +3164,9 @@ Return nil if no project was found."
  csv-mode
  :straight
  '(csv-mode :type git :host github :repo "emacsmirror/csv-mode"))
-
+#+end_src
+** Explain Pause Mode
+#+begin_src emacs-lisp :load yes
 (use-package
  explain-pause-mode
  :straight
@@ -3172,7 +3174,9 @@ Return nil if no project was found."
    :type git
    :host github
    :repo "lastquestion/explain-pause-mode"))
-
+#+end_src
+** Helpful
+#+begin_src emacs-lisp :load yes
 ;; use helpful instead of the normal help buffers
 ;; Note that the built-in `describe-function' includes both functions
 ;; and macros. `helpful-function' is functions only, so we provide
@@ -3187,6 +3191,9 @@ Return nil if no project was found."
  ;; ("C-h k" . helpful-key)
  )
 
+#+end_src
+** Dimmer
+#+begin_src emacs-lisp :load yes
 (use-package
  dimmer
  :config
@@ -3199,11 +3206,15 @@ Return nil if no project was found."
  (setq dimmer-fraction 0.15)
  (dimmer-mode t))
 
+#+end_src
+** Volatile Highlights
+#+begin_src emacs-lisp :load yes
 (use-package
  volatile-highlights
-
  :config (volatile-highlights-mode t))
-
+#+end_src
+** Highlight todos
+#+begin_src emacs-lisp :load yes
 (use-package hl-todo :init (global-hl-todo-mode))
 #+end_src
 ** Tree-Sitter
