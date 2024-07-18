@@ -3180,7 +3180,6 @@ Return nil if no project was found."
 (use-package
  helpful
  :defer t
- ;; TODO: Add these back in when helpful plays nicely with literate-elisp
  :bind
  ("C-h f" . helpful-callable)
  ("C-h v" . helpful-variable)
