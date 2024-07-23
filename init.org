@@ -644,6 +644,15 @@ If non-nil, Unison will only propagate changes from `unison-root1` to `unison-ro
       (push command unison-sync-queue)
       (unison-process-next-command))))
 
+(defun unison-force-sync ()
+  "Force a Unison sync with -ignorearchives flag."
+  (interactive)
+  (let ((command (unison-build-command)))
+    (when command
+      (setq command (concat command " -ignorearchives"))
+      (push command unison-sync-queue)
+      (unison-process-next-command))))
+
 (define-minor-mode unison-sync-mode
   "Minor mode to sync the current project using Unison on file save."
   :lighter
@@ -2527,7 +2536,6 @@ This really improves use with local variables. You get a highly visible warning 
 ;;nil means to wrap lines in org mode
 (setq org-startup-truncated nil)
 #+end_src
-
 ** Org Modern
 I thought I liked this at first, but now I'm going to disable it because of some annoying text interactions.
 #+begin_src emacs-lisp :load no
@@ -2544,15 +2552,13 @@ I thought I liked this at first, but now I'm going to disable it because of some
  (setq org-startup-indented t)
  (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
 #+end_src
-
 ** Org Roam
 I'm not currently using Org Roam, but maybe some day I'd like to.
-#+begin_src emacs-lisp :load no
-(straight-use-package 'org-roam)
+#+begin_src emacs-lisp :load yes
 (use-package
  org-roam
  :ensure t
- :custom (org-roam-directory (file-truename "~/Documents/PERSONAL/ORG_ROAM/"))
+ :custom (org-roam-directory (file-truename "~/Documents/ORG_ROAM/"))
  :bind
  (("C-c n l" . org-roam-buffer-toggle)
   ("C-c n f" . org-roam-node-find)
@@ -2563,7 +2569,6 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
   ("C-c n j" . org-roam-dailies-capture-today))
  :config (org-roam-setup) (require 'org-roam-protocol))
 #+end_src
-
 ** Jupyter
 #+begin_src emacs-lisp :load yes
 (use-package
@@ -3172,7 +3177,7 @@ Return nil if no project was found."
    :repo "lastquestion/explain-pause-mode"))
 #+end_src
 ** Helpful
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 ;; use helpful instead of the normal help buffers
 ;; Note that the built-in `describe-function' includes both functions
 ;; and macros. `helpful-function' is functions only, so we provide
