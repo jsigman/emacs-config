@@ -2554,7 +2554,7 @@ I thought I liked this at first, but now I'm going to disable it because of some
 #+end_src
 ** Org Roam
 I'm not currently using Org Roam, but maybe some day I'd like to.
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package
  org-roam
  :ensure t
