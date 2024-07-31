@@ -789,16 +789,15 @@ I'm trying migrating from ~projectile~ onto ~project.el~ for its purported benef
  :bind-keymap ("C-c p" . project-prefix-map)
  :config
  (setq project-vc-ignores
-       '("venv"
-         "data"
-         "typings"
-         "node_modules"
-         ".mypy_cache"
-         ".pytest_cache"
-         ".cache"
-         ".dvc/cache"
-         ".dvc/tmp"
-         ".jekyll-cache"))
+       '("venv/"
+         "typings/"
+         "node_modules/"
+         ".mypy_cache/"
+         ".pytest_cache/"
+         ".cache/"
+         ".dvc/cache/"
+         ".dvc/tmp/"
+         ".jekyll-cache/"))
 
  ;; Function to add ignored directories to project-vc-ignores
  (defun my/add-project-ignore (dir)
@@ -2171,6 +2170,10 @@ I have my own little hook to open the flycheck buffer with ~M-C~, and close it a
 #+begin_src emacs-lisp :load yes
 (use-package flymake :ensure t)
 (use-package flymake-ruff :ensure t :config (flymake-ruff-load))
+(add-hook 'python-ts-mode-hook 'flymake-mode)
+#+end_src
+*** Bugfix: Ruff
+#+begin_src emacs-lisp :load yes
 (defun flymake-ruff--check-buffer ()
   "Generate a list of diagnostics for the current buffer."
   (let ((code-buffer (current-buffer))
@@ -2228,7 +2231,9 @@ I have my own little hook to open the flycheck buffer with ~M-C~, and close it a
     dxs))
 (setq flymake-ruff-program-args
       '("--output-format" "concise" "--exit-zero" "--quiet" "-"))
-(add-hook 'python-ts-mode-hook 'flymake-mode)
+(defun my-python-ruff-setup ()
+  (add-hook 'flymake-diagnostic-functions #'flymake-ruff--run-checker nil t))
+(add-hook 'python-base-mode-hook #'my-python-ruff-setup)
 #+end_src
 * TRAMP
 ** General Settings
@@ -2365,48 +2370,20 @@ environment."
 #+end_src
 
 ** Vertico improvements
+I get False Positive completions using ~coder~ with TRAMP ssh completions. This filter removes them.
 #+begin_src emacs-lisp :load yes
-(defun basic-remote-try-completion (string table pred point)
-  (and (vertico--remote-p string)
-       (completion-basic-try-completion string table pred point)))
-(defun basic-remote-all-completions (string table pred point)
-  (and (vertico--remote-p string)
-       (completion-basic-all-completions string table pred point)))
-(add-to-list
- 'completion-styles-alist
- '(basic-remote
-   basic-remote-try-completion basic-remote-all-completions nil))
-(setq
- completion-styles '(orderless basic)
- completion-category-defaults nil
- completion-category-overrides '((file (styles basic-remote partial-completion))))
-;; (defun my-filtered-tramp-ssh-completions ()
-;;   "Filter TRAMP completions to exclude specific patterns."
-;;   (let ((completions
-;;          (tramp-completion-handle-file-name-all-completions "")))
-;;     (debug)
-;;     (seq-filter
-;;      (lambda (c)
-;;        (not
-;;         (or (string-suffix-p ".workspace" c)
-;;             (string-suffix-p "." c)
-;;             (member c '("github.com" "gitlab.com")))))
-;;      completions)))
+(defun my/tramp-ssh-completion-filter (completions)
+  (cl-remove-if-not
+   (lambda (completion)
+     (and (string-match-p "^/ssh:[^:]+:$" completion)
+          (not (string-match-p "--:$" completion))
+          (not (string-match-p "\\.:$" completion))
+          (or (string-match-p "coder\\.[^:]+:$" completion)
+              (not (string-match-p "\\.workspace:$" completion)))))
+   completions))
 
-;; ;; Append the custom completion function without overwriting existing handlers
-;; (let ((existing-handler
-;;        (assoc
-;;         'tramp-completion-file-name-handler
-;;         tramp-completion-function-alist)))
-;;   (if existing-handler
-;;       (setcdr existing-handler 'my-filtered-tramp-ssh-completions)
-;;     (setq tramp-completion-function-alist
-;;           (append
-;;            tramp-completion-function-alist
-;;            (list
-;;             (cons
-;;              'tramp-completion-file-name-handler
-;;              'my-filtered-tramp-ssh-completions))))))
+(advice-add 'tramp-completion-handle-file-name-all-completions
+            :filter-return #'my/tramp-ssh-completion-filter)
 #+end_src
 * Dir-Locals
 #+begin_src emacs-lisp :load yes
@@ -2652,19 +2629,20 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
  :defer t
  :custom (jupyter-repl-echo-eval-p t)
  :config
- (defun my-switch-to-python-ts-mode-if-jupyter ()
-   "Switches to python-ts-mode if the org source block is of type jupyter-python."
-   (when (and (eq major-mode 'python-mode)
-              (string=
-               (org-element-property
-                :language (org-element-at-point))
-               "jupyter-python"))
-     (python-ts-mode)))
+ ;; (defun my-switch-to-python-ts-mode-if-jupyter ()
+ ;;   (interactive)
+ ;;   "Switches to python-ts-mode if the org source block is of type jupyter-python."
+ ;;   (when (and (eq major-mode 'python-mode)
+ ;;              (string=
+ ;;               (org-element-property
+ ;;                :language (org-element-at-point))
+ ;;               "jupyter-python"))
+ ;;     (python-ts-mode)))
 
- (add-hook
-  'org-src-mode-hook 'my-switch-to-python-ts-mode-if-jupyter)
+ ;; (add-hook
+ ;;  'org-src-mode-hook 'my-switch-to-python-ts-mode-if-jupyter)
 
- ;; (add-to-list 'org-src-lang-modes '("python" . python-ts))
+ (add-to-list 'org-src-lang-modes '("python" . python-ts))
 )
 #+end_src
 
@@ -2776,22 +2754,40 @@ This is currently broken for me.
 #+begin_src emacs-lisp :load yes
 (defun magit-insert-todos ()
   "Insert a section for TODOs found in comments."
-  (magit-insert-section (todos)
-    (magit-insert-heading "TODOs")
-    (let* ((root (magit-toplevel))
-           ;; Update regex to match common comment formats followed by TODO
-           (todos-output
-            (shell-command-to-string
-             (concat "rg --vimgrep '(#|//|;|<!--)\\s*TODO' " root))))
-      (dolist (line (split-string todos-output "\n" t))
-        (when (string-match
-               "\\([^:]+\\):\\([0-9]+\\):\\([0-9]+\\):\\(.*\\)" line)
-          (let ((file (match-string 1 line))
-                (line-number (string-to-number (match-string 2 line)))
-                (content (match-string 4 line)))
-            (magit-insert-section (todo)
-              (insert (format "%s:%d: %s\n" (file-relative-name file root) line-number content))
-              (magit-insert-heading))))))))
+  (magit-insert-section
+   (todos) (magit-insert-heading "TODOs")
+   (let*
+       ((root (magit-toplevel))
+        ;; Update regex to match common comment formats followed by TODO
+        (todos-output
+         (shell-command-to-string
+          (concat "rg --vimgrep '(#|//|;|<!--)\\s*TODO' " root)))
+        (todos-list '()))
+     ;; Parse and collect todos
+     (dolist (line (split-string todos-output "\n" t))
+       (when (string-match
+              "\\([^:]+\\):\\([0-9]+\\):\\([0-9]+\\):\\(.*\\)" line)
+         (let ((file (file-relative-name (match-string 1 line) root))
+               (line-number (string-to-number (match-string 2 line)))
+               (content (match-string 4 line)))
+           (push (list file line-number content) todos-list))))
+     ;; Sort todos by filename and line number
+     (setq todos-list
+           (sort todos-list
+                 (lambda (a b)
+                   (or (string< (car a) (car b))
+                       (and (string= (car a) (car b))
+                            (< (cadr a) (cadr b)))))))
+     ;; Insert sorted todos
+     (dolist (todo todos-list)
+       (let ((file (nth 0 todo))
+             (line-number (nth 1 todo))
+             (content (nth 2 todo)))
+         (magit-insert-section
+          (todo)
+          (insert
+           (format "%s:%d: %s\n" file line-number content))
+          (magit-insert-heading)))))))
 
 ;; Define the minor mode to integrate TODOs into Magit status buffer
 (define-minor-mode magit-todos-mode
