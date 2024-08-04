@@ -2375,16 +2375,15 @@ I get False Positive completions using ~coder~ with TRAMP ssh completions. This 
 (defun my/tramp-ssh-completion-filter (completions)
   (cl-remove-if-not
    (lambda (completion)
-     (and (string-match-p "^/ssh:[^:]+:$" completion)
-          (not (string-match-p "--:$" completion))
-          (not (string-match-p "\\.:$" completion))
-          (or (string-match-p "coder\\.[^:]+:$" completion)
-              (not (string-match-p "\\.workspace:$" completion)))))
+     (not (or (string-match-p "^coder-vscode--:$" completion)         ; Exclude "coder-vscode--:"
+              (string-match-p "^coder-vscode\\.coder\\.infiniaml\\.net--:$" completion)  ; Exclude "coder-vscode.coder.infiniaml.net--:"
+              (string-match-p "^coder\\.:$" completion))))             ; Exclude "coder.:"
    completions))
 
 (advice-add 'tramp-completion-handle-file-name-all-completions
             :filter-return #'my/tramp-ssh-completion-filter)
 #+end_src
+
 * Dir-Locals
 #+begin_src emacs-lisp :load yes
 (add-to-list
