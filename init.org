@@ -616,8 +616,22 @@ If non-nil, Unison will only propagate changes from `unison-root1` to `unison-ro
       (insert (format "Running command: %s\n\n" command)))
     (setq unison-sync-running t)
     (let ((process
-           (start-process-shell-command
-            "unison-sync" output-buffer command)))
+           (make-process
+            :name "unison-sync"
+            :buffer output-buffer
+            :command (list "sh" "-c" command)
+            :filter
+            (lambda (proc string)
+              (when (buffer-live-p (process-buffer proc))
+                (with-current-buffer (process-buffer proc)
+                  (let ((moving (= (point) (process-mark proc))))
+                    (save-excursion
+                      (goto-char (process-mark proc))
+                      (insert
+                       (replace-regexp-in-string "\r" "\n" string))
+                      (set-marker (process-mark proc) (point)))
+                    (if moving
+                        (goto-char (process-mark proc))))))))))
       (set-process-sentinel process 'unison-sync-sentinel))))
 
 (defun unison-sync-sentinel (process event)
@@ -2241,9 +2255,10 @@ I have my own little hook to open the flycheck buffer with ~M-C~, and close it a
 (setq enable-remote-dir-locals 't)
 (setq tramp-chunksize 4050)
 (setq tramp-verbose 10)
-(setq vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
-                                   vc-ignore-dir-regexp
-                                   tramp-file-name-regexp))
+(setq vc-ignore-dir-regexp
+      (format "\\(%s\\)\\|\\(%s\\)"
+              vc-ignore-dir-regexp
+              tramp-file-name-regexp))
 (defun open-remote-dired ()
   "Opens a Dired buffer at the path specified by REMOTE_HOST and REMOTE_PATH environment variables."
   (interactive)
@@ -2690,7 +2705,6 @@ This is really only used in the publishing script of my emacs config, I don't ne
  :demand t
  :init
  (setq magit-delete-by-moving-to-trash nil)
- (setq vc-handled-backends nil)
  :bind
  (:map
   magit-mode-map
