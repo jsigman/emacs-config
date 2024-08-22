@@ -2806,7 +2806,7 @@ This is currently broken for me.
 ** Emacs Theme
 *** Leuven
 Leuven is always a nice option, beautiful with Org Mode.
-#+begin_src emacs-lisp :load no
+#+begin_src emacs-lisp :load yes
 (use-package leuven-theme
   :config
   (load-theme 'leuven-dark t))
@@ -2823,7 +2823,7 @@ Trying this theme out for a little bit.
 #+end_src
 *** ef-day
 I'm always changing my theme, but I tend to like light themes with yellow-ish backgrounds. Almost like handwriting with a yellow memo pad.
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package ef-themes :config (load-theme 'ef-day t))
 #+end_src
 *** Gruvbox-dark
