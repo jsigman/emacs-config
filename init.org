@@ -1,4 +1,5 @@
 #+PROPERTY: header-args:emacs-lisp :load yes
+#+PROPERTY: header-args:emacs-lisp :results silent
 * MacOS specific settings
 ** Command key as control
 #+begin_src emacs-lisp :load yes
@@ -2331,6 +2332,7 @@ This really improves use with local variables. You get a highly visible warning 
  :around #'my/dir-local-error-warning)
 #+end_src
 * Org Mode
+** Org Src Formatting
 #+begin_src emacs-lisp :load yes
 (defun org-src-format-and-save ()
   (interactive)
@@ -2344,8 +2346,7 @@ This really improves use with local variables. You get a highly visible warning 
   (sit-for 0.100)
   (org-edit-src-save))
 #+end_src
-
-
+** Org Mode Settings
 #+begin_src emacs-lisp :load yes
 (use-package
  org
@@ -2356,8 +2357,6 @@ This really improves use with local variables. You get a highly visible warning 
  :bind
  (:map
   org-mode-map
-  ;; ("\C-cl" . org-store-link)
-  ;; ("\C-ca" . org-agenda)
   ("C-'" . nil)
   ("C-c C-c" . org-ctrl-c-ctrl-c)
   ("C-M-<return>" . my/org-babel-execute-and-next)
@@ -2370,6 +2369,10 @@ This really improves use with local variables. You get a highly visible warning 
        (plist-put org-format-latex-options :scale 2.0))
  (setq org-latex-create-formula-image-program 'dvisvgm)
 
+(defun my/org-babel-execute-and-next ()
+  (interactive)
+  (org-babel-execute-src-block)
+  (org-babel-next-src-block))
 
  (org-babel-do-load-languages
   'org-babel-load-languages
@@ -2379,7 +2382,7 @@ This really improves use with local variables. You get a highly visible warning 
     (jq . t)
     (jupyter . nil)
     (python . t)))
-
+ ; Needed to make org-babel-jupyter work, want to refresh the kernels to see what is visible in venv
  (defun my/load-org-jupyter ()
    (org-babel-do-load-languages
     'org-babel-load-languages '((jupyter . t)))
@@ -2420,11 +2423,6 @@ This really improves use with local variables. You get a highly visible warning 
 (use-package mermaid-mode)
 (use-package ob-mermaid)
 (use-package htmlize :after org)
-
-(defun my/org-babel-execute-and-next ()
-  (interactive)
-  (org-babel-execute-src-block)
-  (org-babel-next-src-block))
 #+end_src
 ** Colors in Org
 #+begin_src emacs-lisp :load yes
@@ -2564,10 +2562,8 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
  ;; (add-hook
  ;;  'org-src-mode-hook 'my-switch-to-python-ts-mode-if-jupyter)
 
- (add-to-list 'org-src-lang-modes '("python" . python-ts))
-)
+ (add-to-list 'org-src-lang-modes '("python" . python-ts)))
 #+end_src
-
 ** Org Markdown
 This is really only used in the publishing script of my emacs config, I don't need to load this on every startup.
 *** ox-md
@@ -2625,7 +2621,6 @@ This is really only used in the publishing script of my emacs config, I don't ne
  :bind (:map global-map ("M-G" . magit-status))
  :config (use-package transient))
 #+end_src
-
 ** Forge
 Haven't yet found a great use for this.
 #+begin_src emacs-lisp :load no
@@ -2634,8 +2629,7 @@ Haven't yet found a great use for this.
  :after magit
  :config
  ; This is so we can access forge information
- (setq auth-sources '("~/.authinfo")))
-
+ (setq auth-sources '("~/.authinfo.gpg")))
 (use-package ghub :defer t)
 #+end_src
 ** Magit Todos mode
