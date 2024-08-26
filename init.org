@@ -3173,10 +3173,13 @@ Combobulate seems like a cool idea, but I've found it to be more frustrating tha
   (dolist (hook (symbol-value source-hook))
     (unless (memq hook (symbol-value dest-hook))
       (add-hook dest-hook hook))))
-
+#+end_src
+*** Treesit Auto
+#+begin_src emacs-lisp :load yes
 (use-package
  treesit-auto
- :straight '(treesit-auto :type git :host github :repo "renzmann/treesit-auto")
+ :straight
+ '(treesit-auto :type git :host github :repo "renzmann/treesit-auto")
  :demand t
  :init
  (setq treesit-auto-install t)
@@ -3203,20 +3206,23 @@ Combobulate seems like a cool idea, but I've found it to be more frustrating tha
          toml
          typescript
          yaml))
- :config (global-treesit-auto-mode)
+ :config (global-treesit-auto-mode))
+#+end_src
+*** Merge mode hooks in treesit
+I want the same hooks to be used in treesit as in the original mode.
+#+begin_src emacs-lisp :load yes
+;; Merge hooks for relevant modes
+(merge-mode-hooks 'python-mode-hook 'python-ts-mode-hook)
+(merge-mode-hooks 'yaml-mode-hook 'yaml-ts-mode-hook)
+;; (merge-mode-hooks 'json-mode-hook 'json-ts-mode-hook)
+;; (merge-mode-hooks 'js-mode-hook 'js-ts-mode-hook)
+;; (merge-mode-hooks 'markdown-mode-hook 'markdown-ts-mode-hook)
+(merge-mode-hooks 'sh-mode-hook 'bash-ts-mode-hook)
 
- ;; Merge hooks for relevant modes
- (merge-mode-hooks 'python-mode-hook 'python-ts-mode-hook)
- (merge-mode-hooks 'yaml-mode-hook 'yaml-ts-mode-hook)
- ;; (merge-mode-hooks 'json-mode-hook 'json-ts-mode-hook)
- ;; (merge-mode-hooks 'js-mode-hook 'js-ts-mode-hook)
- ;; (merge-mode-hooks 'markdown-mode-hook 'markdown-ts-mode-hook)
- (merge-mode-hooks 'sh-mode-hook 'bash-ts-mode-hook)
-
- ;; Copy different key bindings
- (copy-different-key-bindings python-mode-map python-ts-mode-map)
- ;; (copy-different-key-bindings yaml-mode-map yaml-ts-mode-map)
- ;; (copy-different-key-bindings json-mode-map json-ts-mode-map)
- ;; (copy-different-key-bindings markdown-mode-map markdown-ts-mode-map)
- (copy-different-key-bindings sh-mode-map bash-ts-mode-map))
+;; Copy different key bindings
+(copy-different-key-bindings python-mode-map python-ts-mode-map)
+;; (copy-different-key-bindings yaml-mode-map yaml-ts-mode-map)
+;; (copy-different-key-bindings json-mode-map json-ts-mode-map)
+;; (copy-different-key-bindings markdown-mode-map markdown-ts-mode-map)
+(copy-different-key-bindings sh-mode-map bash-ts-mode-map)
 #+end_src
