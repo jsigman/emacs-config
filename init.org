@@ -2629,7 +2629,8 @@ Haven't yet found a great use for this.
  :after magit
  :config
  ; This is so we can access forge information
- (setq auth-sources '("~/.authinfo.gpg")))
+ (setq auth-sources '("~/.authinfo.gpg"))
+ (setq epa-pinentry-mode 'loopback))
 (use-package ghub :defer t)
 #+end_src
 ** Magit Todos mode
