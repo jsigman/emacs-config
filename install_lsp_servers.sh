@@ -1,6 +1,7 @@
 #!/bin/bash
 npm -g install pyright
 npm -g install yaml-language-server
+npm -g install prettier
 
 # html-ls and json-ls
 npm -g install vscode-langservers-extracted

@@ -82,6 +82,8 @@
  :init
  (setq vterm-always-compile-module t)
  (setq vterm-timer-delay 0.01)
+ (setq vterm-tramp-shells
+       '("/usr/bin/bash" "/bin/bash" "/bin/zsh" "docker" "/bin/sh"))
  :config
  (define-key
   vterm-mode-map (kbd "M-k")
@@ -1679,23 +1681,33 @@ See also `eglot-server-capable' for :documentHighlightProvider."
  :config)
 #+END_SRC
 ** HTML
-#+begin_src emacs-lisp :load no
-(when (not (eq system-type 'gnu/linux))
-  (require 'html-ts-mode)
-  (define-key html-ts-mode-map (kbd "M-o M-o") nil)
-  (define-key html-mode-map (kbd "M-o M-o") nil)
-  (define-key sgml-mode-map (kbd "M-o M-o") nil)
-  (define-key html-mode-map (kbd "M-o") nil)
-  (define-key sgml-mode-map (kbd "M-o") nil)
-  (define-key html-mode-map (kbd "M-o") 'next-multiframe-window)
-  (define-key html-mode-map (kbd "M-i") 'previous-multiframe-window)
-
-  (define-key html-ts-mode-map (kbd "M-o M-o") nil)
-  (define-key html-ts-mode-map (kbd "M-o") nil)
-  (define-key html-ts-mode-map (kbd "M-o") 'next-multiframe-window)
-  (define-key
-   html-ts-mode-map (kbd "M-i") 'previous-multiframe-window))
-#+END_SRC
+#+begin_src emacs-lisp :load yes
+(use-package
+ sgml-mode
+ :mode ("\\.html\\'" . html-mode)
+ :bind
+ (:map
+  sgml-mode-map
+  ("M-o b" . nil)
+  ("M-o d" . nil)
+  ("M-o i" . nil)
+  ("M-o l" . nil)
+  ("M-o o" . nil)
+  ("M-o u" . nil)
+  ("M-o M-o" . nil)
+  ("M-o" . nil))
+ :bind
+ (:map
+  html-mode-map
+  ("M-o b" . nil)
+  ("M-o d" . nil)
+  ("M-o i" . nil)
+  ("M-o l" . nil)
+  ("M-o o" . nil)
+  ("M-o u" . nil)
+  ("M-o M-o" . nil)
+  ("M-o" . nil)))
+#+end_src
 ** Web mode
 #+begin_src emacs-lisp :load yes
 (use-package
@@ -2801,7 +2813,7 @@ This is currently broken for me.
 ** Emacs Theme
 *** Leuven
 Leuven is always a nice option, beautiful with Org Mode.
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package leuven-theme
   :config
   (load-theme 'leuven-dark t))
@@ -2818,7 +2830,7 @@ Trying this theme out for a little bit.
 #+end_src
 *** ef-day
 I'm always changing my theme, but I tend to like light themes with yellow-ish backgrounds. Almost like handwriting with a yellow memo pad.
-#+begin_src emacs-lisp :load no
+#+begin_src emacs-lisp :load yes
 (use-package ef-themes :config (load-theme 'ef-day t))
 #+end_src
 *** Gruvbox-dark
@@ -3214,6 +3226,7 @@ I want the same hooks to be used in treesit as in the original mode.
 ;; Merge hooks for relevant modes
 (merge-mode-hooks 'python-mode-hook 'python-ts-mode-hook)
 (merge-mode-hooks 'yaml-mode-hook 'yaml-ts-mode-hook)
+(merge-mode-hooks 'html-mode-hook 'html-ts-mode-hook)
 ;; (merge-mode-hooks 'json-mode-hook 'json-ts-mode-hook)
 ;; (merge-mode-hooks 'js-mode-hook 'js-ts-mode-hook)
 ;; (merge-mode-hooks 'markdown-mode-hook 'markdown-ts-mode-hook)
@@ -3222,6 +3235,7 @@ I want the same hooks to be used in treesit as in the original mode.
 ;; Copy different key bindings
 (copy-different-key-bindings python-mode-map python-ts-mode-map)
 ;; (copy-different-key-bindings yaml-mode-map yaml-ts-mode-map)
+;; (copy-different-key-bindings html-mode-map html-ts-mode-map)
 ;; (copy-different-key-bindings json-mode-map json-ts-mode-map)
 ;; (copy-different-key-bindings markdown-mode-map markdown-ts-mode-map)
 (copy-different-key-bindings sh-mode-map bash-ts-mode-map)
