@@ -2463,20 +2463,24 @@ I thought I liked this at first, but now I'm going to disable it because of some
 #+end_src
 ** Org Roam
 I'm not currently using Org Roam, but maybe some day I'd like to.
-#+begin_src emacs-lisp :load no
-(use-package
- org-roam
- :ensure t
- :custom (org-roam-directory (file-truename "~/Documents/ORG_ROAM/"))
- :bind
- (("C-c n l" . org-roam-buffer-toggle)
-  ("C-c n f" . org-roam-node-find)
-  ("C-c n g" . org-roam-graph)
-  ("C-c n i" . org-roam-node-insert)
-  ("C-c n c" . org-roam-capture)
-  ;; Dailies
-  ("C-c n j" . org-roam-dailies-capture-today))
- :config (org-roam-setup) (require 'org-roam-protocol))
+#+begin_src emacs-lisp :load yes
+(use-package org-roam
+  :ensure t
+  :custom
+  (org-roam-directory (file-truename "Documents/org-roam/"))
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ;; Dailies
+         ("C-c n j" . org-roam-dailies-capture-today))
+  :config
+  ;; If you're using a vertical completion framework, you might want a more informative completion interface
+  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  (org-roam-db-autosync-mode)
+  ;; If using org-roam-protocol
+  (require 'org-roam-protocol))
 #+end_src
 ** Jupyter
 #+begin_src emacs-lisp :load yes
@@ -2680,13 +2684,6 @@ This is currently broken for me.
 #+end_src
 ** Homegrown Magit TODOs
 #+begin_src emacs-lisp :load yes
-;;; magit-todos.el --- Display clickable TODOs in Magit status buffer
-
-;;; Commentary:
-;; This mode adds a section to the Magit status buffer that displays TODOs found in the repository.
-
-;;; Code:
-
 (require 'magit)
 
 (defface magit-todos-line-number
@@ -2694,7 +2691,7 @@ This is currently broken for me.
   "Face for line numbers in Magit-Todos."
   :group 'magit-faces)
 
-(defvar magit-todos-debug t
+(defvar magit-todos-debug nil
   "Enable debug messages for magit-todos.")
 
 (defun magit-todos-debug-message (format-string &rest args)
@@ -2814,7 +2811,6 @@ This is currently broken for me.
 
 ;; Automatically enable the mode
 (magit-todos-mode 1)
-(setq magit-todos-debug nil)
 #+end_src
 ** Magit coloring
 *** ~git-gutter~
