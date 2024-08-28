@@ -2680,7 +2680,7 @@ This is currently broken for me.
 #+end_src
 ** Homegrown Magit TODOs
 #+begin_src emacs-lisp :load yes
-;;; magit-todos.el --- Display TODOs in Magit status buffer
+;;; magit-todos.el --- Display clickable TODOs in Magit status buffer
 
 ;;; Commentary:
 ;; This mode adds a section to the Magit status buffer that displays TODOs found in the repository.
@@ -2694,17 +2694,53 @@ This is currently broken for me.
   "Face for line numbers in Magit-Todos."
   :group 'magit-faces)
 
+(defvar magit-todos-debug t
+  "Enable debug messages for magit-todos.")
+
+(defun magit-todos-debug-message (format-string &rest args)
+  "Print a debug message if `magit-todos-debug' is non-nil."
+  (when magit-todos-debug
+    (apply #'message
+           (concat "magit-todos debug: " format-string)
+           args)))
+
+(defun magit-todos-jump-to-file (file line-number)
+  "Jump to FILE at LINE-NUMBER."
+  (magit-todos-debug-message "Jumping to %s:%s" file line-number)
+  (let ((full-path (expand-file-name file (magit-toplevel))))
+    (if (file-exists-p full-path)
+        (progn
+          (find-file full-path)
+          (goto-char (point-min))
+          (forward-line (1- line-number)))
+      (message "File not found: %s" full-path))))
+
+(defun magit-todos-jump-to-todo ()
+  "Jump to the TODO at point."
+  (interactive)
+  (let ((file (get-text-property (point) 'magit-todos-file))
+        (line-number (get-text-property (point) 'magit-todos-line)))
+    (magit-todos-debug-message
+     "magit-todos-jump-to-todo called with %s:%s"
+     file line-number)
+    (if (and file line-number)
+        (magit-todos-jump-to-file file line-number)
+      (magit-todos-debug-message
+       "No file or line number found at point"))))
+
 (defun magit-insert-todos ()
   "Insert a section for TODOs found in comments."
+  (magit-todos-debug-message "Inserting TODOs section")
   (magit-insert-section
    (todos) (magit-insert-heading "TODOs")
-   (let*
-       ((root (magit-toplevel))
-        ;; Update regex to match common comment formats followed by TODO
-        (todos-output
-         (shell-command-to-string
-          (concat "rg --vimgrep '(#|//|;|<!--)\\s*TODO' " root)))
-        (todos-list '()))
+   (let* ((root (magit-toplevel))
+          (todos-output
+           (shell-command-to-string
+            (concat "rg --vimgrep '(#|//|;|<!--)\\s*TODO' " root)))
+          (todos-list '()))
+     (magit-todos-debug-message "Found %d lines of TODOs"
+                                (length
+                                 (split-string todos-output "\n" t)))
      ;; Parse and collect todos
      (dolist (line (split-string todos-output "\n" t))
        (when (string-match
@@ -2720,19 +2756,38 @@ This is currently broken for me.
                    (or (string< (car a) (car b))
                        (and (string= (car a) (car b))
                             (< (cadr a) (cadr b)))))))
+     (magit-todos-debug-message "Sorted %d TODOs" (length todos-list))
      ;; Insert sorted todos
      (dolist (todo todos-list)
-       (let ((file (nth 0 todo))
-             (line-number (nth 1 todo))
-             (content (nth 2 todo)))
+       (let* ((file (nth 0 todo))
+              (line-number (nth 1 todo))
+              (content (nth 2 todo))
+              (todo-string
+               (concat
+                (propertize file 'face 'magit-filename) ":"
+                (propertize (number-to-string line-number)
+                            'face 'magit-todos-line-number)
+                ": " content)))
          (magit-insert-section
           (todo)
           (insert
-           (propertize file 'face 'magit-filename) ":"
-           (propertize (number-to-string line-number)
-                       'face 'magit-todos-line-number)
-           ": " content "\n")
-          (magit-insert-heading)))))))
+           (propertize todo-string
+                       'magit-todos-file
+                       file
+                       'magit-todos-line
+                       line-number
+                       'keymap
+                       (let ((map (make-sparse-keymap)))
+                         (define-key
+                          map (kbd "RET") 'magit-todos-jump-to-todo)
+                         (define-key
+                          map [mouse-1] 'magit-todos-jump-to-todo)
+                         map)
+                       'mouse-face
+                       'highlight
+                       'help-echo
+                       "mouse-1 or RET: visit this TODO"))
+          (insert "\n") (magit-insert-heading)))))))
 
 (define-minor-mode magit-todos-mode
   "Display TODOs in Magit status using rg."
@@ -2745,10 +2800,12 @@ This is currently broken for me.
 
 (defun magit-todos-mode-enable ()
   "Enable Magit-Todos integration."
+  (magit-todos-debug-message "Enabling magit-todos-mode")
   (add-hook 'magit-status-sections-hook 'magit-insert-todos t))
 
 (defun magit-todos-mode-disable ()
   "Disable Magit-Todos integration."
+  (magit-todos-debug-message "Disabling magit-todos-mode")
   (remove-hook 'magit-status-sections-hook 'magit-insert-todos))
 
 (provide 'magit-todos)
@@ -2757,8 +2814,8 @@ This is currently broken for me.
 
 ;; Automatically enable the mode
 (magit-todos-mode 1)
+(setq magit-todos-debug nil)
 #+end_src
-
 ** Magit coloring
 *** ~git-gutter~
 #+begin_src emacs-lisp :load yes
