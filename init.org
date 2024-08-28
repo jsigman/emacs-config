@@ -2680,6 +2680,20 @@ This is currently broken for me.
 #+end_src
 ** Homegrown Magit TODOs
 #+begin_src emacs-lisp :load yes
+;;; magit-todos.el --- Display TODOs in Magit status buffer
+
+;;; Commentary:
+;; This mode adds a section to the Magit status buffer that displays TODOs found in the repository.
+
+;;; Code:
+
+(require 'magit)
+
+(defface magit-todos-line-number
+  '((t :inherit magit-filename :weight bold))
+  "Face for line numbers in Magit-Todos."
+  :group 'magit-faces)
+
 (defun magit-insert-todos ()
   "Insert a section for TODOs found in comments."
   (magit-insert-section
@@ -2714,10 +2728,12 @@ This is currently broken for me.
          (magit-insert-section
           (todo)
           (insert
-           (format "%s:%d: %s\n" file line-number content))
+           (propertize file 'face 'magit-filename) ":"
+           (propertize (number-to-string line-number)
+                       'face 'magit-todos-line-number)
+           ": " content "\n")
           (magit-insert-heading)))))))
 
-;; Define the minor mode to integrate TODOs into Magit status buffer
 (define-minor-mode magit-todos-mode
   "Display TODOs in Magit status using rg."
   :lighter " Magit-Todos"
@@ -2735,7 +2751,11 @@ This is currently broken for me.
   "Disable Magit-Todos integration."
   (remove-hook 'magit-status-sections-hook 'magit-insert-todos))
 
-(provide 'magit-todos) ;; Optional: only if you plan to use this as a separate package or file.
+(provide 'magit-todos)
+
+;;; magit-todos.el ends here
+
+;; Automatically enable the mode
 (magit-todos-mode 1)
 #+end_src
 
