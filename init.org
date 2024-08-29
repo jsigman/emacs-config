@@ -2467,7 +2467,7 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
 (use-package org-roam
   :ensure t
   :custom
-  (org-roam-directory (file-truename "Documents/org-roam/"))
+  (org-roam-directory (file-truename "~/Documents/org-roam/"))
   :bind (("C-c n l" . org-roam-buffer-toggle)
          ("C-c n f" . org-roam-node-find)
          ("C-c n g" . org-roam-graph)
