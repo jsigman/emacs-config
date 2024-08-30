@@ -1515,24 +1515,6 @@ See also `eglot-server-capable' for :documentHighlightProvider."
  :config
  (add-to-list 'auto-mode-alist '("\\.liquid\\'" . web-mode)))
 #+end_src
-** Lua
-*** Non-gnu ELPA version
-*** lua-ts-mode
-TODO: They just started supporting this in emacs 30
-#+begin_src emacs-lisp :load no
-(use-package
- lua-ts-mode
- :straight
- '(lua-ts-mode
-   :type git
-   :host nil
-   :repo "https://git.sr.ht/~johnmuhl/lua-ts-mode"
-   :files ("*.el"))
- :mode (("\\.lua\\'" . lua-ts-mode) ("lsyncd\\.conf\\'" . lua-ts-mode))
- :config
- ;; Any additional configuration you might want goes here
- )
-#+END_SRC
 ** Dotenv Mode
 #+begin_src emacs-lisp :load yes
 (use-package dotenv-mode :defer t)
@@ -1674,71 +1656,6 @@ I'm currently not using DAP mode, and prefer to use python from the command line
 
  :ensure t)
 #+end_src
-** Codeium
-#+begin_src emacs-lisp :load no
-;; we recommend using use-package to organize your init.el
-(use-package codeium
-    ;; if you use straight
-    :straight '(:type git :host github :repo "Exafunction/codeium.el")
-    ;; otherwise, make sure that the codeium.el file is on load-path
-
-    :init
-    ;; use globally
-    (add-to-list 'completion-at-point-functions #'codeium-completion-at-point)
-    ;; or on a hook
-    ;; (add-hook 'python-mode-hook
-    ;;     (lambda ()
-    ;;         (setq-local completion-at-point-functions '(codeium-completion-at-point))))
-
-    ;; if you want multiple completion backends, use cape (https://github.com/minad/cape):
-    ;; (add-hook 'python-mode-hook
-    ;;     (lambda ()
-    ;;         (setq-local completion-at-point-functions
-    ;;             (list (cape-super-capf #'codeium-completion-at-point #'lsp-completion-at-point)))))
-    ;; an async company-backend is coming soon!
-
-    ;; codeium-completion-at-point is autoloaded, but you can
-    ;; optionally set a timer, which might speed up things as the
-    ;; codeium local language server takes ~0.2s to start up
-    ;; (add-hook 'emacs-startup-hook
-    ;;  (lambda () (run-with-timer 0.1 nil #'codeium-init)))
-
-    ;; :defer t ;; lazy loading, if you want
-    :config
-    (setq use-dialog-box nil) ;; do not use popup boxes
-
-    ;; if you don't want to use customize to save the api-key
-    ;; (setq codeium/metadata/api_key "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
-
-    ;; get codeium status in the modeline
-    (setq codeium-mode-line-enable
-        (lambda (api) (not (memq api '(CancelRequest Heartbeat AcceptCompletion)))))
-    (add-to-list 'mode-line-format '(:eval (car-safe codeium-mode-line)) t)
-    ;; alternatively for a more extensive mode-line
-    ;; (add-to-list 'mode-line-format '(-50 "" codeium-mode-line) t)
-
-    ;; use M-x codeium-diagnose to see apis/fields that would be sent to the local language server
-    (setq codeium-api-enabled
-        (lambda (api)
-            (memq api '(GetCompletions Heartbeat CancelRequest GetAuthToken RegisterUser auth-redirect AcceptCompletion))))
-    ;; you can also set a config for a single buffer like this:
-    ;; (add-hook 'python-mode-hook
-    ;;     (lambda ()
-    ;;         (setq-local codeium/editor_options/tab_size 4)))
-
-    ;; You can overwrite all the codeium configs!
-    ;; for example, we recommend limiting the string sent to codeium for better performance
-    (defun my-codeium/document/text ()
-        (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (min (+ (point) 1000) (point-max))))
-    ;; if you change the text, you should also change the cursor_offset
-    ;; warning: this is measured by UTF-8 encoded bytes
-    (defun my-codeium/document/cursor_offset ()
-        (codeium-utf8-byte-length
-            (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (point))))
-    (setq codeium/document/text 'my-codeium/document/text)
-    (setq codeium/document/cursor_offset 'my-codeium/document/cursor_offset))
-#+end_src
-
 ** C3PO
 This one didn't work very well
 #+begin_src emacs-lisp :load no
@@ -2029,41 +1946,6 @@ Disable lock files in TRAMP
 (add-to-list 'file-name-handler-alist
              '("\\`/\\(ssh\\|scp\\|ftp\\):" . my-tramp-file-name-handler))
 #+end_src
-
-** Dir-locals helper function
-I'm still trying to make all my editing features work inside TRAMP with Emacs.
-
-#+begin_src emacs-lisp :load no
-(defun set-remote-venv-path ()
-  "Set PATH for TRAMP to include the venv/bin directory."
-  (with-parsed-tramp-file-name default-directory tramp-info
-    (let* ((absolute-local-directory (if (string= tramp-info-localname "~/")
-                                         (tramp-call-process tramp-info-method tramp-info-user tramp-info-host "pwd" nil t nil)
-                                       tramp-info-localname))
-           (remote-path (concat "/" tramp-info-method ":" tramp-info-user "@" tramp-info-host ":" absolute-local-directory)))
-      (set (make-local-variable 'process-environment)
-           (append
-            (list (format "PATH=%svenv/bin:%s"
-                          remote-path
-                          (getenv "PATH")))
-            process-environment)))))
-#+end_src
-
-
-#+begin_src emacs-lisp :load no
-(defun set-remote-venv-path ()
-  "Set PATH for TRAMP to include the venv/bin directory."
-  (with-parsed-tramp-file-name default-directory tramp-info
-    (let ((remote-path (if (string= tramp-info-localname "~/")
-                           (concat "/" tramp-info-method ":" tramp-info-user "@" tramp-info-host ":/")
-                         (concat "/" tramp-info-method ":" tramp-info-user "@" tramp-info-host ":" tramp-info-localname))))
-      (set (make-local-variable 'process-environment)
-           (append
-            (list (format "PATH=%svenv/bin:%s"
-                          remote-path
-                          (getenv "PATH")))
-            process-environment)))))
-#+end_src
 ** Direnv in Tramp
 [[https://github.com/eush77/dotfiles/blob/ace2b1dc0f229b4897d60728a320a8f88722e0c4/emacs/.emacs.d/config/config-direnv.el#L28-L52][Code exists in an unmerged branch]].
 #+begin_src emacs-lisp :load yes
@@ -2099,7 +1981,6 @@ environment."
         (find-file (concat "/sudo::" file))
       (message "File is already writable"))))
 #+end_src
-
 ** Vertico improvements
 I get False Positive completions using ~coder~ with TRAMP ssh completions. This filter removes them.
 #+begin_src emacs-lisp :load yes
@@ -2114,7 +1995,6 @@ I get False Positive completions using ~coder~ with TRAMP ssh completions. This 
 (advice-add 'tramp-completion-handle-file-name-all-completions
             :filter-return #'my/tramp-ssh-completion-filter)
 #+end_src
-
 * Dir-Locals
 #+begin_src emacs-lisp :load yes
 (add-to-list
@@ -2133,7 +2013,6 @@ This really improves use with local variables. You get a highly visible warning 
       (format "Error reading .dir-locals.el: %s"
               (error-message-string err))
       :error))))
-
 (advice-add
  'hack-dir-local-variables
  :around #'my/dir-local-error-warning)
@@ -2756,63 +2635,27 @@ This may be needed to set the fringe to the new background color. Run it when st
     ;; else
     ))
 #+end_src
-** Diminish/Blackout
-I find these frustrating as I have to manually include every mode which might appear in the modeline. I'm not sure if there's a better way to do this.
-#+begin_src emacs-lisp :load no
-(use-package diminish)
-(diminish 'anzu-mode)
-(diminish 'ivy-mode)
-(diminish 'rainbow-mode)
-(diminish 'eldoc-mode)
-(diminish 'projectile-mode)
-(diminish 'blacken-mode)
-(diminish 'python-black-on-save-mode)
-(diminish 'which-key-mode)
-(diminish 'flycheck-mode)
-(add-hook 'undo-tree-mode-hook (lambda () (diminish 'undo-tree-mode)))
-(diminish 'auto-revert-mode)
-(diminish 'beacon-mode)
-(diminish 'all-the-icons-dired-mode)
-(diminish 'tree-sitter-hl-mode)
-
-(use-package blackout)
-(blackout 'ivy-mode)
-(blackout 'company-posframe-mode)
-(blackout 'company-mode)
-(diminish 'yas-mode)
-(blackout 'yas-minor-mode)
-(blackout 'rainbow-mode)
-(blackout 'which-key-mode)
-(blackout 'projectile-mode)
-(blackout 'git-gutter-mode)
-(blackout 'git-gutter+-mode)
-(blackout 'goggles-mode)
-(blackout 'org-roam-mode)
-(blackout 'polymode)
-(blackout 'poly-org-mode)
-(blackout 'smartparens-mode)
-(blackout 'visual-line-mode)
-(blackout 'anzu-mode)
-(blackout 'apheleia-mode)
-(blackout 'explain-pause-mode)
-(blackout 'volatile-highlights-mode)
-(blackout 'all-the-icons-dired-mode)
-(blackout 'jupyter-repl-interaction-mode)
-(blackout 'page-break-lines-mode)
-(blackout 'org-src-mode)
-(blackout 'whole-line-or-region-local-mode)
-(blackout 'smartparens-mode)
-(blackout 'tree-sitter-hl-mode)
-(blackout 'tree-sitter-mode)
-(blackout 'highlight-indent-guides-mode)
-(blackout 'copilot-mode)
-
-(diminish 'jupyter-repl-interaction-mode)
-(diminish 'page-break-lines-mode)
-(diminish 'org-src-mode)
-(diminish 'highlight-indent-guides)
-#+end_src
 ** Modeline
+*** Simple Modeline
+#+begin_src emacs-lisp :load yes
+(use-package
+ simple-modeline
+ :init
+ (setq simple-modeline-segments
+       '((simple-modeline-segment-modified
+          simple-modeline-segment-buffer-name
+          simple-modeline-segment-position)
+         (
+          ;; simple-modeline-segment-minor-modes
+          simple-modeline-segment-input-method
+          simple-modeline-segment-eol
+          simple-modeline-segment-encoding
+          simple-modeline-segment-vc
+          simple-modeline-segment-misc-info
+          simple-modeline-segment-process
+          simple-modeline-segment-major-mode)))
+ :hook (after-init . simple-modeline-mode))
+#+end_src
 *** Telephone Line
 #+begin_src emacs-lisp :load no
 (use-package
@@ -2835,7 +2678,6 @@ I find these frustrating as I have to manually include every mode which might ap
          (evil . (telephone-line-airline-position-segment))))
  (telephone-line-mode t))
 #+end_src
-
 *** Doom Modeline
 Bugfix: Requires installing shrink path manually on linux. Not sure why.
 #+begin_src emacs-lisp :load no
@@ -2875,7 +2717,6 @@ Return nil if no project was found."
                      (with-no-warnings
                        (project-roots project))))))))))))
 #+end_src
-
 *** Awesome Tray
 #+begin_src emacs-lisp :load no
 (use-package
@@ -2901,7 +2742,6 @@ Return nil if no project was found."
 ;; I don't think I like buffer expose after all
 (use-package
  all-the-icons-completion
-
  :config (all-the-icons-completion-mode)
  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup))
 #+end_src
