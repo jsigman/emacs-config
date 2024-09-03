@@ -70,6 +70,7 @@
  :init
  (setq exec-path-from-shell-variables
        '("PATH" "MANPATH" "OPENAI_API_KEY"))
+ (setq exec-path-from-shell-arguments '("-l" "-i"))
  :config
  (when (memq window-system '(mac ns x))
    (exec-path-from-shell-initialize)))
@@ -385,8 +386,12 @@ I think this is a little too aggressive right now, but it's a cool idea.
 #+begin_src emacs-lisp :load yes
 (use-package
  direnv
- :config (direnv-mode 't)
-)
+ :init
+ ; An attempt to run direnv earlier in the startup process
+ (setq direnv--hooks
+       '(find-file-hook
+         post-command-hook before-hack-local-variables-hook))
+ :config (direnv-mode 't))
 #+end_src
 ** Fish
 #+begin_src emacs-lisp :load no
