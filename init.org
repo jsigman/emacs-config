@@ -1470,8 +1470,7 @@ This mode is used to run language servers in a docker container. At some point I
    yaml-mode
    json-mode
    dockerfile-mode
-   LaTeX-mode
-   org-mode)
+   LaTeX-mode)
   . maybe-start-eglot)
  :hook (find-file . disable-eglot-if-remote)
  :config
@@ -1494,7 +1493,6 @@ This mode is used to run language servers in a docker container. At some point I
   'eglot-server-programs
   '(dockerfile-mode . ("docker-langserver" "--stdio")))
  (add-to-list 'eglot-server-programs '(LaTeX-mode . ("texlab")))
- (add-to-list 'eglot-server-programs '(org-mode . ("texlab")))
  (custom-set-faces
   '(eglot-highlight-symbol-face
     ((t (:inherit highlight :underline t)))))
@@ -1785,12 +1783,14 @@ So far, I am unable to find a way to compile sqlite3 on my own, but I would love
   (fset 'yes-or-no-p (lambda (&rest args) t))
 
   ;; Load the sqlite3 package
-  (use-package sqlite3
-    :straight (sqlite3
-               :type git
-               :host github
-               :repo "pekingduck/emacs-sqlite3-api"
-               :files ("*.c" "*.h" "*.el" "Makefile")))
+  (use-package
+   sqlite3
+   :straight
+   (sqlite3
+    :type git
+    :host github
+    :repo "pekingduck/emacs-sqlite3-api"
+    :files ("*.c" "*.h" "*.el" "Makefile")))
 
   ;; Restore the original function
   (fset 'yes-or-no-p original-yes-or-no-p))
@@ -2464,23 +2464,28 @@ I thought I liked this at first, but now I'm going to disable it because of some
 ** Org Roam
 I'm not currently using Org Roam, but maybe some day I'd like to.
 #+begin_src emacs-lisp :load yes
-(use-package org-roam
-  :ensure t
-  :custom
-  (org-roam-directory (file-truename "~/Documents/org-roam/"))
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-         ("C-c n f" . org-roam-node-find)
-         ("C-c n g" . org-roam-graph)
-         ("C-c n i" . org-roam-node-insert)
-         ("C-c n c" . org-roam-capture)
-         ;; Dailies
-         ("C-c n j" . org-roam-dailies-capture-today))
-  :config
-  ;; If you're using a vertical completion framework, you might want a more informative completion interface
-  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-  (org-roam-db-autosync-mode)
-  ;; If using org-roam-protocol
-  (require 'org-roam-protocol))
+(use-package
+ org-roam
+ :ensure t
+ :custom (org-roam-directory (file-truename "~/Documents/org-roam/"))
+ :bind
+ (("C-c n l" . org-roam-buffer-toggle)
+  ("C-c n f" . org-roam-node-find)
+  ("C-c n g" . org-roam-graph)
+  ("C-c n i" . org-roam-node-insert)
+  ("C-c n c" . org-roam-capture)
+  ;; Dailies
+  ("C-c n j" . org-roam-dailies-capture-today))
+ :init
+ ;; (setq org-roam-database-connector 'sqlite3) ;; TODO: update to sqlite3 on linux
+ :config
+ ;; If you're using a vertical completion framework, you might want a more informative completion interface
+ (setq org-roam-node-display-template
+       (concat
+        "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+ (org-roam-db-autosync-mode)
+ ;; If using org-roam-protocol
+ (require 'org-roam-protocol))
 #+end_src
 ** Jupyter
 #+begin_src emacs-lisp :load yes
@@ -3188,7 +3193,7 @@ Return nil if no project was found."
  ("C-h k" . helpful-key))
 #+end_src
 ** Dimmer
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package
  dimmer
  :config
@@ -3200,7 +3205,6 @@ Return nil if no project was found."
 
  (setq dimmer-fraction 0.15)
  (dimmer-mode t))
-
 #+end_src
 ** Volatile Highlights
 #+begin_src emacs-lisp :load yes
