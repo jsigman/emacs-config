@@ -1510,6 +1510,7 @@ See also `eglot-server-capable' for :documentHighlightProvider."
   ("M-o u" . nil)
   ("M-o M-o" . nil)
   ("M-o" . nil)))
+(use-package html-ts-mode)
 #+end_src
 ** Web mode
 #+begin_src emacs-lisp :load yes
@@ -1580,6 +1581,7 @@ So far, I am unable to find a way to compile sqlite3 on my own, but I would love
 ** Yaml
 #+begin_src emacs-lisp :load yes
 (use-package yaml-mode)
+(use-package yaml-ts-mode)
 #+end_src
 ** Docker
 #+begin_src emacs-lisp :load yes
@@ -1614,12 +1616,25 @@ I'm currently not using DAP mode, and prefer to use python from the command line
 
  (define-key python-mode-map (kbd "M-D") #'dap-hydra))
 #+end_src
-** Java/Javascript/JSON
+** JQ
 #+begin_src emacs-lisp :load yes
-  (use-package jq-mode)
-  (use-package
-   jsonian
-   :straight '(jsonian :type git :host github :repo "iwahbe/jsonian" :build (:not autoloads)))
+(use-package jq-mode)
+#+end_src
+*** Json-ts-mode
+#+begin_src emacs-lisp :load yes
+(use-package json-mode)
+(use-package json-ts-mode)
+#+end_src
+*** Jsonian
+#+begin_src emacs-lisp :load no
+(use-package
+ jsonian
+ :straight
+ '(jsonian
+   :type git
+   :host github
+   :repo "iwahbe/jsonian"
+   :build (:not autoloads)))
 #+end_src
 * Large Language Models in Emacs
 ** Github Copilot
@@ -2926,7 +2941,6 @@ Combobulate seems like a cool idea, but I've found it to be more frustrating tha
          java
          javascript
          json
-         latex
          make
          markdown
          proto
@@ -2944,16 +2958,17 @@ I want the same hooks to be used in treesit as in the original mode.
 (merge-mode-hooks 'python-mode-hook 'python-ts-mode-hook)
 (merge-mode-hooks 'yaml-mode-hook 'yaml-ts-mode-hook)
 (merge-mode-hooks 'html-mode-hook 'html-ts-mode-hook)
-;; (merge-mode-hooks 'json-mode-hook 'json-ts-mode-hook)
+(merge-mode-hooks 'json-mode-hook 'json-ts-mode-hook)
 ;; (merge-mode-hooks 'js-mode-hook 'js-ts-mode-hook)
 ;; (merge-mode-hooks 'markdown-mode-hook 'markdown-ts-mode-hook)
 (merge-mode-hooks 'sh-mode-hook 'bash-ts-mode-hook)
 
+
 ;; Copy different key bindings
 (copy-different-key-bindings python-mode-map python-ts-mode-map)
-;; (copy-different-key-bindings yaml-mode-map yaml-ts-mode-map)
-;; (copy-different-key-bindings html-mode-map html-ts-mode-map)
-;; (copy-different-key-bindings json-mode-map json-ts-mode-map)
+(copy-different-key-bindings yaml-mode-map yaml-ts-mode-map)
+(copy-different-key-bindings html-mode-map html-ts-mode-map)
+(copy-different-key-bindings json-mode-map json-ts-mode-map)
 ;; (copy-different-key-bindings markdown-mode-map markdown-ts-mode-map)
 (copy-different-key-bindings sh-mode-map bash-ts-mode-map)
 #+end_src
