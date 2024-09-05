@@ -2,5 +2,5 @@
 # name: src-script
 # --
 #+begin_${1:$$(yas-choose-value '("src"))} ${2:$$(yas-choose-value '("bash" "ruby" "elisp"))} :results output
-  $0
+$0
 #+end_$1
