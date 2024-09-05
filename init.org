@@ -13,7 +13,10 @@
    'default-frame-alist
    '(ns-appearance . light)) ;; or dark - depending on your theme
 
-  (use-package osx-plist :straight '(osx-plist :type git :host github :repo "gonewest818/osx-plist")))
+  (use-package
+   osx-plist
+   :straight
+   '(osx-plist :type git :host github :repo "gonewest818/osx-plist")))
 #+end_src
 ** Window size
 #+begin_src emacs-lisp :load yes
@@ -1641,40 +1644,19 @@ I'm currently not using DAP mode, and prefer to use python from the command line
 #+begin_src emacs-lisp :load yes
 (use-package
  copilot
- :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+ :straight
+ (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
  :bind
  (:map
   copilot-completion-map ("M-<return>" . copilot-accept-completion))
- :hook
- ((prog-mode . copilot-mode)
-  (yaml-mode . copilot-mode)
-  (org-mode . copilot-mode)
-  (direnv-envrc-mode . copilot-mode)
-  (conf-mode . copilot-mode))
+ :hook (prog-mode . copilot-mode)
+ :hook (yaml-mode . copilot-mode)
+ :hook (org-mode . copilot-mode)
+ :hook (direnv-envrc-mode . copilot-mode)
+ :hook (conf-mode . copilot-mode)
  :config
  (setq copilot-max-char -1)
- (setq copilot-indent-offset-warning-disable t)
-
- ;; Function to check if server is installed and up to date
- (defun ensure-copilot-server-updated ()
-   (if (not (file-exists-p copilot--server-executable))
-       (progn
-         (message "Copilot server not found. Installing...")
-         (copilot-install-server))
-     (let ((installed-version (copilot-installed-version))
-           (required-version copilot-version))
-       (when (and installed-version
-                  (version< installed-version required-version))
-         (message "Updating Copilot server from %s to %s"
-                  installed-version
-                  required-version)
-         (copilot-reinstall-server)))))
-
- ;; Run the check when the package is loaded
- ;; TODO: Still not working
- ;; (ensure-copilot-server-updated)
-
- :ensure t)
+ (setq copilot-indent-offset-warning-disable t))
 #+end_src
 ** C3PO
 This one didn't work very well
