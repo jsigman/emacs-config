@@ -2153,28 +2153,37 @@ I thought I liked this at first, but now I'm going to disable it because of some
 ** Org Roam
 I'm not currently using Org Roam, but maybe some day I'd like to.
 #+begin_src emacs-lisp :load yes
-(use-package
- org-roam
- :ensure t
- :custom (org-roam-directory (file-truename "~/Dropbox/org-roam/"))
- :bind
- (("C-c n l" . org-roam-buffer-toggle)
-  ("C-c n f" . org-roam-node-find)
-  ("C-c n g" . org-roam-graph)
-  ("C-c n i" . org-roam-node-insert)
-  ("C-c n c" . org-roam-capture)
-  ;; Dailies
-  ("C-c n j" . org-roam-dailies-capture-today))
- :init
- ;; (setq org-roam-database-connector 'sqlite3) ;; TODO: update to sqlite3 on linux
- :config
- ;; If you're using a vertical completion framework, you might want a more informative completion interface
- (setq org-roam-node-display-template
-       (concat
-        "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
- (org-roam-db-autosync-mode)
- ;; If using org-roam-protocol
- (require 'org-roam-protocol))
+(use-package org-roam
+  :ensure t
+  :custom
+  (org-roam-directory (file-truename "~/Dropbox/org-roam/")) ;; Define org-roam-directory first
+  :bind
+  (("C-c n l" . org-roam-buffer-toggle)
+   ("C-c n f" . org-roam-node-find)
+   ("C-c n g" . org-roam-graph)
+   ("C-c n i" . org-roam-node-insert)
+   ("C-c n c" . org-roam-capture)
+   ;; Dailies
+   ("C-c n j" . org-roam-dailies-capture-today))
+  :init
+  ;; Delay setting org-id-locations-file until after org-roam is loaded
+  (with-eval-after-load 'org-roam
+    (setq org-id-locations-file (expand-file-name "org-id-locations" org-roam-directory)))
+  :config
+  ;; If using a vertical completion framework, customize completion interface
+  (setq org-roam-node-display-template
+        (concat
+         "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  ;; Automatically sync the database
+  (org-roam-db-autosync-mode)
+
+  ;; Check and update org-id-locations file if it doesn't exist
+  (unless (file-exists-p org-id-locations-file)
+    (message "Org-id-locations file not found. Generating a new one...")
+    (org-roam-update-org-id-locations))
+
+  ;; If using org-roam-protocol
+  (require 'org-roam-protocol))
 #+end_src
 ** Jupyter
 #+begin_src emacs-lisp :load yes
