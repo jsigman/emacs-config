@@ -651,6 +651,10 @@ This is [[https://github.com/jsigman/unison-sync-mode][my own little package]] f
  (push '(jsonian-mode . prettier-json) apheleia-mode-alist)
  (setq apheleia-mode-alist
        (assq-delete-all 'emacs-lisp-mode apheleia-mode-alist))
+
+ ;; Add shfmt for direnv-envrc-mode
+ (add-to-list 'apheleia-mode-alist '(direnv-envrc-mode . shfmt))
+
  (apheleia-global-mode t))
 #+end_src
 ** Elisp Autofmt
