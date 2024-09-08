@@ -1604,15 +1604,7 @@ So far, I am unable to find a way to compile sqlite3 on my own, but I would love
 (use-package yaml-mode)
 (use-package yaml-ts-mode)
 #+end_src
-** Docker
-#+begin_src emacs-lisp :load yes
-(use-package
- dockerfile-mode
- :config (setq dockerfile-mode-command "docker"))
-(use-package docker
-  :ensure t
-  :bind ("C-c d" . docker))
-#+END_SRC
+** DAP Mode
 I'm currently not using DAP mode, and prefer to use python from the command line (vterm) with ~pdb~. Some day I'd like to learn this.
 #+begin_src emacs-lisp :load no
 (use-package
@@ -2036,6 +2028,52 @@ This really improves use with local variables. You get a highly visible warning 
 (advice-add
  'hack-dir-local-variables
  :around #'my/dir-local-error-warning)
+#+end_src
+* Application Development
+** Docker
+#+begin_src emacs-lisp :load yes
+(use-package
+ dockerfile-mode
+ :config (setq dockerfile-mode-command "docker"))
+(use-package docker
+  :ensure t
+  :bind ("C-c d" . docker))
+#+END_SRC
+** Heroku
+#+begin_src emacs-lisp :load yes
+(use-package
+ heroku
+ :ensure t
+ :defer t
+ :bind (:map global-map ("C-c h" . heroku-command-map))
+ :commands
+ (heroku-list
+  heroku-logs
+  heroku-restart
+  heroku-dynos-kill
+  heroku-run-detached
+  heroku-run-python
+  heroku-run-bash)
+ :init
+ (define-prefix-command 'heroku-command-map)
+ (define-key heroku-command-map (kbd "l") 'heroku-list)
+ (define-key heroku-command-map (kbd "s") 'heroku-sql)
+ :config
+ ;; Function to get app name, falling back to the default
+ (defun my/heroku-get-app-name ()
+   (or (and (boundp 'heroku-app-name) heroku-app-name)
+       (getenv "HEROKU_APP_NAME")
+       heroku-default-app))
+
+ ;; Advice to use our custom function
+ (advice-add 'heroku-get-app-name :override #'my/heroku-get-app-name)
+
+ :custom
+ (heroku-timestamp-regex
+  "^[[:digit:]]\\{4\\}-[[:digit:]]\\{2\\}-[[:digit:]]\\{2\\}T[[:digit:]:\+\.]*")
+ (heroku-app-name-re "^[[:alnum:]-]*")
+ (heroku-region-re "\(\\([[:alnum:]]*\\)\)")
+ (heroku-collab-re "[[:alnum:]]*@[[:alnum:]\.-_]*"))
 #+end_src
 * Org Mode
 ** Org Src Formatting
