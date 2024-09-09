@@ -19,7 +19,8 @@
    '(osx-plist :type git :host github :repo "gonewest818/osx-plist")))
 #+end_src
 ** Window size
-#+begin_src emacs-lisp :load yes
+*** Big and Centered
+#+begin_src emacs-lisp :load no
 (add-to-list 'default-frame-alist '(width . 130)) ; Set width to 80 columns
 (add-to-list 'default-frame-alist '(height . 40)) ; Set height to 24 lines
 
@@ -51,6 +52,16 @@
 
 ;; Call this function when Emacs starts
 (add-hook 'window-setup-hook #'center-frame)
+#+end_src
+*** Full Screen
+#+begin_src emacs-lisp :load yes
+(defun toggle-fullscreen ()
+  "Toggle full screen."
+  (interactive)
+  (set-frame-parameter
+   nil 'fullscreen
+   (if (frame-parameter nil 'fullscreen) nil 'fullboth)))
+(toggle-fullscreen)
 #+end_src
 ** Copying syntax highlighting to the clipboard
 #+begin_src  emacs-lisp :load yes
@@ -104,13 +115,6 @@
  (define-key vterm-mode-map (kbd "M-R") 'vterm-toggle-cd)
  ; Unbind M-s so we can use this for other commands
  (define-key vterm-mode-map (kbd "M-s") 'nil)
- (setq vterm-toggle-scope 'dedicated)
- (setq vterm-toggle-project-root t)
- (setq vterm-toggle-cd-auto-create-buffer nil)
- (setq vterm-toggle-reset-window-configration-after-exit t)
- (setq vterm-toggle-fullscreen-p nil)
- (setq vterm-toggle-hide-method 'bury-all-vterm-buffer)
-
 
  (defun kill-buffer-and-its-windows (buffer)
    "Kill BUFFER and delete its windows.  Default is `current-buffer'.
@@ -146,18 +150,19 @@ BUFFER may be either a buffer or its name (a string)."
     (interactive)
     (kill-buffer-and-its-windows (current-buffer))))
  ;; Add goto-address-mode to vterm-mode-hook for clickable links
- (add-hook 'vterm-mode-hook 'goto-address-mode)
- (defun my-vterm-scroll-to-top (orig-fun &rest args)
-   "Ensure vterm buffer is scrolled to the top after creation."
-   (let ((buf (apply orig-fun args)))
-     (with-current-buffer buf
-       (goto-char (point-min))
-       (vterm-clear-scrollback)
-       (recenter-top-bottom 0))
-     buf))
+ (add-hook 'vterm-mode-hook 'goto-address-mode))
 
- (advice-add 'vterm :around #'my-vterm-scroll-to-top)
- (advice-add 'vterm-other-window :around #'my-vterm-scroll-to-top))
+(defun scroll-to-top-keep-cursor ()
+  "Scroll the buffer to the top while keeping the cursor at its current position."
+  (interactive)
+  (let ((current-line (line-number-at-pos))
+        (current-column (current-column)))
+    (goto-char (point-min))
+    (recenter-top-bottom 0)
+    (forward-line (1- current-line))
+    (move-to-column current-column)))
+
+;; (add-hook 'vterm-mode-hook #'my-vterm-init-hook)
 #+end_src
 ** Vterm Toggle
 #+begin_src emacs-lisp :load yes
@@ -175,7 +180,13 @@ BUFFER may be either a buffer or its name (a string)."
   ("M-p" . vterm-toggle-backward))
  (:map global-map ("M-T" . vterm-toggle) ("M-R" . vterm-toggle-cd))
  :config
+
+ (setq vterm-toggle-scope 'dedicated)
+ (setq vterm-toggle-project-root t)
+ (setq vterm-toggle-cd-auto-create-buffer nil)
+ (setq vterm-toggle-reset-window-configration-after-exit t)
  (setq vterm-toggle-fullscreen-p nil)
+ (setq vterm-toggle-hide-method 'bury-all-vterm-buffer)
  (add-to-list
   'display-buffer-alist
   '((lambda (buffer-or-name _)
