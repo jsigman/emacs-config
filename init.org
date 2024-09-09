@@ -152,18 +152,6 @@ BUFFER may be either a buffer or its name (a string)."
     (kill-buffer-and-its-windows (current-buffer))))
  ;; Add goto-address-mode to vterm-mode-hook for clickable links
  (add-hook 'vterm-mode-hook 'goto-address-mode))
-
-(defun scroll-to-top-keep-cursor ()
-  "Scroll the buffer to the top while keeping the cursor at its current position."
-  (interactive)
-  (let ((current-line (line-number-at-pos))
-        (current-column (current-column)))
-    (goto-char (point-min))
-    (recenter-top-bottom 0)
-    (forward-line (1- current-line))
-    (move-to-column current-column)))
-
-;; (add-hook 'vterm-mode-hook #'my-vterm-init-hook)
 #+end_src
 ** Vterm Toggle
 #+begin_src emacs-lisp :load yes
