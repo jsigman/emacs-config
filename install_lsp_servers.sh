@@ -10,6 +10,7 @@ npm -g install dockerfile-language-server-nodejs
 npm -g install bash-language-server
 npm -g install prettier-plugin-toml
 npm -g install remark-language-server
+npm -g install vscode-json-languageserver
 
 # Detect the operating system and install TexLab
 if [[ "$OSTYPE" == "darwin"* ]]; then

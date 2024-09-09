@@ -1089,6 +1089,7 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
 (use-package
  consult
  ;; Replace bindings. Lazily loaded due by `use-package'.
+ :demand t
  :bind
  ( ;; C-c bindings in `mode-specific-map'
   ("C-c M-x" . consult-mode-command)
@@ -1828,8 +1829,15 @@ I have my own little hook to open the flycheck buffer with ~M-C~, and close it a
 ** Flymake
 #+begin_src emacs-lisp :load yes
 (use-package flymake :ensure t)
-(use-package flymake-ruff :ensure t :config (flymake-ruff-load))
 (add-hook 'python-ts-mode-hook 'flymake-mode)
+#+end_src
+*** Ruff
+#+begin_src emacs-lisp :load yes
+(use-package flymake-ruff :ensure t :config (flymake-ruff-load))
+#+end_src
+*** JSON
+#+begin_src emacs-lisp :load no
+(use-package flymake-json :ensure t :config (flymake-json-load))
 #+end_src
 *** Bugfix: Ruff
 #+begin_src emacs-lisp :load yes
