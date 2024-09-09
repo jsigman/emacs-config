@@ -2119,6 +2119,16 @@ This really improves use with local variables. You get a highly visible warning 
  :hook (org-mode-hook . visual-line-mode)
  :hook (org-babel-after-execute-hook . org-display-inline-images)
  :hook (org-babel-after-execute-hook . append)
+ :hook
+ (org-mode
+  .
+  (lambda ()
+    (remove-hook
+     'completion-at-point-functions #'pcomplete-completions-at-point
+     t)
+    (remove-hook
+     'completion-at-point-functions #'ispell-completion-at-point
+     t)))
  :bind
  (:map
   org-mode-map
