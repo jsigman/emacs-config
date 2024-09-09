@@ -62,7 +62,7 @@ I'll do this first, so that it goes back to this when I exit full screen mode (i
   (set-frame-parameter
    nil 'fullscreen
    (if (frame-parameter nil 'fullscreen) nil 'fullboth)))
-(toggle-fullscreen)
+(add-hook 'window-setup-hook #'toggle-fullscreen)
 #+end_src
 ** Copying syntax highlighting to the clipboard
 #+begin_src  emacs-lisp :load yes
