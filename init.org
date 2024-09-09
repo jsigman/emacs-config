@@ -20,7 +20,8 @@
 #+end_src
 ** Window size
 *** Big and Centered
-#+begin_src emacs-lisp :load no
+I'll do this first, so that it goes back to this when I exit full screen mode (if enabled).
+#+begin_src emacs-lisp :load yes
 (add-to-list 'default-frame-alist '(width . 130)) ; Set width to 80 columns
 (add-to-list 'default-frame-alist '(height . 40)) ; Set height to 24 lines
 
@@ -95,6 +96,7 @@
 (use-package
  vterm
  :init
+ (setq vterm-copy-exclude-prompt nil)
  (setq vterm-always-compile-module t)
  (setq vterm-timer-delay 0.01)
  (setq vterm-tramp-shells
@@ -112,6 +114,7 @@
  (define-key vterm-mode-map (kbd "M-T") nil)
  (define-key vterm-mode-map (kbd "M-R") nil)
  (define-key vterm-mode-map (kbd "M-G") nil)
+ (define-key vterm-mode-map (kbd "M-:") nil)
  (define-key vterm-mode-map (kbd "M-s") 'nil)
 
  (defun kill-buffer-and-its-windows (buffer)
