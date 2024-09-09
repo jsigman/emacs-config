@@ -12,16 +12,18 @@ npm -g install prettier-plugin-toml
 npm -g install remark-language-server
 npm -g install vscode-json-languageserver
 
-# Detect the operating system and install TexLab
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    # macOS
-    echo "Installing TexLab using Homebrew..."
-    brew install texlab
-elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    # Linux
-    echo "Installing TexLab using Cargo..."
-    cargo install texlab
-else
-    echo "Unsupported operating system: $OSTYPE"
-    exit 1
+if false; then
+    # Detect the operating system and install TexLab
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS
+        echo "Installing TexLab using Homebrew..."
+        brew install texlab
+    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        # Linux
+        echo "Installing TexLab using Cargo..."
+        cargo install texlab
+    else
+        echo "Unsupported operating system: $OSTYPE"
+        exit 1
+    fi
 fi
