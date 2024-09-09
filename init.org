@@ -105,15 +105,13 @@
   (lambda ()
     (interactive)
     (kill-this-buffer nil)))
- ;; (define-key vterm-mode-map (kbd "M-i") 'previous-multiframe-window)
- ;; (define-key vterm-mode-map (kbd "M-o") 'next-multiframe-window)
- (define-key vterm-mode-map (kbd "M-0") 'delete-window)
- (define-key vterm-mode-map (kbd "M-1") 'delete-other-windows)
- (define-key vterm-mode-map (kbd "M-2") 'split-window-below)
- (define-key vterm-mode-map (kbd "M-3") 'split-window-right)
- (define-key vterm-mode-map (kbd "M-T") 'vterm-toggle)
- (define-key vterm-mode-map (kbd "M-R") 'vterm-toggle-cd)
- ; Unbind M-s so we can use this for other commands
+ (define-key vterm-mode-map (kbd "M-0") nil)
+ (define-key vterm-mode-map (kbd "M-1") nil)
+ (define-key vterm-mode-map (kbd "M-2") nil)
+ (define-key vterm-mode-map (kbd "M-3") nil)
+ (define-key vterm-mode-map (kbd "M-T") nil)
+ (define-key vterm-mode-map (kbd "M-R") nil)
+ (define-key vterm-mode-map (kbd "M-G") nil)
  (define-key vterm-mode-map (kbd "M-s") 'nil)
 
  (defun kill-buffer-and-its-windows (buffer)
@@ -180,6 +178,8 @@ BUFFER may be either a buffer or its name (a string)."
   ("M-p" . vterm-toggle-backward))
  (:map global-map ("M-T" . vterm-toggle) ("M-R" . vterm-toggle-cd))
  :config
+ (define-key vterm-mode-map (kbd "M-T") 'vterm-toggle)
+ (define-key vterm-mode-map (kbd "M-R") 'vterm-toggle-cd)
 
  (setq vterm-toggle-scope 'dedicated)
  (setq vterm-toggle-project-root t)
@@ -228,8 +228,7 @@ BUFFER may be either a buffer or its name (a string)."
 
  ;; Override vterm-toggle--project-root
  (defun vterm-toggle--project-root ()
-   (my/get-project-root))
-)
+   (my/get-project-root)))
 #+END_SRC
 * Window management
 ** Zoom
