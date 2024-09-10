@@ -2249,6 +2249,7 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
   (require 'org-roam-protocol))
 #+end_src
 ** Jupyter
+*** ZMQ
 #+begin_src emacs-lisp :load yes
 (use-package
  zmq
@@ -2325,36 +2326,24 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
        (fix-zmq-file-naming)
        (require 'zmq)))) ;; set the variable back to its original value
    (setq noninteractive original-noninteractive-value)))
-
+#+end_src
+*** ob-jupyter
+#+begin_src emacs-lisp :load yes
 (use-package
  jupyter
- :defer t
+ :demand t
  :custom (jupyter-repl-echo-eval-p t)
  :config
- ;; (defun my-switch-to-python-ts-mode-if-jupyter ()
- ;;   (interactive)
- ;;   "Switches to python-ts-mode if the org source block is of type jupyter-python."
- ;;   (when (and (eq major-mode 'python-mode)
- ;;              (string=
- ;;               (org-element-property
- ;;                :language (org-element-at-point))
- ;;               "jupyter-python"))
- ;;     (python-ts-mode)))
-
- ;; (add-hook
- ;;  'org-src-mode-hook 'my-switch-to-python-ts-mode-if-jupyter)
-
- (defun update-org-src-lang-modes ()
-   "Update org-src-lang-modes to use python-ts-mode for jupyter-python."
-   (with-eval-after-load 'org-src
-     (setf (alist-get "jupyter-python" org-src-lang-modes
-                      nil
-                      nil
-                      #'equal)
-           'python-ts)))
-
- ;; Call the function to update org-src-lang-modes
- (update-org-src-lang-modes))
+ (defun my-org-babel-jupyter-use-python-ts-mode (&rest _)
+   "Set python-ts-mode for jupyter-python in org-src-lang-modes."
+   (setf (alist-get "jupyter-python" org-src-lang-modes
+                    nil
+                    nil
+                    #'equal)
+         "python-ts"))
+ (advice-add
+  'org-babel-jupyter-make-local-aliases
+  :after #'my-org-babel-jupyter-use-python-ts-mode))
 #+end_src
 ** Org Markdown
 This is really only used in the publishing script of my emacs config, I don't need to load this on every startup.
