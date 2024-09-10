@@ -2411,7 +2411,13 @@ Haven't yet found a great use for this.
  :config
  ; This is so we can access forge information
  (setq auth-sources '("~/.authinfo.gpg"))
- (setq epa-pinentry-mode 'loopback))
+ (setq epa-pinentry-mode 'loopback)
+ (setq forge-status-buffer-default-topic-filters
+       (forge--topics-spec
+        :type 'pullreq
+        :active t
+        :state 'open
+        :order 'newest)))
 (use-package ghub :defer t)
 #+end_src
 ** Magit Todos mode
