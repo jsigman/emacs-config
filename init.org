@@ -1656,19 +1656,25 @@ I'm currently not using DAP mode, and prefer to use python from the command line
 #+begin_src emacs-lisp :load yes
 (use-package
  copilot
- :straight
- (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+ :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
  :bind
  (:map
   copilot-completion-map ("M-<return>" . copilot-accept-completion))
- :hook (prog-mode . copilot-mode)
- :hook (yaml-mode . copilot-mode)
- :hook (org-mode . copilot-mode)
- :hook (direnv-envrc-mode . copilot-mode)
- :hook (conf-mode . copilot-mode)
+ :hook
+ ((prog-mode yaml-mode org-mode direnv-envrc-mode conf-mode)
+  .
+  my/copilot-mode-setup)
  :config
  (setq copilot-max-char -1)
- (setq copilot-indent-offset-warning-disable t))
+ (setq copilot-indent-offset-warning-disable t)
+
+ ;; Custom function to disable copilot on "coder.*" SSH hosts
+ (defun my/copilot-mode-setup ()
+   "Disable copilot-mode if connected to a 'coder.*' host."
+   (let ((remote-host (file-remote-p default-directory 'host)))
+     (unless (and remote-host
+                  (string-match-p "^coder\\." remote-host))
+       (copilot-mode 1)))))
 #+end_src
 ** C3PO
 This one didn't work very well
