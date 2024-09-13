@@ -436,10 +436,19 @@ I think this is a little too aggressive right now, but it's a cool idea.
 ;; Replace the text of selections
 (pending-delete-mode t)
 #+end_src
-** Undo Tree
-I haven't found a great way to use undo-tree, but everyone seems to love it.
-#+begin_src emacs-lisp :load no
-(use-package undo-tree :init (global-undo-tree-mode))
+** Undo
+*** Undo-Fu
+#+begin_src emacs-lisp :load yes
+(use-package
+ undo-fu
+ :bind ("C-/" . undo-fu-only-undo) ("C-?" . undo-fu-only-redo))
+(use-package undo-fu-session :config (global-undo-fu-session-mode))
+#+end_src
+*** Vundo
+#+begin_src emacs-lisp :load yes
+(use-package
+ vundo
+ :init (setq vundo-glyph-alist vundo-unicode-symbols))
 #+end_src
 ** So long mode
 I find this breaks browsing of long json files, more than it helps me out.
@@ -2169,7 +2178,8 @@ This really improves use with local variables. You get a highly visible warning 
  (visual-line-mode t)
 
  ; Org-babel stuff
- (setf (alist-get "bash" org-src-lang-modes) "bash-ts")
+ (setf (alist-get "bash" org-src-lang-modes nil nil #'equal)
+       'bash-ts)
 
  (setq org-log-done t)
 
