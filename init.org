@@ -699,8 +699,42 @@ This is [[https://github.com/jsigman/unison-sync-mode][my own little package]] f
 :hook (org-mode . ws-butler-mode))
 #+end_src
 ** Indentation
+*** Electric Indent
 #+begin_src emacs-lisp :load yes
 (electric-indent-mode 0)
+#+end_src
+*** Highlight Indent Guides
+#+begin_src emacs-lisp :load yes
+(use-package
+ highlight-indent-guides
+ :hook ((python-mode) . highlight-indent-guides-mode))
+#+end_src
+*** Indent bars
+This is not working now due to stipple support, I believe.
+#+begin_src emacs-lisp :load no
+(use-package
+ indent-bars
+ :straight (indent-bars :type git :host github :repo "jdtsmith/indent-bars")
+ :config
+ (require 'indent-bars-ts) ; not needed with straight
+ :custom
+ (indent-bars-treesit-support t)
+ (indent-bars-treesit-ignore-blank-lines-types '("module"))
+ ;; Add other languages as needed
+ (indent-bars-treesit-scope
+  '((python
+     function_definition
+     class_definition
+     for_statement
+     if_statement
+     with_statement
+     while_statement)))
+ ;; Note: wrap may not be needed if no-descend-list is enough
+ ;;(indent-bars-treesit-wrap '((python argument_list parameters ; for python, as an example
+ ;;				      list list_comprehension
+ ;;				      dictionary dictionary_comprehension
+ ;;				      parenthesized_expression subscript)))
+ :hook ((python-mode) . indent-bars-mode))
 #+end_src
 * Dired
 #+begin_src emacs-lisp :load yes
@@ -1444,10 +1478,6 @@ See also `eglot-server-capable' for :documentHighlightProvider."
  (define-key python-mode-map (kbd "C-c C-c") nil)
  (define-key python-mode-map (kbd "C-c C-p") nil))
 
-(use-package
- highlight-indent-guides
- :hook (python-mode . highlight-indent-guides-mode))
-
 (add-hook
  'python-mode-hook
  (lambda ()
@@ -1682,6 +1712,8 @@ I'm currently not using DAP mode, and prefer to use python from the command line
  ((prog-mode yaml-mode org-mode direnv-envrc-mode conf-mode)
   .
   my/copilot-mode-setup)
+ ; setting tab-width to 4 for python-mode currently fixes issues with copilot
+ :hook (python-mode . (lambda () (setq tab-width 4)))
  :config
  (setq copilot-max-char -1)
  (setq copilot-indent-offset-warning-disable t)
