@@ -56,13 +56,22 @@ I'll do this first, so that it goes back to this when I exit full screen mode (i
 #+end_src
 *** Full Screen
 #+begin_src emacs-lisp :load yes
-(defun toggle-fullscreen ()
-  "Toggle full screen."
+(defun toggle-fullscreen-or-maximized ()
+  "Toggle between fullscreen on macOS and maximized on Linux."
   (interactive)
-  (set-frame-parameter
-   nil 'fullscreen
-   (if (frame-parameter nil 'fullscreen) nil 'fullboth)))
-(add-hook 'window-setup-hook #'toggle-fullscreen)
+  (if (eq system-type 'darwin) ; macOS
+      (set-frame-parameter
+       nil 'fullscreen
+       (if (frame-parameter nil 'fullscreen)
+           nil
+         'fullboth))
+    (set-frame-parameter
+     nil 'fullscreen
+     (if (eq (frame-parameter nil 'fullscreen) 'maximized)
+         nil
+       'maximized)))) ; Linux
+
+(add-hook 'window-setup-hook #'toggle-fullscreen-or-maximized)
 #+end_src
 ** Copying syntax highlighting to the clipboard
 #+begin_src  emacs-lisp :load yes
