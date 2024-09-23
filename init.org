@@ -2494,23 +2494,6 @@ This is currently broken for me.
  (setq magit-todos-ignore-case t)
  (setq magit-todos-search-regexp "\\b(TODO|FIXME|BUG|HACK)\\b")
  (setq magit-todos-keyword-suffix "")
-
- (defun my/magit-todos-safe-pcre-conversion (orig-fun &rest args)
-   (let ((search-regexp-elisp (plist-get args :search-regexp-elisp)))
-     (condition-case err
-         (apply orig-fun args)
-       (error
-        (message "Failed to convert regexp to PCRE: %S" err)
-        (let ((safe-regexp (regexp-opt magit-todos-keywords)))
-          (apply orig-fun
-                 (plist-put
-                  args
-                  :search-regexp-pcre safe-regexp)))))))
-
- (advice-add
-  'magit-todos--scan-with-rg
-  :around #'my/magit-todos-safe-pcre-conversion)
-
  (magit-todos-mode 1))
 #+end_src
 ** Homegrown Magit TODOs
