@@ -1114,7 +1114,7 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
   :ensure t
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
-   ;; ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ("C-;" . embark-dwim)        ;; good alternative: M-.
    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
 
   :init
@@ -1723,6 +1723,7 @@ I'm currently not using DAP mode, and prefer to use python from the command line
   my/copilot-mode-setup)
  ; setting tab-width to 4 for python-mode currently fixes issues with copilot
  :hook (python-mode . (lambda () (setq tab-width 4)))
+ :hook (yaml-mode . (lambda () (setq tab-width 0)))
  :config
  (setq copilot-max-char -1)
  (setq copilot-indent-offset-warning-disable t)
@@ -2319,10 +2320,52 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
 #+end_src
 ** Jupyter
 *** ZMQ
-#+begin_src emacs-lisp :load yes
+**** Vanilla Install
+#+begin_src emacs-lisp :load no
 (use-package
  zmq
  :straight '(zmq :host github :repo "nnicandro/emacs-zmq")
+ :demand t
+ :config (require 'zmq))
+#+end_src
+**** New: with handling
+#+begin_src emacs-lisp :load no
+(defun my/zmq-initialize ()
+  "Initialize ZMQ by attempting to download the binary, then building if necessary."
+  (require 'zmq)
+  (unless (featurep 'zmq-core)
+    (let ((zmq--subprocess-debug nil)
+          (noninteractive t))
+      (condition-case err
+          (progn
+            (message "Attempting to download ZMQ binary...")
+            (zmq-load))
+        (error
+         (message "Failed to download ZMQ binary. Attempting to build locally...")
+         (let* ((default-directory (file-name-directory (locate-library "zmq.el")))
+                (emacs (file-truename (expand-file-name invocation-name invocation-directory)))
+                (make-command (concat "make" (when emacs (concat " EMACS=" (shell-quote-argument emacs))))))
+           (if (zerop (call-process-shell-command make-command))
+               (progn
+                 (message "ZMQ built successfully.")
+                 (zmq-load))
+             (message "Failed to build ZMQ: %s" (error-message-string err))
+             (signal (car err) (cdr err)))))))))
+
+(use-package zmq
+  :straight '(zmq :host github :repo "nnicandro/emacs-zmq")
+  :init
+  (my/zmq-initialize))
+#+end_src
+**** Old: with handling
+#+begin_src emacs-lisp :load no
+(use-package
+ zmq
+ :straight '(zmq :host github :repo "nnicandro/emacs-zmq")
+ :config
+ ;; Override the zmq-emacs-version constant to "v1.0.1"
+ ;; TODO: This is a hack to get zmq to work with the latest version of emacs, eventually i'd undo this
+ (defconst zmq-emacs-version "v1.0.1")
  :init
  ; macro to wrap loading
  (defmacro safe-wrap (fn &rest clean-up)
@@ -2395,6 +2438,54 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
        (fix-zmq-file-naming)
        (require 'zmq)))) ;; set the variable back to its original value
    (setq noninteractive original-noninteractive-value)))
+#+end_src
+**** To Debug
+#+begin_src emacs-lisp :load no
+(defun zmq--download-module-test (tag)
+  (let ((msg "Check%s for compatible module binary to download%s"))
+    (message "Starting zmq--download-module with tag: %s" tag)
+    (when (or noninteractive (y-or-n-p (format msg "" "? ")))
+      (when noninteractive
+        (message msg "ing" ""))
+      (let* ((api-url "https://api.github.com/repos/nnicandro/emacs-zmq/")
+             (repo-url "https://github.com/nnicandro/emacs-zmq/")
+             (release-url (concat api-url "releases/"))
+             (info (progn
+                     (message "Fetching release info from: %s" (concat release-url tag))
+                     (zmq--download-url (concat release-url tag)
+                                        (require 'json)
+                                        (let ((json-object-type 'plist))
+                                          (ignore-errors (json-read))))))
+             (tag-name (or (plist-get info :tag_name)
+                           (error "Tag name not found in release info")))
+             (ezmq-sys (concat "emacs-zmq-" (zmq--system-configuration)))
+             (assets (cl-remove-if-not
+                      (lambda (x)
+                        (string-prefix-p ezmq-sys x))
+                      (mapcar (lambda (x) (plist-get x :name))
+                              (append (plist-get info :assets) nil)))))
+        (message "Release tag name: %s" tag-name)
+        (message "System configuration for emacs-zmq: %s" ezmq-sys)
+        (message "Expected system configuration: %s" ezmq-sys)
+        (message "Assets fetched: %s" assets)
+        (if (not assets)
+            (error "No assets found matching system configuration")
+          (if (> (length assets) 2)
+              (error "More than one file found, need manual selection")
+            (let* ((tgz-file (cl-find-if (lambda (x) (string-suffix-p ".tar.gz" x))
+                                         assets))
+                   (tgz-dir (expand-file-name
+                             (substring tgz-file 0 (- (length tgz-file)
+                                                      (length ".tar.gz"))))))
+              (message "Downloading and extracting: %s" tgz-file)
+              (zmq--download-and-extract-file
+               (concat repo-url "releases/download/" tag-name) tgz-file)
+              (let* ((pat "emacs-zmq\\.\\(dll\\|so\\|dylib\\)$")
+                     (lib (car (directory-files tgz-dir t pat))))
+                (message "Library file found: %s" lib)
+                (copy-file lib (expand-file-name (file-name-nondirectory lib))))
+              t)))))))
+(zmq--download-module-test (concat "tags/" zmq-emacs-version))
 #+end_src
 *** ob-jupyter
 #+begin_src emacs-lisp :load yes
