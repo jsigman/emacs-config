@@ -1418,6 +1418,7 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
  :custom-face (iedit-occurrence ((t (:background "Red"))))
  :bind (:map eglot-mode-map ("M-S" . eglot-iedit-highlights))
  :init
+ (setq iedit-toggle-key-default nil) ;; Disable the warning for conflicting keybinding
  (defun eglot-iedit-highlights ()
    "Start an `iedit' operation on the documentHighlights at point.
 This can be used as a primitive `eglot-rename' replacement if the
@@ -1557,11 +1558,12 @@ See also `eglot-server-capable' for :documentHighlightProvider."
 #+end_src
 ** Markdown
 #+begin_src emacs-lisp :load yes
-(use-package
- markdown-mode
- :mode ("README\\.md\\'" . gfm-mode)
- :init (setq markdown-command "multimarkdown")
- :config)
+(use-package markdown-mode
+  :mode ("\\.md\\'" . gfm-mode)
+  :init
+  (setq markdown-command "multimarkdown")
+  :config
+  (setq markdown-fontify-code-blocks-natively t))
 #+END_SRC
 ** HTML
 #+begin_src emacs-lisp :load yes
@@ -1713,7 +1715,19 @@ I'm currently not using DAP mode, and prefer to use python from the command line
 #+begin_src emacs-lisp :load yes
 (use-package
  copilot
- :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+ :straight
+ (:host
+  github
+  :repo "zerolfx/copilot.el"
+  :files ("dist" "*.el")
+  :pre-build
+  (lambda (_)
+    (unless (file-exists-p "./dist/copilot.js")
+      (message
+       "Running copilot-install-server after fresh install...")
+      ;; We need to delay the server installation until after the package is properly set up
+      (with-eval-after-load 'copilot
+        (copilot-install-server)))))
  :bind
  (:map
   copilot-completion-map ("M-<return>" . copilot-accept-completion))
@@ -1721,14 +1735,12 @@ I'm currently not using DAP mode, and prefer to use python from the command line
  ((prog-mode yaml-mode org-mode direnv-envrc-mode conf-mode)
   .
   my/copilot-mode-setup)
- ; setting tab-width to 4 for python-mode currently fixes issues with copilot
- :hook (python-mode . (lambda () (setq tab-width 4)))
- :hook (yaml-mode . (lambda () (setq tab-width 0)))
+ (python-mode . (lambda () (setq tab-width 4)))
+ (yaml-mode . (lambda () (setq tab-width 0)))
  :config
  (setq copilot-max-char -1)
  (setq copilot-indent-offset-warning-disable t)
 
- ;; Custom function to disable copilot on "coder.*" SSH hosts
  (defun my/copilot-mode-setup ()
    "Disable copilot-mode if connected to a 'coder.*' host."
    (let ((remote-host (file-remote-p default-directory 'host)))
@@ -1775,6 +1787,18 @@ This one didn't work very well
  :init
  (setopt
   ellama-provider (make-llm-ollama :chat-model "codellama:34b")))
+#+end_src
+** Aider
+#+begin_src emacs-lisp :load yes
+(use-package
+ aider
+ :straight (:host github :repo "tninja/aider.el" :files ("aider.el"))
+ :config
+ ;; Use claude-3-5-sonnet cause it is best in aider benchmark
+ (setq aider-args
+       '("--model"
+         "bedrock/anthropic.claude-3-5-sonnet-20240620-v1:0"))
+ (global-set-key (kbd "C-c a") 'aider-transient-menu))
 #+end_src
 * Linting
 ** Flycheck
@@ -2729,6 +2753,41 @@ This is currently broken for me.
 ** Magit coloring
 *** ~git-gutter~
 #+begin_src emacs-lisp :load yes
+(use-package git-gutter
+  :straight t
+  :config
+  (global-git-gutter-mode t)
+
+  ;; Customize signs
+  (setq git-gutter:modified-sign "  ") ;; Two spaces
+  (setq git-gutter:added-sign "+")     ;; Multiple characters are OK
+  (setq git-gutter:deleted-sign "-")
+
+  ;; Set colors for the gutter signs
+  (set-face-foreground 'git-gutter:modified "magenta")
+  (set-face-foreground 'git-gutter:added "dark green")
+  (set-face-foreground 'git-gutter:deleted "red")
+
+  ;; Prevent git-gutter from running in TRAMP sessions
+  (defun my/git-gutter-disable-in-tramp (&rest _args)
+    "Disable git-gutter if in a TRAMP session."
+    (unless (file-remote-p (or buffer-file-name default-directory))
+      (git-gutter)))
+
+  ;; Advise git-gutter: only run when not in TRAMP
+  (advice-add 'git-gutter :around
+              (lambda (orig-fun &rest args)
+                (unless (file-remote-p (or buffer-file-name default-directory))
+                  (apply orig-fun args))))
+
+  ;; Disable git-gutter-mode on remote files explicitly
+  (add-hook 'find-file-hook
+            (lambda ()
+              (when (file-remote-p (or buffer-file-name default-directory))
+                (git-gutter-mode -1)))))
+                #+end_src
+*** ~git-gutter+~
+#+begin_src emacs-lisp :load no
 (use-package
  git-gutter+
  :config (global-git-gutter+-mode t)
