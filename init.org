@@ -1603,7 +1603,10 @@ See also `eglot-server-capable' for :documentHighlightProvider."
 #+end_src
 ** Dotenv Mode
 #+begin_src emacs-lisp :load yes
-(use-package dotenv-mode :defer t)
+(use-package
+ dotenv-mode
+ :defer t
+(add-to-list 'auto-mode-alist '("\\.env\\(\\.template\\)?\\'" . dotenv-mode))
 #+end_src
 ** Latex
 #+begin_src emacs-lisp :load yes
