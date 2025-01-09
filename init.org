@@ -1606,7 +1606,8 @@ See also `eglot-server-capable' for :documentHighlightProvider."
 (use-package
  dotenv-mode
  :defer t
-(add-to-list 'auto-mode-alist '("\\.env\\(\\.template\\)?\\'" . dotenv-mode))
+ (add-to-list
+  'auto-mode-alist '("\\.env\\(\\.template\\)?\\'" . dotenv-mode)))
 #+end_src
 ** Latex
 #+begin_src emacs-lisp :load yes
@@ -1700,7 +1701,10 @@ I'm currently not using DAP mode, and prefer to use python from the command line
 *** Json-ts-mode
 #+begin_src emacs-lisp :load yes
 (use-package json-mode)
-(use-package json-ts-mode)
+(use-package
+ json-ts-mode
+ ; use json-ts-mode for .jsonl files
+ :init (add-to-list 'auto-mode-alist '("\\.jsonl\\'" . json-ts-mode)))
 #+end_src
 *** Jsonian
 #+begin_src emacs-lisp :load no
@@ -3248,4 +3252,24 @@ I want the same hooks to be used in treesit as in the original mode.
 (copy-different-key-bindings json-mode-map json-ts-mode-map)
 ;; (copy-different-key-bindings markdown-mode-map markdown-ts-mode-map)
 (copy-different-key-bindings sh-mode-map bash-ts-mode-map)
+#+end_src
+** Ultra-scroll
+#+begin_src emacs-lisp :load yes
+(use-package
+ ultra-scroll
+ :straight
+ (ultra-scroll
+  :type git
+  :host github
+  :repo "jdtsmith/ultra-scroll"
+  :files ("ultra-scroll.el"))
+ :init
+ ;; Optional: Add any initialization code or settings here
+ :config
+ ;; Enable the ultra-scroll-mode globally
+ (ultra-scroll-mode 1)
+ ;; Recommended settings for smooth scrolling
+ (setq
+  scroll-margin 0
+  scroll-conservatively 101))
 #+end_src
