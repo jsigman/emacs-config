@@ -1606,6 +1606,7 @@ See also `eglot-server-capable' for :documentHighlightProvider."
 (use-package
  dotenv-mode
  :defer t
+ :init
  (add-to-list
   'auto-mode-alist '("\\.env\\(\\.template\\)?\\'" . dotenv-mode)))
 #+end_src
@@ -3264,12 +3265,11 @@ I want the same hooks to be used in treesit as in the original mode.
   :repo "jdtsmith/ultra-scroll"
   :files ("ultra-scroll.el"))
  :init
- ;; Optional: Add any initialization code or settings here
- :config
- ;; Enable the ultra-scroll-mode globally
- (ultra-scroll-mode 1)
  ;; Recommended settings for smooth scrolling
  (setq
   scroll-margin 0
-  scroll-conservatively 101))
+  scroll-conservatively 101)
+ :config
+ ;; Enable ultra-scroll-mode globally
+ (ultra-scroll-mode 1))
 #+end_src
