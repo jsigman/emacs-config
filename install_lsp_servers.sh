@@ -1,5 +1,5 @@
 #!/bin/bash
-npm -g install pyright
+npm -g install basedpyright
 npm -g install yaml-language-server
 npm -g install prettier
 
