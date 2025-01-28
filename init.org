@@ -205,7 +205,7 @@ BUFFER may be either a buffer or its name (a string)."
  ;; Function to get project root without prompting
  (defun my/get-project-root ()
    (or (when (fboundp 'project-root)
-         (when-let ((project (project-current nil)))
+         (when-let* ((project (project-current nil)))
            (project-root project)))
        (when (fboundp 'projectile-project-root)
          (projectile-project-root))
@@ -272,6 +272,10 @@ I think this is a little too aggressive right now, but it's a cool idea.
 (global-set-key (kbd "M-l") 'downcase-dwim)
 (global-set-key (kbd "C-.") 'xref-find-definitions-other-window)
 (define-key global-map (kbd "RET") 'newline-and-indent)
+
+; Disable Ctrl + mouse wheel up/down zooming in/out
+(global-unset-key (kbd "C-<wheel-up>"))   ;; Unbind Ctrl + Wheel Up
+(global-unset-key (kbd "C-<wheel-down>")) ;; Unbind Ctrl + Wheel Down
 #+end_src
 ** Font Lock
 #+begin_src emacs-lisp :load no
@@ -1363,6 +1367,7 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
   . maybe-start-eglot)
  :hook (find-file . disable-eglot-if-remote)
  :config
+ ;; Configure eglot-server-programs
  (add-to-list
   'eglot-server-programs
   '(python-mode . ("pyright-langserver" "--stdio")))
@@ -1382,20 +1387,28 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
   'eglot-server-programs
   '(dockerfile-mode . ("docker-langserver" "--stdio")))
  (add-to-list 'eglot-server-programs '(LaTeX-mode . ("texlab")))
+
+ (defvar my-eglot-inlay-hints-exempt-modes
+   '(python-ts-mode python-mode) ;; List of modes where inlay hints should be disabled
+   "List of major modes where Eglot inlay hints mode should be disabled.")
+
+ (defun my-disable-eglot-inlay-hints ()
+   "Disable Eglot inlay hints mode for specific major modes."
+   (when (and (bound-and-true-p eglot-inlay-hints-mode)
+              (member major-mode my-eglot-inlay-hints-exempt-modes))
+     (eglot-inlay-hints-mode -1)))
+
+ (add-hook 'eglot-managed-mode-hook #'my-disable-eglot-inlay-hints)
+
+ ;; Customize eglot symbol highlighting
  (custom-set-faces
   '(eglot-highlight-symbol-face
     ((t (:inherit highlight :underline t)))))
 
  ;; Basic settings
- (setq eglot-autoshutdown t)
- (setq eglot-extend-to-xref t)
+ (setq eglot-autoshutdown t) (setq eglot-extend-to-xref t)
 
- ;; Configure completion
- (setq completion-category-defaults nil)
- (setq completion-cycle-threshold 3)
- (setq tab-always-indent 'complete)
-
- ;; Increase read-process-output-max
+ ;; Increase read-process-output-max for performance
  (setq read-process-output-max (* 1024 1024))
 
  ;; Ignore certain directories for file watching
@@ -2004,7 +2017,7 @@ I have my own little hook to open the flycheck buffer with ~M-C~, and close it a
 * TRAMP
 ** General Settings
 #+begin_src emacs-lisp :load yes
-(setq enable-remote-dir-locals 't)
+(setq enable-remote-dir-locals nil)
 (setq tramp-chunksize 4050)
 (setq tramp-verbose 10)
 (setq vc-ignore-dir-regexp
@@ -2353,12 +2366,16 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
 ** Jupyter
 *** ZMQ
 **** Vanilla Install
-#+begin_src emacs-lisp :load no
-(use-package
- zmq
- :straight '(zmq :host github :repo "nnicandro/emacs-zmq")
- :demand t
- :config (require 'zmq))
+#+begin_src emacs-lisp :load yes
+(use-package zmq
+  :straight `(zmq :host github
+                  :repo "nnicandro/emacs-zmq"
+                  :files ("*" "src/*" ".dir-locals.el" "configure.ac" "Makefile.am" "gen-constants.awk")
+                  :build (:not compile
+                         "make CC=/opt/homebrew/bin/gcc-14 CXX=/opt/homebrew/bin/g++-14 CXXFLAGS=-std=c++17"))
+  :demand t
+  :config
+  (require 'zmq))
 #+end_src
 **** New: with handling
 #+begin_src emacs-lisp :load no
@@ -2761,38 +2778,33 @@ This is currently broken for me.
 ** Magit coloring
 *** ~git-gutter~
 #+begin_src emacs-lisp :load yes
-(use-package git-gutter
-  :straight t
-  :config
-  (global-git-gutter-mode t)
+(use-package
+ git-gutter
+ :straight t
+ :config
+ ;; Add a special mode for TRAMP buffers
+ (defun my/tramp-file-mode ()
+   "Mode for TRAMP files."
+   (when (file-remote-p (or buffer-file-name default-directory))
+     (setq-local mode-name "TRAMP")))
 
-  ;; Customize signs
-  (setq git-gutter:modified-sign "  ") ;; Two spaces
-  (setq git-gutter:added-sign "+")     ;; Multiple characters are OK
-  (setq git-gutter:deleted-sign "-")
+ ;; Add this mode to git-gutter's disabled modes
+ (add-to-list 'git-gutter:disabled-modes 'my/tramp-file-mode)
 
-  ;; Set colors for the gutter signs
-  (set-face-foreground 'git-gutter:modified "magenta")
-  (set-face-foreground 'git-gutter:added "dark green")
-  (set-face-foreground 'git-gutter:deleted "red")
+ ;; Add the mode to remote files
+ (add-hook 'find-file-hook #'my/tramp-file-mode)
 
-  ;; Prevent git-gutter from running in TRAMP sessions
-  (defun my/git-gutter-disable-in-tramp (&rest _args)
-    "Disable git-gutter if in a TRAMP session."
-    (unless (file-remote-p (or buffer-file-name default-directory))
-      (git-gutter)))
+ ;; Rest of your configuration
+ (global-git-gutter-mode t)
+ (setq git-gutter:modified-sign "  ")
+ (setq git-gutter:added-sign "+")
+ (setq git-gutter:deleted-sign "-")
+ (set-face-foreground 'git-gutter:modified "magenta")
+ (set-face-foreground 'git-gutter:added "dark green")
+ (set-face-foreground 'git-gutter:deleted "red")
 
-  ;; Advise git-gutter: only run when not in TRAMP
-  (advice-add 'git-gutter :around
-              (lambda (orig-fun &rest args)
-                (unless (file-remote-p (or buffer-file-name default-directory))
-                  (apply orig-fun args))))
-
-  ;; Disable git-gutter-mode on remote files explicitly
-  (add-hook 'find-file-hook
-            (lambda ()
-              (when (file-remote-p (or buffer-file-name default-directory))
-                (git-gutter-mode -1)))))
+ ;; Optional: Increase the verbosity for debugging
+ (setq git-gutter:verbosity 4))
                 #+end_src
 *** ~git-gutter+~
 #+begin_src emacs-lisp :load no
@@ -2855,8 +2867,15 @@ This is currently broken for me.
 #+begin_src emacs-lisp :load no
 (use-package treemacs-projectile)
 #+end_src
+~treemacs-icons-dired~ is very slow in TRAMP.
 #+begin_src emacs-lisp :load yes
-(use-package treemacs-icons-dired :config (treemacs-icons-dired-mode))
+(use-package
+ treemacs-icons-dired
+ :config
+ (defun my/maybe-enable-treemacs-icons ()
+   (unless (file-remote-p default-directory)
+     (treemacs-icons-dired-mode)))
+ (add-hook 'dired-mode-hook #'my/maybe-enable-treemacs-icons))
 #+end_src
 * Appearance
 #+begin_src emacs-lisp :load yes
@@ -3016,7 +3035,7 @@ Return nil if no project was found."
               ((and (memq
                      doom-modeline-project-detection '(auto project))
                     (fboundp 'project-current))
-               (when-let ((project (project-current)))
+               (when-let* ((project (project-current)))
                  (expand-file-name
                   (if (fboundp 'project-root)
                       (project-root project)
