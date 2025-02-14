@@ -1717,8 +1717,14 @@ I'm currently not using DAP mode, and prefer to use python from the command line
 (use-package json-mode)
 (use-package
  json-ts-mode
- ; use json-ts-mode for .jsonl files
- :init (add-to-list 'auto-mode-alist '("\\.jsonl\\'" . json-ts-mode)))
+ :init (add-to-list 'auto-mode-alist '("\\.jsonl\\'" . json-ts-mode))
+ ;; Add a hook to disable apheleia for jsonl files
+ (add-hook
+  'json-ts-mode-hook
+  (lambda ()
+    (when (and buffer-file-name
+               (string-match-p "\\.jsonl\\'" buffer-file-name))
+      (apheleia-mode -1)))))
 #+end_src
 *** Jsonian
 #+begin_src emacs-lisp :load no
@@ -2367,15 +2373,62 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
 *** ZMQ
 **** Vanilla Install
 #+begin_src emacs-lisp :load yes
-(use-package zmq
-  :straight `(zmq :host github
-                  :repo "nnicandro/emacs-zmq"
-                  :files ("*" "src/*" ".dir-locals.el" "configure.ac" "Makefile.am" "gen-constants.awk")
-                  :build (:not compile
-                         "make CC=/opt/homebrew/bin/gcc-14 CXX=/opt/homebrew/bin/g++-14 CXXFLAGS=-std=c++17"))
-  :demand t
-  :config
-  (require 'zmq))
+(use-package
+ zmq
+ :straight (zmq :type git :host github :repo "nnicandro/emacs-zmq")
+ :config (require 'zmq)
+ (defun zmq--download-module (tag)
+   (let ((msg "Check%s for compatible module binary to download%s"))
+     (when (or noninteractive (y-or-n-p (format msg "" "? ")))
+       (when noninteractive
+         (message msg "ing" ""))
+       (catch 'failure
+         (let* ((api-url
+                 "https://api.github.com/repos/nnicandro/emacs-zmq/")
+                (repo-url "https://github.com/nnicandro/emacs-zmq/")
+                (release-url (concat api-url "releases/"))
+                (info
+                 (zmq--download-url
+                  (concat release-url tag) (require 'json)
+                  (let ((json-object-type 'plist))
+                    (ignore-errors
+                      (json-read)))))
+                (tag-name
+                 (or (plist-get info :tag_name) (throw 'failure nil)))
+                (ezmq-sys
+                 (if (and (string-prefix-p
+                           "aarch64" system-configuration)
+                          (string-match
+                           "darwin" system-configuration))
+                     "emacs-zmq-arm64-apple-darwin"
+                   (concat "emacs-zmq-" (zmq--system-configuration))))
+                (assets
+                 (cl-remove-if-not
+                  (lambda (x) (string-prefix-p ezmq-sys x))
+                  (mapcar
+                   (lambda (x) (plist-get x :name))
+                   (append (plist-get info :assets) nil)))))
+           (when assets
+             (let* ((tgz-file
+                     (cl-find-if
+                      (lambda (x)
+                        (string-suffix-p ".tar.gz" x))
+                      assets))
+                    (tgz-dir
+                     (expand-file-name
+                      (substring
+                       tgz-file
+                       0 (- (length tgz-file) (length ".tar.gz"))))))
+               (zmq--download-and-extract-file
+                (concat
+                 repo-url "releases/download/" tag-name)
+                tgz-file)
+               (let* ((pat "emacs-zmq\\.\\(dll\\|so\\|dylib\\)$")
+                      (lib (car (directory-files tgz-dir t pat))))
+                 (copy-file
+                  lib
+                  (expand-file-name (file-name-nondirectory lib))))
+               t))))))))
 #+end_src
 **** New: with handling
 #+begin_src emacs-lisp :load no
