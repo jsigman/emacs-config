@@ -1738,8 +1738,58 @@ I'm currently not using DAP mode, and prefer to use python from the command line
    :build (:not autoloads)))
 #+end_src
 * Large Language Models in Emacs
-** Github Copilot
+** Minuet AI
+:PROPERTIES:
+:URL: https://github.com/milanglacier/minuet-ai.el
+:END:
 #+begin_src emacs-lisp :load yes
+(use-package
+ minuet
+ :bind
+ (:map
+  minuet-active-mode-map
+  ("M-RET" . minuet-accept-suggestion)
+  ("M-n" . minuet-next-suggestion)
+  ("M-p" . minuet-previous-suggestion))
+
+ :hook
+ ((python-ts-mode
+   python-mode
+   emacs-lisp-mode
+   js-ts-mode
+   typescript-ts-mode
+   rust-ts-mode
+   c++-ts-mode
+   c-ts-mode)
+  . minuet-auto-suggestion-mode)
+
+ :config
+ ;; Create and show minuet buffer
+ (with-current-buffer (get-buffer-create "*minuet*")
+   (special-mode)
+   (display-buffer (current-buffer)))
+
+ ;; Basic settings
+ (setq minuet-provider 'openai-fim-compatible)
+ (setq minuet-request-timeout 10)
+ (setq minuet-context-window 512)
+ (setq minuet-n-completions 1)
+
+ ;; Configure Ollama FIM endpoint
+ (plist-put
+  minuet-openai-fim-compatible-options
+  :end-point "http://localhost:11434/v1/completions")
+ (plist-put
+  minuet-openai-fim-compatible-options
+  :model "qwen2.5-coder:3b")
+ (plist-put minuet-openai-fim-compatible-options :api-key "TERM")
+
+ ;; Auto-suggestion parameters
+ (setq minuet-auto-suggestion-debounce-delay 0.5)
+ (setq minuet-auto-suggestion-throttle-delay 1.0))
+#+end_src
+** Github Copilot
+#+begin_src emacs-lisp :load no
 (use-package
  copilot
  :straight
