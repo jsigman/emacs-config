@@ -16,3 +16,5 @@
 (setq package-enable-at-startup nil)
 ; ignore redefinition warnings
 (set 'ad-redefinition-action 'accept)
+(setq frame-inhibit-implied-resize t)
+(setq inhibit-startup-message t)

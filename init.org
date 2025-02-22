@@ -1742,9 +1742,10 @@ I'm currently not using DAP mode, and prefer to use python from the command line
 :PROPERTIES:
 :URL: https://github.com/milanglacier/minuet-ai.el
 :END:
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package
  minuet
+ :demand t ; Force immediate loading
  :bind
  (:map
   minuet-active-mode-map
@@ -1760,33 +1761,18 @@ I'm currently not using DAP mode, and prefer to use python from the command line
    typescript-ts-mode
    rust-ts-mode
    c++-ts-mode
-   c-ts-mode)
+   c-ts-mode
+   yaml-ts-mode)
   . minuet-auto-suggestion-mode)
 
  :config
- ;; Create and show minuet buffer
- (with-current-buffer (get-buffer-create "*minuet*")
-   (special-mode)
-   (display-buffer (current-buffer)))
-
- ;; Basic settings
  (setq minuet-provider 'openai-fim-compatible)
  (setq minuet-request-timeout 10)
- (setq minuet-context-window 512)
+ (setq minuet-context-window 256)
  (setq minuet-n-completions 1)
 
- ;; Configure Ollama FIM endpoint
- (plist-put
-  minuet-openai-fim-compatible-options
-  :end-point "http://localhost:11434/v1/completions")
- (plist-put
-  minuet-openai-fim-compatible-options
-  :model "qwen2.5-coder:3b")
- (plist-put minuet-openai-fim-compatible-options :api-key "TERM")
-
- ;; Auto-suggestion parameters
- (setq minuet-auto-suggestion-debounce-delay 0.5)
- (setq minuet-auto-suggestion-throttle-delay 1.0))
+ (setq minuet-auto-suggestion-debounce-delay 0.2)
+ (setq minuet-auto-suggestion-throttle-delay 0.5))
 #+end_src
 ** Github Copilot
 #+begin_src emacs-lisp :load no
@@ -2204,6 +2190,18 @@ This really improves use with local variables. You get a highly visible warning 
 (advice-add
  'hack-dir-local-variables
  :around #'my/dir-local-error-warning)
+#+end_src
+** Custom safe values
+#+begin_src emacs-lisp :load yes
+(put 'flymake-diagnostic-functions 'safe-local-variable
+     (lambda (value)
+       (and (listp value)
+            (cl-every #'symbolp value))))
+
+(put 'python-flymake-command 'safe-local-variable
+     (lambda (value)
+       (and (listp value)
+            (cl-every #'stringp value))))
 #+end_src
 * Application Development
 ** Docker
