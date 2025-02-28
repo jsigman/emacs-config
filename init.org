@@ -4,7 +4,7 @@
 ** Command key as control
 #+begin_src emacs-lisp :load yes
 (when (eq system-type 'darwin)
-  (setq mac-command-modifier 'control)
+  (setq mac-left-command-modifier 'super)
   (setq mac-right-command-modifier 'meta)
 
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
@@ -631,9 +631,6 @@ This is [[https://github.com/jsigman/unison-sync-mode][my own little package]] f
 (use-package
  avy
  :config
- ;; (global-set-key
- ;;  (kbd "C-;")
- ;;  'avy-goto-char-timer) ;; I use this most frequently
  (global-set-key
   (kbd "C-'")
   'avy-goto-line) ;; Consistent with ivy-avy
@@ -1492,49 +1489,53 @@ See also `eglot-server-capable' for :documentHighlightProvider."
 #+end_src
 ** Python
 #+begin_src emacs-lisp :load yes
+;;; Python configuration
 (use-package
  python
  :init
  (setq python-shell-interpreter "python3")
  (setq python-shell-interpreter-args "-i")
+ :bind
+ (:map
+  python-mode-map
+  ;; Unbind all Python shell keys I don't use
+  ("C-c C-b" . nil) ; python-shell-send-block - Send current block to Python shell
+  ("C-c C-c" . nil) ; python-shell-send-buffer - Send entire buffer to Python shell
+  ("C-c C-d" . nil) ; python-describe-symbol - Display documentation for Python symbol
+  ("C-c C-f" . nil) ; python-shell-send-file - Send file to Python shell
+  ("C-c C-p" . nil) ; run-python - Start a Python interpreter process
+  ("C-c C-r" . nil) ; python-shell-send-region - Send region to Python shell
+  ("C-c C-s" . nil) ; python-shell-send-string - Send string to Python shell
+  ("C-c C-z" . nil)) ; python-shell-switch-to-shell - Switch to Python shell buffer
  :config
- (define-key python-mode-map (kbd "C-c C-c") nil)
- (define-key python-mode-map (kbd "C-c C-p") nil))
+ ;; Also unbind keys for python-ts-mode
+ (with-eval-after-load 'python-ts-mode
+   (bind-keys
+    :map python-ts-mode-map
+    ("C-c C-b" . nil) ; python-shell-send-block
+    ("C-c C-c" . nil) ; python-shell-send-buffer
+    ("C-c C-d" . nil) ; python-describe-symbol
+    ("C-c C-f" . nil) ; python-shell-send-file
+    ("C-c C-p" . nil) ; run-python
+    ("C-c C-r" . nil) ; python-shell-send-region
+    ("C-c C-s" . nil) ; python-shell-send-string
+    ("C-c C-z" . nil)))) ; python-shell-switch-to-shell
 
+;; Python prettify symbols
 (add-hook
  'python-mode-hook
  (lambda ()
    (mapc
     (lambda (pair) (push pair prettify-symbols-alist))
-    '( ;; Syntax
-      ;; ("def" .      #x2131)
-      ;; ("not" .      #x2757)
-      ("in" . #x2208)
-      ;; ("not in" .   #x2209)
-      ("return" . #x27fc) ("yield" . #x27fb)
-      ;; ("for" .      #x2200)
-      ;; Base Types
-      ;; ("int" .      #x2124)
-      ;; ("float" .    #x211d)
-      ;; ("str" .      #x1d54a)
-      ;; ("True" .     #x1d54b)
-      ;; ("False" .    #x1d53d)
-      ;; Mypy
-      ;; ("Dict" .     #x1d507)
-      ;; ("List" .     #x2112)
-      ;; ("Tuple" .    #x2a02)
-      ;; ("Set" .      #x2126)
-      ;; ("Iterable" . #x1d50a)
-      ;; ("Any" .      #x2754)
-      ;; ("Union" .    #x22c3)
-      ))))
-(use-package
- pip-requirements
- :init
- (add-to-list
-  'auto-mode-alist
-  `(,(rx "requirements" (zero-or-more anything) ".in" string-end)
-    . pip-requirements-mode)))
+    '(("in" . #x2208) ("return" . #x27fc) ("yield" . #x27fb)))))
+
+;; Apply the same prettify-symbols to python-ts-mode
+(add-hook
+ 'python-ts-mode-hook
+ (lambda ()
+   (mapc
+    (lambda (pair) (push pair prettify-symbols-alist))
+    '(("in" . #x2208) ("return" . #x27fc) ("yield" . #x27fb)))))
 #+end_src
 *** Docstrings
 #+begin_src emacs-lisp :load no
@@ -3289,8 +3290,6 @@ Combobulate seems like a cool idea, but I've found it to be more frustrating tha
 (use-package
  combobulate
  :straight '(combobulate :type git :host github :repo "mickeynp/combobulate")
- ;; You can manually enable Combobulate with `M-x
- ;; combobulate-mode'.
  :hook
  ((python-ts-mode . combobulate-mode)
   (js-ts-mode . combobulate-mode)
@@ -3298,11 +3297,58 @@ Combobulate seems like a cool idea, but I've found it to be more frustrating tha
   (yaml-ts-mode . combobulate-mode)
   (typescript-ts-mode . combobulate-mode)
   (tsx-ts-mode . combobulate-mode))
- ;; Amend this to the directory where you keep Combobulate's source
- ;; code.
  :bind
  (:map
-  combobulate-key-map (("C-;" . combobulate-avy-jump) ("M-k" . nil))))
+  combobulate-key-map
+  ;; Navigation
+  ("C-M-u" . combobulate-navigate-up)
+  ("C-M-d" . combobulate-navigate-down)
+  ("C-M-n" . combobulate-navigate-next)
+  ("C-M-p" . combobulate-navigate-previous)
+  ("C-S-d" . combobulate-navigate-beginning-of-defun)
+  ("C-S-e" . combobulate-navigate-end-of-defun)
+  ;; Structural editing
+  ("C->" . combobulate-drag-down)
+  ("C-<" . combobulate-drag-up)
+  ("M-s-k" . combobulate-kill-node-dwim)
+  ("M-s-c" . combobulate-clone-node-dwim)
+  ;; ("C-c s" . combobulate-splice-parent) interferes with rg
+  ;; Enhanced selection
+  ("C-M-SPC" . combobulate-mark-node-dwim)
+  ("M-k" . nil)
+  ;; Menu - using newly freed C-c C-b key
+  ("C-c C-b" . combobulate-menu)
+  ;; Smart paste with indentation
+  ("C-s-v" . my/paste-with-combobulate-indent))
+ :config (use-package transient :demand t)
+
+ (transient-define-prefix
+  combobulate-menu () "Combobulate operations menu."
+  ["Navigation"
+   ("u" "Up" combobulate-navigate-up)
+   ("d" "Down" combobulate-navigate-down)
+   ("n" "Next" combobulate-navigate-next)
+   ("p" "Previous" combobulate-navigate-previous)
+   ("b" "Beginning of defun" combobulate-navigate-beginning-of-defun)
+   ("e" "End of defun" combobulate-navigate-end-of-defun)]
+  ["Editing"
+   ("k" "Kill node" combobulate-kill-node-dwim)
+   ("c" "Clone node" combobulate-clone-node-dwim)
+   ("s" "Splice" combobulate-splice-parent)
+   (">" "Drag down" combobulate-drag-down)
+   ("<" "Drag up" combobulate-drag-up)]
+  ["Selection" ("SPC" "Mark node" combobulate-mark-node-dwim)]))
+#+end_src
+**** Combobulate-python
+#+begin_src emacs-lisp :load yes
+(defun my/combobulate-python-setup ()
+  "Custom setup for Combobulate in Python mode."
+  (setq-local combobulate-key-prefix "C-c")
+  ;; Enable Combobulate's smarter indentation features
+  (setq-local combobulate-python-smart-indent t)
+  (setq-local combobulate-python-indent-blocks-dwim t))
+
+(add-hook 'python-ts-mode-hook 'my/combobulate-python-setup)
 #+end_src
 *** Treesit
 #+begin_src emacs-lisp :load yes
