@@ -702,6 +702,29 @@ This is [[https://github.com/jsigman/unison-sync-mode][my own little package]] f
              (expand-file-name "straight" user-emacs-directory)))
            (buffer-file-name))))))
 #+end_src
+** Package lint
+#+begin_src emacs-lisp :load yes
+(use-package
+ package-lint
+ :ensure t
+ :commands (package-lint-current-buffer)
+ :config
+ (defun my/package-lint-this-file ()
+   "Run package-lint on the current buffer and show output."
+   (interactive)
+   (let ((output-buffer (get-buffer-create "*Package-Lint*")))
+     (with-current-buffer output-buffer
+       (erase-buffer)
+       (insert
+        "Running package-lint on "
+        (buffer-name (current-buffer))
+        "...\n\n"))
+     ;; Current version of package-lint doesn't take a buffer argument
+     (package-lint-current-buffer)
+     (display-buffer output-buffer)))
+
+ :bind (:map emacs-lisp-mode-map ("C-c C-x l" . my/package-lint-this-file)))
+#+end_src
 ** Whitespace butler
 #+begin_src emacs-lisp :load yes
 (use-package ws-butler
