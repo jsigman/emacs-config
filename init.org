@@ -915,6 +915,48 @@ This setup should now correctly handle Git submodules as separate projects while
          (string-match-p tramp-file-name-regexp project-root))))
 #+end_src
 * Completions
+** Completion Preview
+#+begin_src emacs-lisp :load no
+;; Built-in completion-preview configuration (Emacs 30+)
+(use-package completion-preview
+  :ensure nil  ;; Built-in package, don't try to install
+  :when (fboundp 'completion-preview-mode)
+  :custom
+  ;; Configure to mimic Corfu behavior
+  (completion-preview-minimum-symbol-length 1)    ;; Like corfu-auto-prefix
+  (completion-preview-exact-match-only nil)       ;; Show multiple matches, not just exact
+  (completion-preview-idle-delay 0.0)             ;; No delay, like corfu-auto-delay
+  (completion-preview-commands '(self-insert-command
+                                insert-char
+                                delete-backward-char
+                                backward-delete-char-untabify
+                                analyze-text-conversion
+                                completion-preview-complete))
+  (completion-preview-sort-function #'completion-pcm--sort-string-in-region)  ;; Similar ordering to Corfu
+  (completion-preview-message-format "Completion %i of %n")  ;; Nice cycling message
+  
+  :init
+  ;; Use our existing completion styles (orderless)
+  (setq completion-preview-completion-styles '(orderless basic))
+  
+  ;; Enable globally
+  (global-completion-preview-mode 1)
+  
+  :config
+  ;; Add cycling keybindings similar to Corfu
+  (define-key completion-preview-active-mode-map (kbd "M-n") #'completion-preview-next-candidate)
+  (define-key completion-preview-active-mode-map (kbd "M-p") #'completion-preview-prev-candidate)
+  
+  ;; Add visual enhancements
+  (custom-set-faces
+   '(completion-preview ((t :inherit shadow :slant italic)))
+   '(completion-preview-exact ((t :underline "#00aa00" :inherit completion-preview-common)))
+   '(completion-preview-highlight ((t :inherit highlight :weight bold))))
+  
+  ;; Optional: disable preview when doing certain operations
+  (add-hook 'before-save-hook (lambda () (completion-preview-hide))))
+#+end_src
+
 ** Corfu
 #+begin_src emacs-lisp :load yes
 (use-package
@@ -970,6 +1012,26 @@ This setup should now correctly handle Git submodules as separate projects while
                 (message "corfu--candidates returned: %S" result)
                 result)))
 #+end_src
+*** Completion-preview/Eglot integration
+#+begin_src emacs-lisp :load no
+;; Better approach for combining Eglot and file completion
+(defun my/eglot-capf ()
+  "Set up improved completion-at-point functions for Eglot-managed buffers."
+  (setq-local
+   completion-at-point-functions
+   (list
+    #'eglot-completion-at-point
+    ;; Use cape-file separately rather than in cape-capf-super
+    #'cape-file)))
+
+(add-hook 'eglot-managed-mode-hook #'my/eglot-capf)
+
+;; Keep the Eglot integration settings
+(setq completion-category-overrides
+      '((eglot (styles orderless)) (eglot-capf (styles orderless))))
+(advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
+#+end_src
+
 *** Corfu/Eglot integration
 From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this source]].
 #+begin_src emacs-lisp :load yes
@@ -1484,6 +1546,18 @@ See also `eglot-server-capable' for :documentHighlightProvider."
                (eglot--lsp-position-to-point (plist-get range :end))))
          (iedit-add-occurrence-overlay start end))))))
 #+end_src
+*** Eglot-booster
+#+begin_src emacs-lisp :load yes
+(use-package
+ eglot-booster
+ :after eglot
+ :config (eglot-booster-mode)
+ :straight
+ '(eglot-booster
+   :type git
+   :host github
+   :repo "jdtsmith/eglot-booster"))
+#+end_src
 * Programming Modes
 ** Elisp
 *** Elisp code libraries
@@ -1876,7 +1950,7 @@ This one didn't work very well
   ellama-provider (make-llm-ollama :chat-model "codellama:34b")))
 #+end_src
 ** Aider
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package
  aider
  :straight (:host github :repo "tninja/aider.el" :files ("aider.el"))

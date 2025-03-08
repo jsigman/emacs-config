@@ -27,3 +27,5 @@ if false; then
         exit 1
     fi
 fi
+
+cargo install emacs-lsp-booster
