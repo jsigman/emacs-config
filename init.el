@@ -1,3 +1,13 @@
+;;; init.el --- Emacs init file -*- lexical-binding: t -*-
+
+;; IMPORTANT: lexical-binding must be on the first line with proper formatting
+;; This is essential for compile-angel and native compilation to work correctly.
+;; Errors like "Invalid read syntax: ")" or "file has no lexical-binding directive"
+;; are usually related to missing or incorrect lexical-binding settings.
+
+;; Fix for compile-angel related issues - pre-define variables that might be referenced
+(defvar old-value nil)
+(defvar original-noninteractive-value nil)
 (setq comp-speed 2)
 
 ;; Packages setup to prepare literate-elisp
@@ -28,6 +38,11 @@
 (use-package
  literate-elisp
  :demand t
+ :straight
+ '(literate-elisp
+   :type git
+   :host github
+   :repo "jingtaozf/literate-elisp")
  :config
  ;; ;; To make `elisp-refs' work with `literate-elisp', we need to add an advice to `elisp-refs--read-all-buffer-forms'.
  (eval-after-load "elisp-refs"

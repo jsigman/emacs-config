@@ -2311,6 +2311,138 @@ This really improves use with local variables. You get a highly visible warning 
   :ensure t
   :bind ("C-c d" . docker))
 #+END_SRC
+
+* Performance Optimizations (minimal-emacs.d)
+;; These improvements are based on minimal-emacs.d (https://github.com/jamescherti/minimal-emacs.d)
+
+** Compile Angel
+Native compilation enhancer for faster package loading. Compile-angel improves Emacs startup performance by:
+
+1. Automatically compiling changes when saving Elisp files
+2. Providing a safer and more controlled approach to native compilation 
+3. Reducing the overhead of loading many packages through bytecode optimization
+
+Important considerations when using compile-angel:
+
+- *Exclude init.el and early-init.el from compilation*: These files run only once during startup, 
+  so compiling them provides no performance benefit but can cause hard-to-debug issues
+- The package must be loaded with proper error handling (using =with-demoted-errors=)
+- It requires proper lexical-binding directives in all elisp files that will be compiled
+- It interacts with other packages that modify global variables such as =noninteractive=
+- Use =:defer= to avoid initialization issues during early startup
+- It's recommended to explicitly declare its commands with =:commands=
+
+#+begin_src emacs-lisp :load no
+(use-package
+ compile-angel
+ :ensure t
+ :demand t
+ :custom (compile-angel-verbose nil)
+ :config
+ (compile-angel-on-load-mode)
+ (add-hook 'emacs-lisp-mode-hook #'compile-angel-on-save-local-mode))
+#+end_src
+
+** Better Session Management
+Improved management for built-in session features from minimal-emacs.d:
+
+#+begin_src emacs-lisp :load yes
+;; From minimal-emacs.d: Better session management settings
+
+;; Auto-revert: Update buffers when files change on disk
+(global-auto-revert-mode 1)
+(setq global-auto-revert-non-file-buffers t)
+(setq auto-revert-verbose nil)
+
+;; recentf: Track recently opened files
+(recentf-mode 1)
+(setq recentf-max-saved-items 300)
+(setq recentf-max-menu-items 15)
+(add-hook 'kill-emacs-hook #'recentf-cleanup)
+
+;; savehist: Save minibuffer history
+(savehist-mode 1)
+(setq history-length 300)
+(setq savehist-additional-variables
+      '(kill-ring
+        register-alist
+        mark-ring global-mark-ring
+        search-ring regexp-search-ring))
+
+;; save-place: Remember cursor position in files
+(save-place-mode 1)
+(setq save-place-limit 600)
+#+end_src
+
+** Improved File Management
+Better backup and autosave configuration from minimal-emacs.d:
+
+#+begin_src emacs-lisp :load yes
+;; From minimal-emacs.d: Better file handling settings
+
+;; Backup settings for better file safety
+(setq backup-by-copying t)
+(setq delete-old-versions t)
+(setq version-control t)
+(setq kept-new-versions 5)
+(setq kept-old-versions 5)
+
+;; Auto-save for crash protection
+(setq auto-save-default t)
+(setq auto-save-interval 300)
+(setq auto-save-timeout 30)
+(setq auto-save-visited-interval 5)
+(auto-save-visited-mode 1)
+#+end_src
+
+** Enhanced UI Features
+Improved scrolling and window behavior from minimal-emacs.d:
+
+#+begin_src emacs-lisp :load yes
+;; From minimal-emacs.d: Better UI responsiveness settings
+
+;; Smoother scrolling
+(setq scroll-conservatively 101)
+(setq scroll-margin 0)
+(setq scroll-preserve-screen-position t)
+(setq auto-window-vscroll nil)
+
+;; Enable pixel-scroll precision mode for smoother scrolling
+(unless (and (eq window-system 'mac)
+             (bound-and-true-p mac-carbon-version-string))
+  (setq pixel-scroll-precision-use-momentum nil)
+  (pixel-scroll-precision-mode 1))
+
+;; Window dividers configuration
+(window-divider-mode 1)
+(setq window-divider-default-bottom-width 1
+      window-divider-default-places t
+      window-divider-default-right-width 1)
+
+;; Don't stretch cursor for wide characters
+(setq x-stretch-cursor nil)
+
+;; No cursor in non-selected windows
+(setq-default cursor-in-non-selected-windows nil)
+(setq highlight-nonselected-windows nil)
+#+end_src
+
+** Code Folding with Outline-Indent
+Enhanced code folding by indentation level from minimal-emacs.d:
+
+#+begin_src emacs-lisp :load yes
+;; From minimal-emacs.d: Better code folding
+
+(use-package outline-indent
+  :ensure t
+  :custom
+  (outline-indent-ellipsis " ▼ ")
+  :init
+  (add-hook 'python-mode-hook #'outline-indent-minor-mode)
+  (add-hook 'python-ts-mode-hook #'outline-indent-minor-mode)
+  (add-hook 'yaml-mode-hook #'outline-indent-minor-mode)
+  (add-hook 'yaml-ts-mode-hook #'outline-indent-minor-mode))
+#+end_src
 ** Heroku
 #+begin_src emacs-lisp :load yes
 (use-package
@@ -2518,15 +2650,27 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
 ** Jupyter
 *** ZMQ
 **** Vanilla Install
+;; NOTE: The zmq module requires special handling for the noninteractive variable
+;; This section uses localized variables rather than modifying the global noninteractive
+;; variable, which can conflict with compile-angel and other packages.
+;;
+;; Problems that can occur without these fixes:
+;; - "Symbol's value as variable is void: old-value" errors
+;; - "Invalid read syntax: ")" errors due to improper lexical scoping
+;; - Runtime errors with package loading 
+
 #+begin_src emacs-lisp :load yes
 (use-package
  zmq
  :straight (zmq :type git :host github :repo "nnicandro/emacs-zmq")
  :config (require 'zmq)
  (defun zmq--download-module (tag)
-   (let ((msg "Check%s for compatible module binary to download%s"))
-     (when (or noninteractive (y-or-n-p (format msg "" "? ")))
-       (when noninteractive
+   (let ((msg "Check%s for compatible module binary to download%s")
+         ;; Save original value but don't modify global state
+         (original-interactive-value (bound-and-true-p noninteractive))
+         (temp-noninteractive t))
+     (when (or temp-noninteractive (y-or-n-p (format msg "" "? ")))
+       (when temp-noninteractive
          (message msg "ing" ""))
        (catch 'failure
          (let* ((api-url
@@ -2675,17 +2819,15 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
                  (copy-file source-file lib)))
              t))))))
 
- (let (original-noninteractive-value
-       noninteractive)
-   ;; this is a hack so i don't have to ask about downloading the compatible binary
-   (setq noninteractive t)
-   (safe-wrap
-    (condition-case nil
-        (require 'zmq)
-      (error
-       (fix-zmq-file-naming)
-       (require 'zmq)))) ;; set the variable back to its original value
-   (setq noninteractive original-noninteractive-value)))
+ (let ((was-interactive (not (bound-and-true-p noninteractive))))
+   ;; Use cl-letf to temporarily bind noninteractive without global side effects
+   (cl-letf (((symbol-value 'noninteractive) t))
+     (safe-wrap
+      (condition-case nil
+          (require 'zmq)
+        (error
+         (fix-zmq-file-naming)
+         (require 'zmq))))))
 #+end_src
 **** To Debug
 #+begin_src emacs-lisp :load no
