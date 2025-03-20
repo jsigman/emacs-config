@@ -2960,7 +2960,7 @@ This is really only used in the publishing script of my emacs config, I don't ne
  :config (use-package transient))
 #+end_src
 ** Forge
-Haven't yet found a great use for this.
+*** Base Package
 #+begin_src emacs-lisp :load yes
 (use-package
  forge
@@ -2976,6 +2976,31 @@ Haven't yet found a great use for this.
         :state 'open
         :order 'newest)))
 (use-package ghub :defer t)
+#+end_src
+*** forge-llm with Ollama
+#+begin_src emacs-lisp :load yes
+;; Set up the llm package
+(use-package llm :straight t :custom (llm-warn-on-nonfree nil))
+
+;; Configure the Ollama provider
+(use-package
+ forge-llm
+ :straight (:host gitlab :repo "rogs/forge-llm")
+ :after forge
+ :custom
+ ;; These settings can still be set immediately
+ (forge-llm-temperature 0.2) (forge-llm-max-tokens 1000)
+ :config
+ ;; This runs after both the package and custom.el are loaded
+ (setq forge-llm-llm-provider
+       (lambda ()
+         (require 'llm-ollama)
+         (llm-ollama-make-provider
+          :chat-model
+          (car
+           (plist-get minuet-openai-fim-compatible-options :model))
+          :default-chat-temperature 0.2)))
+ (forge-llm-setup))
 #+end_src
 ** Magit Todos mode
 This is currently broken for me.
