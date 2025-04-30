@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t -*-
 #+PROPERTY: header-args:emacs-lisp :load yes
 #+PROPERTY: header-args:emacs-lisp :results silent
 * MacOS specific settings
@@ -288,10 +289,22 @@ I think this is a little too aggressive right now, but it's a cool idea.
 (use-package
  ctrlf
  :config
+ ;; Standard CTRLF configuration
  (define-key
   ctrlf-minibuffer-mode-map (kbd "C-r") 'ctrlf-backward-default)
- (setq ctrlf-default-search-style 'fuzzy-regexp)
  (setq ctrlf-default-search-style 'literal)
+
+ ;; Add a hook to automatically cancel CTRLF search when leaving the minibuffer
+ (defun my/auto-cancel-ctrlf ()
+   "Automatically cancel CTRLF search when leaving the minibuffer."
+   (when (and (bound-and-true-p ctrlf--active-p)
+              (not (minibufferp))
+              (not (eq (current-buffer) ctrlf--minibuffer)))
+     (ctrlf-cancel)))
+
+ (add-hook 'post-command-hook #'my/auto-cancel-ctrlf)
+
+ ;; Enable CTRLF globally
  (ctrlf-mode t))
 #+end_src
 ** Whole line or region
@@ -733,12 +746,20 @@ This is [[https://github.com/jsigman/unison-sync-mode][my own little package]] f
  :bind (:map emacs-lisp-mode-map ("C-c C-x l" . my/package-lint-this-file)))
 #+end_src
 ** Whitespace butler
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package ws-butler
 :hook (prog-mode . ws-butler-mode)
 :hook (org-mode . ws-butler-mode))
 #+end_src
-** Indentation
+** Whitespace Cleanup
+#+begin_src emacs-lisp :load yes
+(use-package whitespace-cleanup-mode
+  :straight (:host github :repo "purcell/whitespace-cleanup-mode")
+  :hook ((prog-mode . whitespace-cleanup-mode)
+         (org-mode . whitespace-cleanup-mode))
+  :config
+  (setq whitespace-cleanup-mode-preserve-point t))
+#+end_src** Indentation
 *** Electric Indent
 #+begin_src emacs-lisp :load yes
 (electric-indent-mode 0)
@@ -2225,6 +2246,15 @@ Disable lock files in TRAMP
 (add-to-list 'file-name-handler-alist
              '("\\`/\\(ssh\\|scp\\|ftp\\):" . my-tramp-file-name-handler))
 #+end_src
+** Backup files
+#+begin_src emacs-lisp :load yes
+(defun my/setup-tramp-backup-options ()
+  "Disable backups and auto-save for remote files accessed via TRAMP."
+  (when (file-remote-p default-directory)
+    (setq-local backup-inhibited t) ;; Disable backup
+    (setq-local auto-save-default nil) ;; Disable auto save
+    (setq-local create-lockfiles nil))) ;; Disable lock files as well
+#+end_src
 ** Direnv in Tramp
 [[https://github.com/eush77/dotfiles/blob/ace2b1dc0f229b4897d60728a320a8f88722e0c4/emacs/.emacs.d/config/config-direnv.el#L28-L52][Code exists in an unmerged branch]].
 #+begin_src emacs-lisp :load yes
@@ -2503,81 +2533,81 @@ Enhanced code folding by indentation level from minimal-emacs.d:
 #+end_src
 ** Org Mode Settings
 #+begin_src emacs-lisp :load yes
-(use-package
- org
- :defer t
- :hook (org-mode-hook . visual-line-mode)
- :hook (org-babel-after-execute-hook . org-display-inline-images)
- :hook (org-babel-after-execute-hook . append)
- :hook
- (org-mode
-  .
-  (lambda ()
-    (remove-hook
-     'completion-at-point-functions #'pcomplete-completions-at-point
-     t)
-    (remove-hook
-     'completion-at-point-functions #'ispell-completion-at-point
-     t)))
- :bind
- (:map
-  org-mode-map
-  ("C-'" . nil)
-  ("C-c C-c" . org-ctrl-c-ctrl-c)
-  ("C-M-<return>" . my/org-babel-execute-and-next)
-  ("C-c <" . nil)
-  ("M-g o" . consult-org-heading)
-  :map
-  org-src-mode-map
-  ("C-x C-s" . org-src-format-and-save))
- :config
- (setq org-format-latex-options
-       (plist-put org-format-latex-options :scale 2.0))
- (setq org-latex-create-formula-image-program 'dvisvgm)
+  (use-package
+   org
+   :defer t
+   :hook (org-mode-hook . visual-line-mode)
+   :hook (org-babel-after-execute-hook . org-display-inline-images)
+   :hook (org-babel-after-execute-hook . append)
+   :hook
+   (org-mode
+    .
+    (lambda ()
+      (remove-hook
+       'completion-at-point-functions #'pcomplete-completions-at-point
+       t)
+      (remove-hook
+       'completion-at-point-functions #'ispell-completion-at-point
+       t)))
+   :bind
+   (:map
+    org-mode-map
+    ("C-'" . nil)
+    ("C-c C-c" . org-ctrl-c-ctrl-c)
+    ("C-M-<return>" . my/org-babel-execute-and-next)
+    ("C-c <" . nil)
+    ("M-g o" . consult-org-heading)
+    :map
+    org-src-mode-map
+    ("C-x C-s" . org-src-format-and-save))
+   :config
+   (setq org-format-latex-options
+         (plist-put org-format-latex-options :scale 2.0))
+   (setq org-latex-create-formula-image-program 'dvisvgm)
 
- (defun my/org-babel-execute-and-next ()
-   (interactive)
-   (org-babel-execute-src-block)
-   (org-babel-next-src-block))
+   (defun my/org-babel-execute-and-next ()
+     (interactive)
+     (org-babel-execute-src-block)
+     (org-babel-next-src-block))
 
- (org-babel-do-load-languages
-  'org-babel-load-languages
-  '((emacs-lisp . t)
-    (sqlite . t)
-    (shell . t)
-    (jq . t)
-    (jupyter . nil)
-    (python . t)))
- ; Needed to make org-babel-jupyter work, want to refresh the kernels to see what is visible in venv
- (defun my/load-org-jupyter ()
    (org-babel-do-load-languages
-    'org-babel-load-languages '((jupyter . t)))
-   (org-babel-jupyter-aliases-from-kernelspecs 'refresh))
- (visual-line-mode t)
+    'org-babel-load-languages
+    '((emacs-lisp . t)
+      (sqlite . t)
+      (shell . t)
+      (jq . t)
+      (jupyter . nil)
+      (python . t)))
+   ; Needed to make org-babel-jupyter work, want to refresh the kernels to see what is visible in venv
+   (defun my/load-org-jupyter ()
+     (org-babel-do-load-languages
+      'org-babel-load-languages '((jupyter . t)))
+     (org-babel-jupyter-aliases-from-kernelspecs 'refresh))
+   (visual-line-mode t)
 
- ; Org-babel stuff
- (setf (alist-get "bash" org-src-lang-modes nil nil #'equal)
-       'bash-ts)
+   ; Org-babel stuff
+   (setf (alist-get "bash" org-src-lang-modes nil nil #'equal)
+         'bash-ts)
 
- (setq org-log-done t)
+   (setq org-log-done t)
 
- ;; adding this does some weird stuff in colors
- (setq org-startup-indented nil)
+   ;; adding this does some weird stuff in colors
+   (setq org-startup-indented nil)
 
- ;; fontify code in code blocks
- (setq org-src-fontify-natively t)
- (setq org-confirm-babel-evaluate nil) ;don't prompt me to confirm everytime I want to evaluate a block
- (setq org-src-preserve-indentation t)
+   ;; fontify code in code blocks
+   (setq org-src-fontify-natively t)
+   (setq org-confirm-babel-evaluate nil) ;don't prompt me to confirm everytime I want to evaluate a block
+   (setq org-src-preserve-indentation t)
 
- (defun my-update-direnv-in-org-src ()
-   "Update direnv environment variables for org-src buffers."
-   (when (and (bound-and-true-p direnv-mode)
-              (eq major-mode 'org-mode))
-     (let ((org-file-path (buffer-file-name (buffer-base-buffer))))
-       (when org-file-path
-         (direnv-update-environment org-file-path)))))
+   (defun my-update-direnv-in-org-src ()
+     "Update direnv environment variables for org-src buffers."
+     (when (and (bound-and-true-p direnv-mode)
+                (eq major-mode 'org-mode))
+       (let ((org-file-path (buffer-file-name (buffer-base-buffer))))
+         (when org-file-path
+           (direnv-update-environment org-file-path)))))
 
- (add-hook 'org-src-mode-hook 'my-update-direnv-in-org-src))
+   (add-hook 'org-src-mode-hook 'my-update-direnv-in-org-src))
 #+end_src
 ** Org Babel
 #+begin_src emacs-lisp :load yes
