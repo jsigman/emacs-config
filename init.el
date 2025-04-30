@@ -10,6 +10,30 @@
 (defvar original-noninteractive-value nil)
 (setq comp-speed 2)
 
+;; Configure straight.el to use GitHub mirrors for Savannah repositories
+(setq straight-vc-git-default-clone-url
+      '(("git\\.savannah\\.gnu\\.org"
+         .
+         "https://github.com/emacs-straight/%s")))
+
+;; Override recipes for specific packages
+(setq straight-recipe-overrides
+      '((nil
+         .
+         ((nongnu-elpa
+           :type git
+           :host github
+           :repo "emacsmirror/nongnu_elpa")
+          (ws-butler
+           :type git
+           :host github
+           :repo "emacsmirror/ws-butler")
+          (org
+           :type git
+           :host github
+           :repo "emacs-straight/org-mode"
+           :local-repo "org")))))
+
 ;; Packages setup to prepare literate-elisp
 (defvar bootstrap-version)
 (let ((bootstrap-file
