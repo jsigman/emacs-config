@@ -2652,37 +2652,58 @@ I thought I liked this at first, but now I'm going to disable it because of some
 ** Org Roam
 I'm not currently using Org Roam, but maybe some day I'd like to.
 #+begin_src emacs-lisp :load yes
-(use-package org-roam
-  :ensure t
-  :custom
-  (org-roam-directory (file-truename "~/Dropbox/org-roam/")) ;; Define org-roam-directory first
-  :bind
-  (("C-c n l" . org-roam-buffer-toggle)
-   ("C-c n f" . org-roam-node-find)
-   ("C-c n g" . org-roam-graph)
-   ("C-c n i" . org-roam-node-insert)
-   ("C-c n c" . org-roam-capture)
-   ;; Dailies
-   ("C-c n j" . org-roam-dailies-capture-today))
-  :init
-  ;; Delay setting org-id-locations-file until after org-roam is loaded
-  (with-eval-after-load 'org-roam
-    (setq org-id-locations-file (expand-file-name "org-id-locations" org-roam-directory)))
-  :config
-  ;; If using a vertical completion framework, customize completion interface
-  (setq org-roam-node-display-template
-        (concat
-         "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-  ;; Automatically sync the database
-  (org-roam-db-autosync-mode)
+(defun my/dropbox-directory ()
+  "Return the absolute path to the user's Dropbox folder on macOS (or fallback)."
+  (let* ((info-json-path (expand-file-name "~/.dropbox/info.json"))
+         (json-object-type 'alist)
+         (json-key-type 'string)
+         (json-array-type 'list))
+    (if (file-exists-p info-json-path)
+        (let* ((json-data (json-read-file info-json-path))
+               (personal (cdr (assoc "personal" json-data)))
+               (business (cdr (assoc "business" json-data))))
+          (or (and personal (cdr (assoc "path" personal)))
+              (and business (cdr (assoc "path" business)))
+              (expand-file-name "~/Dropbox")))
+      (expand-file-name "~/Dropbox"))))
 
-  ;; Check and update org-id-locations file if it doesn't exist
-  (unless (file-exists-p org-id-locations-file)
-    (message "Org-id-locations file not found. Generating a new one...")
-    (org-roam-update-org-id-locations))
+(use-package
+ org-roam
+ :ensure t
+ :custom
+ (org-roam-directory
+  (file-truename
+   (expand-file-name "org-roam" (my/dropbox-directory))))
+ :bind
+ (("C-c n l" . org-roam-buffer-toggle)
+  ("C-c n f" . org-roam-node-find)
+  ("C-c n g" . org-roam-graph)
+  ("C-c n i" . org-roam-node-insert)
+  ("C-c n c" . org-roam-capture)
+  ;; Dailies
+  ("C-c n j" . org-roam-dailies-capture-today))
+ :init
+ ;; Delay setting org-id-locations-file until after org-roam is loaded
+ (with-eval-after-load 'org-roam
+   (setq org-id-locations-file
+         (expand-file-name "org-id-locations" org-roam-directory)))
+ :config
+ ;; Customize node display
+ (setq org-roam-node-display-template
+       (concat
+        "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
 
-  ;; If using org-roam-protocol
-  (require 'org-roam-protocol))
+ ;; Sync the database automatically
+ (org-roam-db-autosync-mode)
+
+ ;; Generate org-id-locations file if missing
+ (unless (file-exists-p org-id-locations-file)
+   (message
+    "Org-id-locations file not found. Generating a new one...")
+   (org-roam-update-org-id-locations))
+
+ ;; Enable org-roam-protocol if available
+ (require 'org-roam-protocol))
 #+end_src
 ** Jupyter
 *** ZMQ
