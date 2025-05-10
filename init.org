@@ -258,6 +258,26 @@ I think this is a little too aggressive right now, but it's a cool idea.
  (cwm-update-fringe-background))
 #+end_src
 * Editing Packages
+** EditorConfig
+#+begin_src emacs-lisp :load yes
+;; EditorConfig Setup
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1)
+  ;; Set some custom variables that extend EditorConfig's capabilities
+  (setq editorconfig-trim-whitespaces-mode 'whitespace-cleanup-mode)
+  
+  ;; Custom hook to apply visual settings after EditorConfig is loaded
+  (defun my/apply-visual-settings (_props)
+    "Apply visual settings after EditorConfig properties are loaded."
+    (when (and (boundp 'max_line_length) max_line_length)
+      (when (bound-and-true-p visual-fill-column-mode)
+        (setq-local visual-fill-column-width max_line_length))))
+  
+  (add-hook 'editorconfig-after-apply-functions #'my/apply-visual-settings))
+#+end_src
+
 ** Global Keybindings
 #+begin_src emacs-lisp :load yes
 (global-set-key (kbd "M-k") (lambda () (interactive) (kill-this-buffer nil)))
@@ -361,8 +381,6 @@ I think this is a little too aggressive right now, but it's a cool idea.
 #+end_src
 ** Line Numbers in Code
 #+begin_src emacs-lisp :load yes
-(setq require-final-newline t)
-(setq show-trailing-whitespace t)
 (setq native-comp-async-report-warnings-errors nil)
 ;; Show the line number of the cursor in the mode bar at the bottom of each buffer
 (setq line-number-mode t)
@@ -387,7 +405,6 @@ I think this is a little too aggressive right now, but it's a cool idea.
       `((".*" ,temporary-file-directory t)))
 ;; Don't truncate lines
 (setq truncate-lines t)
-(setq-default indent-tabs-mode nil)
 
 ;; Don't show the scroll bar on the side of buffers
 (scroll-bar-mode -1)
@@ -750,19 +767,6 @@ This is [[https://github.com/jsigman/unison-sync-mode][my own little package]] f
 (use-package ws-butler
 :hook (prog-mode . ws-butler-mode)
 :hook (org-mode . ws-butler-mode))
-#+end_src
-** Whitespace Cleanup
-#+begin_src emacs-lisp :load yes
-(use-package whitespace-cleanup-mode
-  :straight (:host github :repo "purcell/whitespace-cleanup-mode")
-  :hook ((prog-mode . whitespace-cleanup-mode)
-         (org-mode . whitespace-cleanup-mode))
-  :config
-  (setq whitespace-cleanup-mode-preserve-point t))
-#+end_src** Indentation
-*** Electric Indent
-#+begin_src emacs-lisp :load yes
-(electric-indent-mode 0)
 #+end_src
 *** Highlight Indent Guides
 #+begin_src emacs-lisp :load yes
