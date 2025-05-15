@@ -125,7 +125,7 @@ I'll do this first, so that it goes back to this when I exit full screen mode (i
  (define-key vterm-mode-map (kbd "M-R") nil)
  (define-key vterm-mode-map (kbd "M-G") nil)
  (define-key vterm-mode-map (kbd "M-:") nil)
- (define-key vterm-mode-map (kbd "M-s") 'nil)
+ (define-key vterm-mode-map (kbd "M-s") nil)
 
  (defun kill-buffer-and-its-windows (buffer)
    "Kill BUFFER and delete its windows.  Default is `current-buffer'.
@@ -151,8 +151,8 @@ BUFFER may be either a buffer or its name (a string)."
                    (delete-window win)
                  (error nil))))))
      (when (interactive-p)
-       (error
-        "Cannot kill buffer.  Not a live buffer: `%s'" buffer))))
+       (error "Cannot kill buffer.  Not a live buffer: `%s'"
+              buffer))))
 
  (setq vterm-kill-buffer-on-exit t)
  (define-key
@@ -160,7 +160,40 @@ BUFFER may be either a buffer or its name (a string)."
   (lambda ()
     (interactive)
     (kill-buffer-and-its-windows (current-buffer))))
- ;; Add goto-address-mode to vterm-mode-hook for clickable links
+
+ ;; Fix for Starship prompt scroll positioning
+ (defun my/vterm-fix-starship-scroll ()
+   "Fix the initial scroll position when using Starship prompt in vterm."
+   (when (eq major-mode 'vterm-mode)
+     ;; Wait a tiny bit for vterm to initialize
+     (run-with-timer
+      0.1 nil
+      (lambda ()
+        (when (and (buffer-live-p (current-buffer))
+                   (eq major-mode 'vterm-mode))
+          ;; Check if Starship is active by searching for STARSHIP_SESSION_KEY
+          (vterm-send-string
+           "if [ -n \"$STARSHIP_SESSION_KEY\" ]; then echo \"STARSHIP_IS_ACTIVE\"; fi\n")
+          ;; Wait for command to execute
+          (run-with-timer
+           0.05 nil
+           (lambda ()
+             (when (and (buffer-live-p (current-buffer))
+                        (eq major-mode 'vterm-mode))
+               ;; If we found Starship is active
+               (when (save-excursion
+                       (goto-char (point-min))
+                       (re-search-forward "STARSHIP_IS_ACTIVE" nil t))
+                 ;; Fix the scrolling
+                 (goto-char (point-min))
+                 (recenter-top-bottom 0)
+                 (goto-char (point-max))
+                 (vterm-reset-cursor-point)
+                 ;; Clean up our detection output
+                 (vterm-send-string "clear\n"))))))))))
+
+ ;; Add hook for Starship scroll fix and goto-address-mode
+ ;; (add-hook 'vterm-mode-hook 'my/vterm-fix-starship-scroll) ;; this doesn't work yet
  (add-hook 'vterm-mode-hook 'goto-address-mode))
 #+end_src
 ** Vterm Toggle
@@ -230,7 +263,7 @@ BUFFER may be either a buffer or its name (a string)."
  ;; Override vterm-toggle--project-root
  (defun vterm-toggle--project-root ()
    (my/get-project-root)))
-#+END_SRC
+#+end_src
 * Window management
 ** Zoom
 I think this is a little too aggressive right now, but it's a cool idea.
@@ -261,21 +294,22 @@ I think this is a little too aggressive right now, but it's a cool idea.
 ** EditorConfig
 #+begin_src emacs-lisp :load yes
 ;; EditorConfig Setup
-(use-package editorconfig
-  :ensure t
-  :config
-  (editorconfig-mode 1)
-  ;; Set some custom variables that extend EditorConfig's capabilities
-  (setq editorconfig-trim-whitespaces-mode 'whitespace-cleanup-mode)
-  
-  ;; Custom hook to apply visual settings after EditorConfig is loaded
-  (defun my/apply-visual-settings (_props)
-    "Apply visual settings after EditorConfig properties are loaded."
-    (when (and (boundp 'max_line_length) max_line_length)
-      (when (bound-and-true-p visual-fill-column-mode)
-        (setq-local visual-fill-column-width max_line_length))))
-  
-  (add-hook 'editorconfig-after-apply-functions #'my/apply-visual-settings))
+(use-package
+ editorconfig
+ :ensure t
+ :config (editorconfig-mode 1)
+ ;; Set some custom variables that extend EditorConfig's capabilities
+ (setq editorconfig-trim-whitespaces-mode 'whitespace-cleanup-mode)
+
+ ;; Custom hook to apply visual settings after EditorConfig is loaded
+ (defun my/apply-visual-settings (_props)
+   "Apply visual settings after EditorConfig properties are loaded."
+   (when (and (boundp 'max_line_length) max_line_length)
+     (when (bound-and-true-p visual-fill-column-mode)
+       (setq-local visual-fill-column-width max_line_length))))
+
+ (add-hook
+  'editorconfig-after-apply-functions #'my/apply-visual-settings))
 #+end_src
 
 ** Global Keybindings
@@ -446,8 +480,11 @@ I think this is a little too aggressive right now, but it's a cool idea.
 #+end_src
 ** Window movement keybindings
 #+begin_src emacs-lisp :load yes
-(define-key term-raw-map (kbd "M-o") 'next-multiframe-window)
-(define-key term-raw-map (kbd "M-i") 'previous-multiframe-window)
+(with-eval-after-load 'term
+  ;; Uncommented for term mode
+  (define-key term-raw-map (kbd "M-o") 'next-multiframe-window)
+  (define-key term-raw-map (kbd "M-i") 'previous-multiframe-window))
+
 (define-key global-map (kbd "M-o") 'next-multiframe-window)
 (define-key global-map (kbd "M-i") 'previous-multiframe-window)
 
@@ -768,6 +805,16 @@ This is [[https://github.com/jsigman/unison-sync-mode][my own little package]] f
 :hook (prog-mode . ws-butler-mode)
 :hook (org-mode . ws-butler-mode))
 #+end_src
+** Whitespace Cleanup
+#+begin_src emacs-lisp :load yes
+(use-package
+ whitespace-cleanup-mode
+ :straight (:host github :repo "purcell/whitespace-cleanup-mode")
+ :hook
+ ((prog-mode . whitespace-cleanup-mode)
+  (org-mode . whitespace-cleanup-mode))
+ :config (setq whitespace-cleanup-mode-preserve-point t))
+#+end_src
 *** Highlight Indent Guides
 #+begin_src emacs-lisp :load yes
 (use-package
@@ -966,25 +1013,25 @@ This setup should now correctly handle Git submodules as separate projects while
                                 completion-preview-complete))
   (completion-preview-sort-function #'completion-pcm--sort-string-in-region)  ;; Similar ordering to Corfu
   (completion-preview-message-format "Completion %i of %n")  ;; Nice cycling message
-  
+
   :init
   ;; Use our existing completion styles (orderless)
   (setq completion-preview-completion-styles '(orderless basic))
-  
+
   ;; Enable globally
   (global-completion-preview-mode 1)
-  
+
   :config
   ;; Add cycling keybindings similar to Corfu
   (define-key completion-preview-active-mode-map (kbd "M-n") #'completion-preview-next-candidate)
   (define-key completion-preview-active-mode-map (kbd "M-p") #'completion-preview-prev-candidate)
-  
+
   ;; Add visual enhancements
   (custom-set-faces
    '(completion-preview ((t :inherit shadow :slant italic)))
    '(completion-preview-exact ((t :underline "#00aa00" :inherit completion-preview-common)))
    '(completion-preview-highlight ((t :inherit highlight :weight bold))))
-  
+
   ;; Optional: disable preview when doing certain operations
   (add-hook 'before-save-hook (lambda () (completion-preview-hide))))
 #+end_src
@@ -1383,8 +1430,6 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
   ;; :preview-key "M-."
   :preview-key '(:debounce 0.4 any))
 
- ;; Optionally configure the narrowing key.
- ;; Both < and C-+ work reasonably well.
  (setq consult-narrow-key "<") ;; "C-+"
 
  ;; Optionally make narrowing help available in the minibuffer.
@@ -2360,12 +2405,12 @@ This really improves use with local variables. You get a highly visible warning 
 Native compilation enhancer for faster package loading. Compile-angel improves Emacs startup performance by:
 
 1. Automatically compiling changes when saving Elisp files
-2. Providing a safer and more controlled approach to native compilation 
+2. Providing a safer and more controlled approach to native compilation
 3. Reducing the overhead of loading many packages through bytecode optimization
 
 Important considerations when using compile-angel:
 
-- *Exclude init.el and early-init.el from compilation*: These files run only once during startup, 
+- *Exclude init.el and early-init.el from compilation*: These files run only once during startup,
   so compiling them provides no performance benefit but can cause hard-to-debug issues
 - The package must be loaded with proper error handling (using =with-demoted-errors=)
 - It requires proper lexical-binding directives in all elisp files that will be compiled
@@ -2719,7 +2764,7 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
 ;; Problems that can occur without these fixes:
 ;; - "Symbol's value as variable is void: old-value" errors
 ;; - "Invalid read syntax: ")" errors due to improper lexical scoping
-;; - Runtime errors with package loading 
+;; - Runtime errors with package loading
 
 #+begin_src emacs-lisp :load yes
 (use-package
