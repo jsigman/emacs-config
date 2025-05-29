@@ -108,6 +108,7 @@ I'll do this first, so that it goes back to this when I exit full screen mode (i
  :init
  (setq vterm-copy-exclude-prompt nil)
  (setq vterm-always-compile-module t)
+ (setq vterm-max-scrollback 20000)
  (setq vterm-timer-delay 0.01)
  (setq vterm-tramp-shells
        '("/usr/bin/bash" "/bin/bash" "/bin/zsh" "docker" "/bin/sh"))
@@ -1342,7 +1343,7 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
   ("M-y" . consult-yank-pop) ;; orig. yank-pop
   ;; M-g bindings in `goto-map'
   ("M-g e" . consult-compile-error)
-  ("M-g f" . consult-flymake) ;; Alternative: consult-flycheck
+  ("M-g f" . consult-flycheck) ;; Alternative: consult-flycheck
   ("M-g g" . consult-goto-line) ;; orig. goto-line
   ("M-g M-g" . consult-goto-line) ;; orig. goto-line
   ("M-g o" . consult-outline) ;; Alternative: consult-org-heading
@@ -1451,6 +1452,8 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
  ;;;; 5. No project support
  ;; (setq consult-project-function nil)
  )
+
+(use-package consult-flycheck)
 #+end_src
 * Snippets
 ** Yasnippet
@@ -2040,47 +2043,47 @@ This one didn't work very well
 #+end_src
 * Linting
 ** Flycheck
-#+begin_src emacs-lisp :load no
+#+begin_src emacs-lisp :load yes
 (use-package
  flycheck
  :init
- (define-fringe-bitmap 'my-flycheck-fringe-indicator
-   (vector
-    #b00000000
-    #b00000000
-    #b00000000
-    #b00000000
-    #b00000000
-    #b00000000
-    #b00000000
-    #b00011100
-    #b00111110
-    #b00111110
-    #b00111110
-    #b00011100
-    #b00000000
-    #b00000000
-    #b00000000
-    #b00000000
-    #b00000000))
- (flycheck-define-error-level
-  'error
-  :severity 2
-  :overlay-category 'flycheck-error-overlay
-  :fringe-bitmap 'my-flycheck-fringe-indicator
-  :fringe-face 'flycheck-fringe-error)
- (flycheck-define-error-level
-  'warning
-  :severity 1
-  :overlay-category 'flycheck-warning-overlay
-  :fringe-bitmap 'my-flycheck-fringe-indicator
-  :fringe-face 'flycheck-fringe-warning)
- (flycheck-define-error-level
-  'info
-  :severity 0
-  :overlay-category 'flycheck-info-overlay
-  :fringe-bitmap 'my-flycheck-fringe-indicator
-  :fringe-face 'flycheck-fringe-info)
+ ;; (define-fringe-bitmap 'my-flycheck-fringe-indicator
+ ;;   (vector
+ ;;    #b00000000
+ ;;    #b00000000
+ ;;    #b00000000
+ ;;    #b00000000
+ ;;    #b00000000
+ ;;    #b00000000
+ ;;    #b00000000
+ ;;    #b00011100
+ ;;    #b00111110
+ ;;    #b00111110
+ ;;    #b00111110
+ ;;    #b00011100
+ ;;    #b00000000
+ ;;    #b00000000
+ ;;    #b00000000
+ ;;    #b00000000
+ ;;    #b00000000))
+ ;; (flycheck-define-error-level
+ ;;  'error
+ ;;  :severity 2
+ ;;  :overlay-category 'flycheck-error-overlay
+ ;;  :fringe-bitmap 'my-flycheck-fringe-indicator
+ ;;  :fringe-face 'flycheck-fringe-error)
+ ;; (flycheck-define-error-level
+ ;;  'warning
+ ;;  :severity 1
+ ;;  :overlay-category 'flycheck-warning-overlay
+ ;;  :fringe-bitmap 'my-flycheck-fringe-indicator
+ ;;  :fringe-face 'flycheck-fringe-warning)
+ ;; (flycheck-define-error-level
+ ;;  'info
+ ;;  :severity 0
+ ;;  :overlay-category 'flycheck-info-overlay
+ ;;  :fringe-bitmap 'my-flycheck-fringe-indicator
+ ;;  :fringe-face 'flycheck-fringe-info)
  ;; :config
  ;; (use-package flycheck-pos-tip )
  ;; (flycheck-pos-tip-mode)
@@ -2089,44 +2092,9 @@ This one didn't work very well
  (setq flycheck-display-errors-delay 0.1)
  (setq flycheck-idle-buffer-switch-delay 0.1)
 
- (setq flycheck-checkers (remove 'python-pylint flycheck-checkers))
- (setq flycheck-checkers (remove 'python-pycompile flycheck-checkers))
- (setq flycheck-checkers (remove 'python-pyright flycheck-checkers))
-
  (add-hook 'after-init-hook #'global-flycheck-mode)
  (setq flycheck-global-modes
        '(python-base-mode js-mode python-mode python-ts-mode))
-
- (defun debug-flycheck-ruff-disabled (symbol newval operation where)
-   "Log debug information when python-ruff is added to flycheck--automatically-disabled-checkers."
-   (when (and (eq operation 'set) (member 'python-ruff newval))
-     (let ((debug-on-error t)
-           (debug-buffer (get-buffer-create "*flycheck-ruff-debug*")))
-       (with-current-buffer debug-buffer
-         (goto-char (point-max))
-         (insert "\n\n")
-         (insert
-          (format-time-string
-           "Debug info captured at %Y-%m-%d %H:%M:%S\n\n"))
-         (insert
-          "python-ruff has been added to automatically disabled checkers.\n\n")
-         (insert (format "All disabled checkers: %s\n\n" newval))
-         (insert
-          (format ":enabled predicate returned: %s\n\n"
-                  (flycheck-checker-get 'python-ruff :enabled)))
-         (insert
-          (format "Error threshold: %s\n\n"
-                  flycheck-checker-error-threshold))
-         (insert "Stack trace:\n")
-         (insert
-          (with-output-to-string
-            (backtrace)))
-         (insert "\n\nEnd of debug info.\n"))
-       (display-buffer debug-buffer))))
-
- (add-variable-watcher
-  'flycheck--automatically-disabled-checkers
-  #'debug-flycheck-ruff-disabled)
 
  (setq flycheck-checker-error-threshold nil)
  (setq flycheck-debug t))
@@ -2156,12 +2124,12 @@ I have my own little hook to open the flycheck buffer with ~M-C~, and close it a
 (define-key flycheck-mode-map (kbd "M-C") 'my/flycheck-list-errors)
 #+end_src
 ** Flymake
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package flymake :ensure t)
 (add-hook 'python-ts-mode-hook 'flymake-mode)
 #+end_src
 *** Ruff
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package flymake-ruff :ensure t :config (flymake-ruff-load))
 #+end_src
 *** JSON
@@ -2169,7 +2137,7 @@ I have my own little hook to open the flycheck buffer with ~M-C~, and close it a
 (use-package flymake-json :ensure t :config (flymake-json-load))
 #+end_src
 *** Bugfix: Ruff
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (defun flymake-ruff--check-buffer ()
   "Generate a list of diagnostics for the current buffer."
   (let ((code-buffer (current-buffer))
@@ -2180,22 +2148,24 @@ I have my own little hook to open the flycheck buffer with ~M-C~, and close it a
         (dxs '()))
     (with-temp-buffer
       (insert code-content)
-      (let* ((config
-              (and (project-current)
+      (let* ((project-root
+              (when (project-current)
+                (project-root (project-current))))
+             (config
+              (and project-root
                    (seq-find
                     #'file-readable-p
                     (mapcar
-                     (lambda (f)
-                       (expand-file-name
-                        f
-                        (project-root (project-current))))
+                     (lambda (f) (expand-file-name f project-root))
                      flymake-ruff--default-configs))))
              (args
               (if config
                   (append
                    (list "check" "--config" config)
                    flymake-ruff-program-args)
-                (cons "check" flymake-ruff-program-args))))
+                (cons "check" flymake-ruff-program-args)))
+             ;; Set the default directory to project root if available
+             (default-directory (or project-root default-directory)))
         (apply #'call-process-region
                (point-min)
                (point-max)
@@ -2204,6 +2174,7 @@ I have my own little hook to open the flycheck buffer with ~M-C~, and close it a
                t
                nil
                args))
+      ;; Rest of the function remains the same
       (goto-char (point-min))
       (while (search-forward-regexp flymake-ruff--output-regex
                                     (point-max)
@@ -2225,11 +2196,6 @@ I have my own little hook to open the flycheck buffer with ~M-C~, and close it a
                    :error description)))
             (add-to-list 'dxs dx)))))
     dxs))
-(setq flymake-ruff-program-args
-      '("--output-format" "concise" "--exit-zero" "--quiet" "-"))
-(defun my-python-ruff-setup ()
-  (add-hook 'flymake-diagnostic-functions #'flymake-ruff--run-checker nil t))
-(add-hook 'python-base-mode-hook #'my-python-ruff-setup)
 #+end_src
 * TRAMP
 ** General Settings
@@ -2529,7 +2495,7 @@ Enhanced code folding by indentation level from minimal-emacs.d:
   (add-hook 'yaml-mode-hook #'outline-indent-minor-mode)
   (add-hook 'yaml-ts-mode-hook #'outline-indent-minor-mode))
 #+end_src
-** Heroku
+* Heroku
 #+begin_src emacs-lisp :load yes
 (use-package
  heroku
@@ -3531,7 +3497,7 @@ Return nil if no project was found."
  :config (awesome-tray-mode 1) awesome-tray-active-modules)
 #+end_src
 ** Icons
-** All the icons
+*** All the icons
 #+begin_src emacs-lisp :load yes
 (use-package all-the-icons)
 (use-package
@@ -3544,7 +3510,7 @@ Return nil if no project was found."
  :config (all-the-icons-completion-mode)
  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup))
 #+end_src
-** SVG Support
+*** SVG Support
 #+begin_src emacs-lisp :load yes
 ; Re-enable with SVG support
 (use-package
