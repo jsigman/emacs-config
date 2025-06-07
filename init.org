@@ -265,6 +265,79 @@ BUFFER may be either a buffer or its name (a string)."
  (defun vterm-toggle--project-root ()
    (my/get-project-root)))
 #+end_src
+** Eat
+#+begin_src emacs-lisp :load no
+(use-package eat
+  :straight (eat :type git
+                 :host codeberg
+                 :repo "akib/emacs-eat"
+                 :files ("*.el" ("term" "term/*.el") "*.texi"
+                         "*.ti" ("terminfo/e" "terminfo/e/*")
+                         ("terminfo/65" "terminfo/65/*")
+                         ("integration" "integration/*")
+                         (:exclude ".dir-locals.el" "*-tests.el")))
+  :init
+  (setq eat-kill-buffer-on-exit t)
+  (setq eat-enable-mouse t)
+  
+  :config
+  ;; Basic key unbinding to avoid conflicts
+  (define-key eat-mode-map (kbd "M-T") nil)
+  
+  (add-hook 'eat-mode-hook 'goto-address-mode))
+
+;; Custom eat toggle functionality
+(defun my/get-project-root ()
+  "Get project root without prompting."
+  (or (when (fboundp 'project-root)
+        (when-let* ((project (project-current nil)))
+          (project-root project)))
+      (when (fboundp 'projectile-project-root)
+        (projectile-project-root))
+      default-directory))
+
+(defun eat-toggle ()
+  "Toggle eat terminal in bottom window."
+  (interactive)
+  (let* ((project-root (my/get-project-root))
+         (eat-buffer-name (format "*eat-%s*" 
+                                  (file-name-nondirectory 
+                                   (directory-file-name project-root))))
+         (eat-buffer (get-buffer eat-buffer-name))
+         (eat-window (and eat-buffer (get-buffer-window eat-buffer))))
+    
+    (if eat-window
+        ;; If eat buffer is visible, hide it
+        (quit-window nil eat-window)
+      ;; Otherwise show/create eat buffer
+      (if eat-buffer
+          ;; Buffer exists but not visible, show it
+          (display-buffer eat-buffer)
+        ;; Create new eat buffer
+        (let ((default-directory project-root))
+          (display-buffer (eat eat-buffer-name)))))))
+
+;; Key bindings
+(with-eval-after-load 'eat
+  (define-key eat-mode-map (kbd "M-T") 'eat-toggle)
+  (define-key eat-mode-map (kbd "M-o") 'eat-toggle))
+
+(global-set-key (kbd "M-T") 'eat-toggle)
+(global-set-key (kbd "M-o") 'eat-toggle)
+
+;; Display buffer configuration for eat
+(add-to-list
+ 'display-buffer-alist
+ '((lambda (buffer-or-name _)
+     (let ((buffer (get-buffer buffer-or-name)))
+       (with-current-buffer buffer
+         (eq major-mode 'eat-mode))))
+   (display-buffer-reuse-window display-buffer-in-direction)
+   (direction . bottom)
+   (dedicated . t)
+   (reusable-frames . visible)
+   (window-height . 0.3)))
+#+end_src
 * Window management
 ** Zoom
 I think this is a little too aggressive right now, but it's a cool idea.
@@ -332,6 +405,13 @@ I think this is a little too aggressive right now, but it's a cool idea.
 ; Disable Ctrl + mouse wheel up/down zooming in/out
 (global-unset-key (kbd "C-<wheel-up>"))   ;; Unbind Ctrl + Wheel Up
 (global-unset-key (kbd "C-<wheel-down>")) ;; Unbind Ctrl + Wheel Down
+#+end_src
+*** Crux
+#+begin_src emacs-lisp :load yes
+(use-package crux
+  :bind
+  ;; Remap all instances of keyboard-quit (more comprehensive than just "C-g")
+  ([remap keyboard-quit] . crux-keyboard-quit-dwim))
 #+end_src
 ** Font Lock
 #+begin_src emacs-lisp :load no
