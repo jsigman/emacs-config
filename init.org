@@ -2120,6 +2120,57 @@ This one didn't work very well
          "bedrock/anthropic.claude-3-5-sonnet-20240620-v1:0"))
  (global-set-key (kbd "C-c a") 'aider-transient-menu))
 #+end_src
+** Claude Codes
+#+begin_src emacs-lisp :load yes
+(use-package
+ claude-code-ide
+ :straight (:host github :repo "manzaltu/claude-code-ide.el")
+ :custom
+ ;; Path to Claude CLI executable (adjust if needed)
+ (claude-code-ide-cli-path "claude")
+
+ ;; Window placement to match your existing right-side preference
+ (claude-code-ide-window-side 'right)
+ (claude-code-ide-window-width 90)
+
+ ;; Focus behavior
+ (claude-code-ide-focus-on-open t)
+ (claude-code-ide-focus-claude-after-ediff t)
+
+ :init
+ ;; Create a prefix keymap for Claude commands
+ (define-prefix-command 'claude-code-ide-command-map)
+ (global-set-key (kbd "C-c c") 'claude-code-ide-command-map)
+
+ ;; Ensure dependencies are loaded
+ (require 'websocket)
+
+ :config
+ ;; Check if Claude CLI is available
+ (claude-code-ide-check-status)
+
+ ;; Handle interaction with centered-window-mode
+ (when (bound-and-true-p centered-window-mode)
+   (advice-add
+    'claude-code-ide--display-buffer-in-side-window
+    :after
+    (lambda (&rest _)
+      (when (fboundp 'cwm-update-fringe-background)
+        (cwm-update-fringe-background)))))
+
+ ;; Bind keys under the C-c c prefix map
+ :bind
+ (:map
+  claude-code-ide-command-map
+  ("c" . claude-code-ide) ;; Start Claude
+  ("r" . claude-code-ide-resume) ;; Resume previous session
+  ("q" . claude-code-ide-stop) ;; Stop Claude
+  ("s" . claude-code-ide-switch-to-buffer) ;; Switch to Claude buffer
+  ("l" . claude-code-ide-list-sessions) ;; List sessions
+  ("@" . claude-code-ide-insert-at-mentioned) ;; Insert selected text
+  ("d" . claude-code-ide-show-debug))) ;; Show debug buffer
+#+end_src
+
 * Linting
 ** Flycheck
 #+begin_src emacs-lisp :load yes
