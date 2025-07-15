@@ -75,7 +75,7 @@ I'll do this first, so that it goes back to this when I exit full screen mode (i
 (add-hook 'window-setup-hook #'toggle-fullscreen-or-maximized)
 #+end_src
 ** Copying syntax highlighting to the clipboard
-#+begin_src  emacs-lisp :load yes
+#+begin_src  emacs-lisp :load no
   (when (eq system-type 'darwin)
     (use-package
      highlight2clipboard
