@@ -3799,9 +3799,11 @@ Return nil if no project was found."
  (dimmer-mode t))
 #+end_src
 ** Volatile Highlights
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package
  volatile-highlights
+ :straight
+ (:host github :repo "k-talo/volatile-highlights.el" :no-autoloads t)
  :config (volatile-highlights-mode t))
 #+end_src
 ** Highlight todos
