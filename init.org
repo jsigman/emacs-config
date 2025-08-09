@@ -2149,15 +2149,6 @@ This one didn't work very well
  ;; Check if Claude CLI is available
  (claude-code-ide-check-status)
 
- ;; Handle interaction with centered-window-mode
- (when (bound-and-true-p centered-window-mode)
-   (advice-add
-    'claude-code-ide--display-buffer-in-side-window
-    :after
-    (lambda (&rest _)
-      (when (fboundp 'cwm-update-fringe-background)
-        (cwm-update-fringe-background)))))
-
  ;; Bind keys under the C-c c prefix map
  :bind
  (:map
@@ -2862,7 +2853,7 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
 ;; - "Invalid read syntax: ")" errors due to improper lexical scoping
 ;; - Runtime errors with package loading
 
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package
  zmq
  :straight (zmq :type git :host github :repo "nnicandro/emacs-zmq")
@@ -3081,9 +3072,14 @@ I'm not currently using Org Roam, but maybe some day I'd like to.
 (zmq--download-module-test (concat "tags/" zmq-emacs-version))
 #+end_src
 *** ob-jupyter
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
+(use-package simple-httpd
+  :ensure t)
+
 (use-package
  jupyter
+ :ensure t
+ :after simple-httpd
  :demand t
  :custom (jupyter-repl-echo-eval-p t)
  :config
@@ -3200,7 +3196,7 @@ This is really only used in the publishing script of my emacs config, I don't ne
 #+end_src
 *** Fix for GitLab MR Templates Without YAML Front Matter
 Forge requires YAML front matter in GitLab MR templates, but GitLab itself doesn't. This fix allows templates without front matter to work by using filenames as prompts. Remove when [[https://github.com/magit/forge/issues][forge upstream issue]] is fixed.
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 ;; Override forge's template processing to support templates without YAML front matter
 (defvar my-forge--current-template-file nil
   "Current template file being processed")
@@ -3799,7 +3795,7 @@ Return nil if no project was found."
  (dimmer-mode t))
 #+end_src
 ** Volatile Highlights
-#+begin_src emacs-lisp :load no
+#+begin_src emacs-lisp :load yes
 (use-package
  volatile-highlights
  :straight
