@@ -243,6 +243,9 @@ BUFFER may be either a buffer or its name (a string)."
            (project-root project)))
        (when (fboundp 'projectile-project-root)
          (projectile-project-root))
+       ;; Fallback: look for nearest .git directory (handles submodules)
+       (when-let ((git-dir (locate-dominating-file default-directory ".git")))
+         (expand-file-name git-dir))
        default-directory))
 
  ;; Override vterm-toggle--new
@@ -293,6 +296,9 @@ BUFFER may be either a buffer or its name (a string)."
           (project-root project)))
       (when (fboundp 'projectile-project-root)
         (projectile-project-root))
+      ;; Fallback: look for nearest .git directory (handles submodules)
+      (when-let ((git-dir (locate-dominating-file default-directory ".git")))
+        (expand-file-name git-dir))
       default-directory))
 
 (defun eat-toggle ()
@@ -958,21 +964,62 @@ Migrating from ~projectile~ to ~project.el~ for better integration with ~eglot~ 
  :straight (:type built-in)
  :bind-keymap ("C-c p" . project-prefix-map)
  :config (setq project-vc-include-untracked t)
- ;; Custom project detection function
- (defun my/project-try-local (dir)
-   "Determine if DIR is a project by finding the nearest .git directory.
-This helps with correctly identifying Git submodules as separate projects."
-   (let ((root (locate-dominating-file dir ".git")))
-     (when root
-       (cons 'transient (expand-file-name root)))))
+ ;; =============================================================================
+ ;; PROJECT DETECTION CONFIGURATION
+ ;; =============================================================================
+ ;; This configuration handles two scenarios:
+ ;; 1. Git submodules (like all/.emacs.d) - should be treated as separate projects
+ ;; 2. Monorepo subprojects (marked with .project files) - should be treated as separate projects
+ ;;
+ ;; Both use 'vc project type to respect .gitignore files and show only Git-tracked files.
 
- ;; TODO - This function not working yet for monorepo folders
- ;; Add our custom function to the beginning of project-find-functions
- ;; (add-hook 'project-find-functions #'my/project-try-local)
+ ;; Configure built-in project.el to recognize .project files as project boundaries
+ ;; This handles monorepo subprojects where you want to limit scope within a larger Git repo
+ (setq project-vc-extra-root-markers '(".project"))
 
- ;; Set up project-vc-ignores
+ ;; Custom function to detect Git submodules specifically
+ ;; Submodules have .git files (not directories), so they need special handling
+ ;; This runs BEFORE the built-in project-try-vc to catch submodules first
+ (defun my/project-try-submodule (dir)
+   "Detect Git submodules by checking for .git files (not directories).
+   
+   This function:
+   - Only triggers for actual Git submodules (where .git is a file, not directory)  
+   - Returns 'vc project type to respect .gitignore files
+   - Prevents submodules from being detected as part of their parent repository
+   
+   Used for cases like all/.emacs.d submodule in the dotfiles repo."
+   (when-let ((git-file (locate-dominating-file dir ".git")))
+     (let ((git-path (expand-file-name ".git" git-file)))
+       ;; Only treat as project if .git is a file (submodule) not a directory
+       (when (file-regular-p git-path)
+         ;; Return the same format as project-try-vc: (vc backend root-dir)
+         (list 'vc 'Git (expand-file-name git-file))))))
+
+ ;; Add submodule detection to run before the built-in project-try-vc
+ ;; Order matters: submodule detection must run first to catch submodules
+ ;; before project-try-vc finds the parent repository
+ (add-hook 'project-find-functions #'my/project-try-submodule)
+
+ ;; =============================================================================
+ ;; SUMMARY: How this works
+ ;; =============================================================================
+ ;; 1. my/project-try-submodule runs first, catches Git submodules (.git files)
+ ;; 2. project-try-vc runs second, handles normal repos + .project file markers  
+ ;; 3. Both return 'vc projects that respect .gitignore files
+ ;; 4. Result: Fast, correct project boundaries for both submodules and monorepos
+ ;;
+ ;; Examples:
+ ;; - all/.emacs.d (submodule): Detected by .git file, scoped to submodule
+ ;; - monorepo/subproject (with .project): Detected by .project file, scoped to subdir
+ ;; =============================================================================
+
+ ;; Set up project-vc-ignores with proper patterns
  (setq project-vc-ignores
        '("venv/"
+         ".venv/"
+         "env/"
+         ".env/"
          "typings/"
          "node_modules/"
          ".mypy_cache/"
@@ -981,6 +1028,10 @@ This helps with correctly identifying Git submodules as separate projects."
          ".dvc/cache/"
          ".dvc/tmp/"
          ".jekyll-cache/"
+         "__pycache__/"
+         "dist/"
+         "build/"
+         ".git/"
          "!*.org"
          "!/notes/"))
 
@@ -989,19 +1040,20 @@ This helps with correctly identifying Git submodules as separate projects."
    "Add DIR to the list of ignored directories in project-vc-ignores."
    (add-to-list 'project-vc-ignores dir))
 
- ;; Add additional directories to project-vc-ignores
- (dolist (dir
-          '("venv"
-            "data"
-            "typings"
-            "node_modules"
-            ".mypy_cache"
-            ".pytest_cache"
-            ".cache"
-            ".dvc/cache"
-            ".dvc/tmp"
-            ".jekyll-cache"))
-   (my/add-project-ignore dir))
+ ;; Add additional common ignore patterns
+ (dolist (pattern
+          '("*/__pycache__/"
+            "*/node_modules/"
+            "*/.git/"
+            "*/dist/"
+            "*/build/"
+            "*/.tox/"
+            "*/.coverage"
+            "*/htmlcov/"
+            "*.pyc"
+            "*.pyo"
+            "*.egg-info/"))
+   (my/add-project-ignore pattern))
 
  ;; Disable automatic project remembering
  (advice-add 'project-remember-project :override #'ignore)
