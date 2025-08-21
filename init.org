@@ -618,7 +618,7 @@ I think this is a little too aggressive right now, but it's a cool idea.
 #+end_src
 ** So long mode
 I find this breaks browsing of long json files, more than it helps me out.
-#+begin_src emacs-lisp :load no
+#+begin_src emacs-lisp :load yes
 (global-so-long-mode t)
 #+end_src
 ** Emacs startup profiler (esup)
@@ -767,7 +767,7 @@ Loving use of my old colleague [[https://github.com/r-zip][Ryan Pilgrim]]'s pack
 #+end_src
 ** link-to-remote.el
 [[https://github.com/jsigman/link-to-remote.el][Another one of my packages]]. Did this one [[https://en.wikipedia.org/wiki/Vibe_coding][by vibe coding]].
-#+begin_src emacs-lisp :load yes
+#+begin
 (use-package link-to-remote
   :straight (:host github :repo "jsigman/link-to-remote.el")
   :bind ("C-c l" . link-to-remote))
@@ -777,8 +777,8 @@ This is [[https://github.com/jsigman/unison-sync-mode][my own little package]] f
 #+begin_src emacs-lisp :load yes
 (use-package
  unison-sync-mode
- :straight
- (:host github :repo "jsigman/unison-sync-mode"))
+ :straight (:host github :repo "jsigman/unison-sync-mode")
+ :bind ("M-U" . unison-sync-manual))
 #+end_src
 ** Ripgrep
 #+begin_src emacs-lisp :load yes
@@ -1546,6 +1546,7 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
  ;; For some commands and buffer sources it is useful to configure the
  ;; :preview-key on a per-command basis using the `consult-customize' macro.
  (consult-customize
+  consult-buffer :preview-key '(:debounce 0.3 any)
   consult-theme
   :preview-key
   '(:debounce 0.2 any)
@@ -2631,6 +2632,9 @@ Improved scrolling and window behavior from minimal-emacs.d:
 (setq scroll-margin 0)
 (setq scroll-preserve-screen-position t)
 (setq auto-window-vscroll nil)
+
+;; Skip fontification during user input for better performance
+(setq redisplay-skip-fontification-on-input t)
 
 ;; Enable pixel-scroll precision mode for smoother scrolling
 (unless (and (eq window-system 'mac)
