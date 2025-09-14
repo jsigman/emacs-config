@@ -767,7 +767,7 @@ Loving use of my old colleague [[https://github.com/r-zip][Ryan Pilgrim]]'s pack
 #+end_src
 ** link-to-remote.el
 [[https://github.com/jsigman/link-to-remote.el][Another one of my packages]]. Did this one [[https://en.wikipedia.org/wiki/Vibe_coding][by vibe coding]].
-#+begin
+#+begin_src emacs-lisp :load yes
 (use-package link-to-remote
   :straight (:host github :repo "jsigman/link-to-remote.el")
   :bind ("C-c l" . link-to-remote))
