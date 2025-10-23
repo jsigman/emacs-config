@@ -1588,41 +1588,79 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
 (use-package consult-flycheck)
 #+end_src
 * Snippets
-** Yasnippet
+** Tempel
 #+begin_src emacs-lisp :load yes
-(use-package
- yasnippet
- :demand t
- :init
- (load "yasnippet.el") ; get rid of weird invalid function issue
- )
-(use-package
- yasnippet-snippets
- :demand t
- :straight
- '(yasnippet-snippets
-   :type git
-   :host github
-   :repo "jsigman/yasnippet-snippets"))
+(use-package tempel
+  :bind (("M-Y" . tempel-insert)
+         ("M-+" . tempel-complete)
+         ("M-*" . tempel-expand))
 
-(yas-global-mode 1)
+  :init
+  ;; Setup completion at point
+  (defun tempel-setup-capf ()
+    ;; Add the Tempel Capf to `completion-at-point-functions'.
+    ;; `tempel-expand' only triggers on exact matches. Alternatively use
+    ;; `tempel-complete' if you want to see all matches, but then you
+    ;; should also configure `tempel-trigger-prefix', such that Tempel
+    ;; does not trigger too often when you don't expect it. NOTE: We add
+    ;; `tempel-expand' *before* the main programming mode Capf, such
+    ;; that it will be tried first.
+    (setq-local completion-at-point-functions
+                (cons #'tempel-expand
+                      completion-at-point-functions)))
+
+  (add-hook 'conf-mode-hook 'tempel-setup-capf)
+  (add-hook 'prog-mode-hook 'tempel-setup-capf)
+  (add-hook 'text-mode-hook 'tempel-setup-capf)
+  (add-hook 'org-mode-hook 'tempel-setup-capf)
+
+  ;; Optionally make the Tempel templates available to Abbrev,
+  ;; either locally or globally. `expand-abbrev' is bound to C-x '.
+  ;; (add-hook 'prog-mode-hook #'tempel-abbrev-mode)
+  ;; (global-tempel-abbrev-mode)
+  )
+
+;; Add tempel-collection for ready-made templates
+(use-package tempel-collection
+  :after tempel)
 #+END_SRC
-** Consult Yasnippet
+*** Custom Templates
 #+begin_src emacs-lisp :load yes
-(use-package
- consult-yasnippet
- :after consult
- :config (global-set-key (kbd "M-Y") 'consult-yasnippet))
-#+END_SRC
-** Yasnippet-Capf
-#+begin_src emacs-lisp :load yes
-(use-package
- yasnippet-capf
- :after cape
- :init
- (setq yasnippet-capf-lookup-by 'key) ;; key or name
- :config (add-to-list 'completion-at-point-functions #'yasnippet-capf))
-#+END_SRC
+;; Custom tempel templates
+(defvar my-tempel-templates
+  '(fundamental-mode ;; Available everywhere
+
+    (today (format-time-string "%Y-%m-%d"))
+
+    python-mode python-ts-mode
+
+    ;; Debug snippets
+    (ipdb "__import__(\"ipdb\").set_trace()")
+    (pdb "__import__(\"pdb\").set_trace()")
+    (log "import logging" n "logger = logging.getLogger(__name__)" n n)
+
+    ;; Import snippets
+    (pandas "import pandas as pd")
+    (path "from pathlib import Path")
+
+    ;; File operations
+    (rb "open(" (p "filepath") ", \"rb\")")
+    (wb "open(" (p "filepath") ", \"wb\")")
+
+    org-mode
+
+    ;; Source block snippets
+    (jp "#+begin_src jupyter-python" n r n "#+end_src")
+    (py "#+begin_src ipython" n "  " r n "#+end_src")
+    (elisp "#+begin_src emacs-lisp :load yes" n r n "#+end_src")
+
+    ;; Enhanced src block with language selection
+    (src "#+begin_src " (p "Language: " lang) " :results output" n r n "#+end_src"))
+  "My custom tempel templates.")
+
+;; Add custom templates to tempel sources
+(add-to-list 'tempel-template-sources 'my-tempel-templates)
+#+end_src
 * LSP Server Support
 ** Eglot
 #+begin_src emacs-lisp :load yes
