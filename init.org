@@ -1658,8 +1658,9 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
     (src "#+begin_src " (p "Language: " lang) " :results output" n r n "#+end_src"))
   "My custom tempel templates.")
 
-;; Add custom templates to tempel sources
-(add-to-list 'tempel-template-sources 'my-tempel-templates)
+;; Add custom templates to tempel sources after tempel is loaded
+(with-eval-after-load 'tempel
+  (add-to-list 'tempel-template-sources 'my-tempel-templates))
 #+end_src
 * LSP Server Support
 ** Eglot
