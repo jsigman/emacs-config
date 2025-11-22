@@ -1270,6 +1270,25 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
 (add-hook 'eglot-managed-mode-hook #'my/eglot-capf)
 #+end_src
 
+*** Corfu/Tempel integration
+#+begin_src emacs-lisp :load yes
+;; Integrate Tempel snippets with Corfu completion UI
+;; Tempel templates will appear as completion candidates in Corfu
+;; NOTE: tempel-setup-capf is already configured in the Tempel section,
+;; adding #'tempel-expand to completion-at-point-functions
+
+;; Enable snippet support in Eglot so LSP servers can provide snippet completions
+;; This advertises snippet capability to LSP servers and uses Tempel to expand them
+(with-eval-after-load 'eglot
+  (setq eglot-expand-snippet-function #'tempel-expand))
+
+;; How it works:
+;; 1. Tempel adds #'tempel-expand to completion-at-point-functions
+;; 2. Corfu displays all CAPF candidates, including Tempel templates
+;; 3. Eglot advertises snippet support to LSP servers
+;; 4. When you select a completion, Tempel expands it with field navigation
+#+end_src
+
 ** Cape
 #+begin_src emacs-lisp :load yes
 (defun add-cape-completions ()
@@ -1703,10 +1722,11 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
  ;; Configure eglot-server-programs
  (add-to-list
   'eglot-server-programs
-  '(python-mode . ("pyright-langserver" "--stdio")))
- (add-to-list
-  'eglot-server-programs
-  '(markdown-mode . ("vscode-markdown-language-server" "--stdio")))
+  ;; '(python-mode . ("pyright-langserver" "--stdio"))
+  ;; '(python-mode . ("pyrefly" "lsp"))
+  '(python-mode . ("ty" "server"))
+  )
+ (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
  (add-to-list
   'eglot-server-programs
   '(sh-mode . ("bash-language-server" "start")))
@@ -1718,20 +1738,18 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
   '(json-mode . ("vscode-json-languageserver" "--stdio")))
  (add-to-list
   'eglot-server-programs
-  '(dockerfile-mode . ("docker-langserver" "--stdio")))
+  '(dockerfile-mode . ("docker-language-server")))
  (add-to-list 'eglot-server-programs '(LaTeX-mode . ("texlab")))
 
- (defvar my-eglot-inlay-hints-exempt-modes
-   '(python-ts-mode python-mode) ;; List of modes where inlay hints should be disabled
-   "List of major modes where Eglot inlay hints mode should be disabled.")
+ ;; Configure Ty LSP server settings for inlay hints
+ (setq-default eglot-workspace-configuration
+               '(:ty (:inlayHints (:callArgumentNames t
+                                   :functionReturnTypes nil
+                                   :variableTypes nil)
+                      :disableLanguageServices nil)))
 
- (defun my-disable-eglot-inlay-hints ()
-   "Disable Eglot inlay hints mode for specific major modes."
-   (when (and (bound-and-true-p eglot-inlay-hints-mode)
-              (member major-mode my-eglot-inlay-hints-exempt-modes))
-     (eglot-inlay-hints-mode -1)))
-
- (add-hook 'eglot-managed-mode-hook #'my-disable-eglot-inlay-hints)
+ ;; Enable inlay hints globally
+ (setq eglot-inlay-hints-mode t)
 
  ;; Customize eglot symbol highlighting
  (custom-set-faces
@@ -1798,7 +1816,7 @@ See also `eglot-server-capable' for :documentHighlightProvider."
          (iedit-add-occurrence-overlay start end))))))
 #+end_src
 *** Eglot-booster
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package
  eglot-booster
  :after eglot
@@ -4017,7 +4035,7 @@ Combobulate seems like a cool idea, but I've found it to be more frustrating tha
          javascript
          json
          make
-         markdown
+         ;; markdown  ; Not supported by built-in Emacs treesit yet
          proto
          python
          ruby
