@@ -218,7 +218,7 @@ BUFFER may be either a buffer or its name (a string)."
  (setq vterm-toggle-scope 'dedicated)
  (setq vterm-toggle-project-root t)
  (setq vterm-toggle-cd-auto-create-buffer nil)
- (setq vterm-toggle-reset-window-configration-after-exit t)
+ (setq vterm-toggle-reset-window-configration-after-exit nil)
  (setq vterm-toggle-fullscreen-p nil)
  (setq vterm-toggle-hide-method 'bury-all-vterm-buffer)
  (add-to-list
