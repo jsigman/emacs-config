@@ -2346,6 +2346,7 @@ Reduce flickering in vterm buffers, especially useful for Claude Code.
   ("q" . claude-code-ide-stop) ;; Stop Claude
   ("s" . claude-code-ide-switch-to-buffer) ;; Switch to Claude buffer
   ("l" . claude-code-ide-list-sessions) ;; List sessions
+  ("t" . claude-code-ide-toggle-recent) ;; Toggle Claude window visibility
   ("@" . claude-code-ide-insert-at-mentioned) ;; Insert selected text
   ("d" . claude-code-ide-show-debug))) ;; Show debug buffer
 #+end_src
