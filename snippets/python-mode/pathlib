@@ -1,6 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: pathlib
-# key: path
-# group: debug
-# --
-from pathlib import Path

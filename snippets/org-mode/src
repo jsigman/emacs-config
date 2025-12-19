@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: src
-# key: <so
-# --
-#+begin_src ${1:$$(yas-choose-value '("bash" "ruby" "elisp"))} :results output
-$1
-#+end_src

@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: open write binary
-# key: wb
-# --
-open(${0:filepath}, "wb")

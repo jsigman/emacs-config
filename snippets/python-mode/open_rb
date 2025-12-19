@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: open read binary
-# key: rb
-# --
-open(${0:filepath}, "rb")
