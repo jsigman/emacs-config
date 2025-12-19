@@ -12,3 +12,6 @@
 
 # Products
 /web_version.html
+
+# Machine-specific configuration
+local.el

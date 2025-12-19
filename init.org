@@ -100,6 +100,20 @@ I'll do this first, so that it goes back to this when I exit full screen mode (i
  (when (memq window-system '(mac ns x))
    (exec-path-from-shell-initialize)))
 #+END_SRC
+** Local Machine-Specific Configuration
+Load machine-specific settings from ~local.el~ if it exists.
+This file is not version controlled and should contain settings like:
+- Machine-specific paths (e.g., Homebrew curl for gptel Bedrock)
+- gptel backend configuration (AWS Bedrock or Anthropic API)
+- AWS_PROFILE environment variables
+- Local proxy settings
+- Any other host-specific configuration
+
+#+begin_src emacs-lisp :load yes
+(let ((local-config (expand-file-name "local.el" user-emacs-directory)))
+  (when (file-exists-p local-config)
+    (load local-config)))
+#+end_src
 * Terminal
 ** Vterm
 #+begin_src emacs-lisp :load yes
@@ -2292,6 +2306,22 @@ This one didn't work very well
        '("--model"
          "bedrock/anthropic.claude-3-5-sonnet-20240620-v1:0"))
  (global-set-key (kbd "C-c a") 'aider-transient-menu))
+#+end_src
+** gptel
+LLM client for Emacs. Supports AWS Bedrock (via SSO) and Anthropic API.
+
+Backend configuration is done in ~local.el~ (machine-specific, not version controlled).
+See the reference examples below for how to configure backends.
+
+#+begin_src emacs-lisp :load yes
+(use-package gptel
+  :bind (("C-c g"   . gptel-send)           ;; Send region/buffer to LLM
+         ("C-c G"   . gptel)                ;; Open chat buffer
+         ("C-c M-g" . gptel-menu)           ;; Switch backend/model
+         ("C-c r"   . gptel-rewrite-and-replace)) ;; Rewrite region
+  :config
+  ;; Use org-mode for chat buffers (nice formatting and structure)
+  (setq gptel-default-mode 'org-mode))
 #+end_src
 ** Claude Codes
 *** vterm-anti-flicker-filter
