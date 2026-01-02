@@ -1745,18 +1745,129 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
 
     org-mode
 
-    ;; Source block snippets
-    (jp "#+begin_src jupyter-python" n r n "#+end_src")
-    (py "#+begin_src ipython" n "  " r n "#+end_src")
-    (elisp "#+begin_src emacs-lisp :load yes" n r n "#+end_src")
+    ;; Quick source blocks for specific languages
+    (jp "#+begin_src jupyter-python" n r n "#+end_src" :post (org-edit-src-code))
+    (py "#+begin_src ipython" n r n "#+end_src" :post (org-edit-src-code))
+    (elisp "#+begin_src emacs-lisp" n r n "#+end_src" :post (org-edit-src-code))
 
-    ;; Enhanced src block with language selection
-    (src "#+begin_src " (p "Language: " lang) " :results output" n r n "#+end_src"))
+    ;; Smart src block with language completion
+    (src "#+begin_src "
+         (p (completing-read "Language: "
+                             (mapcar #'car org-babel-load-languages)
+                             nil t)
+            lang)
+         ;; Add :results based on language type
+         (cond
+          ((member lang '("python" "bash" "shell" "sh")) " :results output")
+          ((member lang '("dot" "plantuml" "ditaa")) " :file " (p "output.png"))
+          (t ""))
+         n r n "#+end_src"
+         :post (org-edit-src-code)
+         :ann "Smart src with language completion")
+
+    ;; Remote bash block via TRAMP
+    (bashremote "#+begin_src bash :dir /ssh:"
+                (p "user" user) "@" (p "host" host) ":" (p "/path/to/dir/" dir)
+                n r n "#+end_src"
+                :post (org-edit-src-code)
+                :ann "Bash on remote server")
+
+    ;; Simple bash block
+    (bash "#+begin_src bash :results output" n r n "#+end_src"
+          :post (org-edit-src-code))
+
+    ;; Bash block with :dir option
+    (bashdir "#+begin_src bash :results output :dir " (p "./") n r n "#+end_src"
+             :post (org-edit-src-code)
+             :ann "Bash with custom directory")
+
+    ;; Session-based src block (persistent REPL)
+    (srcsess "#+begin_src "
+             (p (completing-read "Language: " '("python" "R" "ruby" "julia")) lang)
+             " :session " (p "*" session "*")
+             " :results output"
+             n r n "#+end_src"
+             :post (org-edit-src-code)
+             :ann "Src block with persistent session")
+
+    ;; Tangled code block (exports to file)
+    (srctangle "#+begin_src "
+               (p (completing-read "Language: "
+                                   (mapcar #'car org-babel-load-languages))
+                  lang)
+               " :tangle "
+               (p (concat (file-name-base (or (buffer-file-name) "output"))
+                          "." (pcase lang
+                                ("python" "py")
+                                ("emacs-lisp" "el")
+                                ("bash" "sh")
+                                (_ lang)))
+                  filename)
+               " :mkdirp yes"
+               n r n "#+end_src"
+               :post (org-edit-src-code)
+               :ann "Tangled src block")
+
+    ;; Named src block with automatic #+RESULTS
+    (srcname "#+name: " (p "block-name" name) n
+             "#+begin_src " (p "Language: " lang) n r n "#+end_src" n
+             "#+RESULTS: " name n
+             :post (org-edit-src-code))
+
+    ;; Docker execution block
+    (bashdocker "#+begin_src bash :results output"
+                n "docker run --rm -it "
+                (p "image" image) " bash -c '"
+                n> r
+                n> "'"
+                n "#+end_src"
+                :post (org-edit-src-code)
+                :ann "Bash in docker container")
+
+    ;; Property drawer (useful for org-roam, exports, etc.)
+    (prop ":PROPERTIES:" n> ":" (p "KEY") ": " (p "value") n> ":END:")
+
+    ;; Simple table starter (2x2)
+    (table "| " p " | " p " |" n
+           "|---+---|" n
+           "| " p " | " p " |")
+
+    ;; Meeting notes with current timestamp
+    (meeting "* Meeting - " (p "Topic") n
+             (format-time-string "[%Y-%m-%d %a %H:%M]") n n
+             "** Attendees" n "- " p n n
+             "** Notes" n r n n
+             "** Action Items" n "- [ ] " p)
+
+    ;; TODO with scheduled/deadline
+    (todo "** TODO " (p "Task") n
+          "SCHEDULED: <" (format-time-string "%Y-%m-%d %a") ">")
+    (deadline "** TODO " (p "Task") n
+              "DEADLINE: <" (format-time-string "%Y-%m-%d %a") ">")
+
+    ;; Links with description
+    (link "[[" (p "URL") "][" (p "description") "]]")
+    (file "[[file:" (p "path") "][" (p "description") "]]")
+
+    ;; Export blocks
+    (html "#+begin_export html" n> r> n> "#+end_export")
+    (latex "#+begin_export latex" n> r> n> "#+end_export"))
   "My custom tempel templates.")
 
 ;; Add custom templates to tempel sources after tempel is loaded
 (with-eval-after-load 'tempel
-  (add-to-list 'tempel-template-sources 'my-tempel-templates))
+  (add-to-list 'tempel-template-sources 'my-tempel-templates)
+
+  ;; Add custom element (* count element...) for repeating elements
+  ;; Used for dynamic tables and other repeated structures
+  (defun tempel-repeat (elt fields)
+    "Custom Tempel element for repeating.
+Usage: (* COUNT ELEMENT...) where COUNT is evaluated and ELEMENT is repeated COUNT times."
+    (pcase elt
+      (`(* ,count . ,rest)
+       (cons 'l (cl-loop for i below (eval count fields) append rest)))))
+
+  (add-to-list 'tempel-user-elements #'tempel-repeat))
 #+end_src
 * LSP Server Support
 ** Eglot
@@ -2020,7 +2131,29 @@ See also `eglot-server-capable' for :documentHighlightProvider."
   :init
   (setq markdown-command "multimarkdown")
   :config
-  (setq markdown-fontify-code-blocks-natively t))
+  (setq markdown-fontify-code-blocks-natively t)
+
+  ;; Make markdown code blocks match org-mode styling
+  (set-face-attribute 'markdown-code-face nil
+                      :inherit 'org-block
+                      :extend t)
+
+  ;; Make the ``` fence lines look like org #+begin_src/#+end_src
+  ;; Opening fence (``` emacs-lisp)
+  (set-face-attribute 'markdown-language-keyword-face nil
+                      :inherit 'org-block-begin-line)
+
+  ;; The ``` delimiters themselves
+  (set-face-attribute 'markdown-markup-face nil
+                      :inherit 'org-block-begin-line)
+
+  ;; Pre/code block content
+  (set-face-attribute 'markdown-pre-face nil
+                      :inherit 'org-block-background)
+
+  ;; Ensure default mode for blocks without language specified
+  ;; This enables syntax highlighting even when language is omitted
+  (setq markdown-fontify-code-block-default-mode 'fundamental-mode))
 #+END_SRC
 ** HTML
 #+begin_src emacs-lisp :load yes
