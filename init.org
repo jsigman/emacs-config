@@ -234,7 +234,9 @@ BUFFER may be either a buffer or its name (a string)."
  (setq vterm-toggle-cd-auto-create-buffer nil)
  (setq vterm-toggle-reset-window-configration-after-exit nil)
  (setq vterm-toggle-fullscreen-p nil)
- (setq vterm-toggle-hide-method 'bury-all-vterm-buffer)
+ ;; Use quit-window: deletes window if possible, otherwise switches to another buffer
+ ;; (delete-window can't work when vterm is the only window)
+ (setq vterm-toggle-hide-method 'quit-window)
  (add-to-list
   'display-buffer-alist
   '((lambda (buffer-or-name _)
@@ -281,65 +283,17 @@ BUFFER may be either a buffer or its name (a string)."
  (defun vterm-toggle--project-root ()
    (my/get-project-root))
 
- ;; Exclude Claude Code buffers from vterm-toggle detection
- ;; This prevents M-T from hiding Claude Code when you're in its vterm buffer
- (defun my/vterm-toggle--get-window ()
-   "Get vterm window, excluding Claude Code buffers."
-   (cl-find-if #'(lambda(w)
-                   (let ((buf (window-buffer w)))
-                     (and (provided-mode-derived-p
-                           (buffer-local-value 'major-mode buf)
-                           'vterm-mode)
-                          ;; Exclude Claude Code buffers by name pattern
-                          (not (string-prefix-p "*claude-code[" (buffer-name buf))))))
-               (window-list)))
-
- ;; Override vterm-toggle's window detection to exclude Claude Code
- (advice-add 'vterm-toggle--get-window :override #'my/vterm-toggle--get-window)
-
- ;; Also exclude Claude Code from the buffer list used by M-n/M-p cycling
- ;; Override the mode hook that adds buffers to the cycling list
- (defun my/vterm-toggle--mode-hook ()
-   "Hook for `vterm-mode-hook' that excludes Claude Code buffers."
-   (unless (string-prefix-p "*claude-code[" (buffer-name))
-     (add-to-list 'vterm-toggle--buffer-list (current-buffer))))
-
- ;; Replace the original hook with our filtered version
- (remove-hook 'vterm-mode-hook #'vterm-toggle--mode-hook)
- (add-hook 'vterm-mode-hook #'my/vterm-toggle--mode-hook)
-
- ;; The main issue: vterm-toggle checks (derived-mode-p 'vterm-mode) directly
- ;; which catches Claude Code before our --get-window override matters.
- ;; We need to make vterm-toggle think we're NOT in vterm-mode when in Claude Code.
- (defun my/vterm-toggle-advice (orig-fun &rest args)
-   "Advice for vterm-toggle to treat Claude Code as a non-vterm buffer."
-   (if (and (derived-mode-p 'vterm-mode)
-            (string-prefix-p "*claude-code[" (buffer-name)))
-       ;; We're in Claude Code - call vterm-toggle-show directly
-       ;; This is what vterm-toggle does when NOT in a vterm buffer
-       (vterm-toggle-show)
-     ;; Normal case - proceed as usual
-     (apply orig-fun args)))
-
- (advice-add 'vterm-toggle :around #'my/vterm-toggle-advice)
-
- ;; M-n/M-p should do nothing in Claude Code (they're for cycling vterm buffers only)
- (defun my/vterm-toggle-forward-advice (orig-fun &rest args)
-   "Advice for vterm-toggle-forward to ignore Claude Code buffers."
-   (unless (and (derived-mode-p 'vterm-mode)
-                (string-prefix-p "*claude-code[" (buffer-name)))
-     ;; Not in Claude Code - proceed normally
-     (apply orig-fun args)))
-
- (defun my/vterm-toggle-backward-advice (orig-fun &rest args)
-   "Advice for vterm-toggle-backward to ignore Claude Code buffers."
-   (unless (and (derived-mode-p 'vterm-mode)
-                (string-prefix-p "*claude-code[" (buffer-name)))
-     ;; Not in Claude Code - proceed normally
-     (apply orig-fun args)))
-
- (advice-add 'vterm-toggle-forward :around #'my/vterm-toggle-forward-advice)
- (advice-add 'vterm-toggle-backward :around #'my/vterm-toggle-backward-advice))
+ ;; Exclude Claude Code buffers from vterm-toggle using the official mechanism
+ ;; This prevents vterm-toggle from managing *claude-code[* buffers
+ ;; vterm-toggle-togglable-buffer-functions was added in commit 6fff527 (Jan 2026)
+ ;; and is the official way to filter buffers. This automatically applies to:
+ ;; - Main toggle logic (M-T to show/hide)
+ ;; - Buffer cycling (M-n/M-p)
+ ;; - Window detection
+ ;; - Mode hook buffer list management
+ (add-to-list 'vterm-toggle-togglable-buffer-functions
+              (lambda (buf)
+                (not (string-prefix-p "*claude-code[" (buffer-name buf))))))
 #+end_src
 ** Eat
 #+begin_src emacs-lisp :load no
@@ -1652,10 +1606,10 @@ From [[https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot][this sou
   consult-bookmark
   consult-recent-file
   consult-xref
-  consult--source-bookmark
-  consult--source-file-register
-  consult--source-recent-file
-  consult--source-project-recent-file
+  consult-source-bookmark
+  consult-source-file-register
+  consult-source-recent-file
+  consult-source-project-recent-file
   ;; :preview-key "M-."
   :preview-key '(:debounce 0.4 any))
 
@@ -2491,7 +2445,7 @@ Reduce flickering in vterm buffers, especially useful for Claude Code.
  :init
  ;; Create a prefix keymap for Claude commands
  (define-prefix-command 'claude-code-ide-command-map)
- (global-set-key (kbd "C-c c") 'claude-code-ide-command-map)
+ (global-set-key (kbd "C-c j") 'claude-code-ide-command-map)
 
  ;; Ensure dependencies are loaded
  (require 'websocket)
