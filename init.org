@@ -932,20 +932,20 @@ This is [[https://github.com/jsigman/unison-sync-mode][my own little package]] f
  :config (setq whitespace-cleanup-mode-preserve-point t))
 #+end_src
 *** Highlight Indent Guides
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package
  highlight-indent-guides
  :hook ((python-mode) . highlight-indent-guides-mode))
 #+end_src
 *** Indent bars
-This is not working now due to stipple support, I believe.
-#+begin_src emacs-lisp :load no
+#+begin_src emacs-lisp :load yes
 (use-package
  indent-bars
  :straight (indent-bars :type git :host github :repo "jdtsmith/indent-bars")
  :config
  (require 'indent-bars-ts) ; not needed with straight
  :custom
+ (indent-bars-depth-update-delay 0.0)
  (indent-bars-treesit-support t)
  (indent-bars-treesit-ignore-blank-lines-types '("module"))
  ;; Add other languages as needed
@@ -2425,7 +2425,7 @@ Reduce flickering in vterm buffers, especially useful for Claude Code.
  )
 #+end_src
 *** Claude Code IDE
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package
  claude-code-ide
  :straight (:host github :repo "manzaltu/claude-code-ide.el")
@@ -2466,6 +2466,55 @@ Reduce flickering in vterm buffers, especially useful for Claude Code.
   ("t" . claude-code-ide-toggle-recent) ;; Toggle Claude window visibility
   ("@" . claude-code-ide-insert-at-mentioned) ;; Insert selected text
   ("d" . claude-code-ide-show-debug))) ;; Show debug buffer
+#+end_src
+*** Agent Shell
+An alternative to claude-code-ide that uses shell-maker (comint-based) instead of vterm.
+To switch between packages, set one to ~:load yes~ and the other to ~:load no~.
+
+Both packages use the same ~C-c j~ prefix, so keybindings remain consistent.
+#+begin_src emacs-lisp :load yes
+(use-package agent-shell
+  :straight (:host github :repo "xenodium/agent-shell")
+  :ensure-system-package
+  (claude-code-acp . "npm install -g @zed-industries/claude-code-acp")
+  :custom
+  ;; Use login-based auth (uses existing Claude CLI login)
+  (agent-shell-anthropic-authentication
+   (agent-shell-anthropic-make-authentication :login t))
+
+  ;; Set Claude Code as the preferred agent
+  (agent-shell-preferred-agent-config
+   (agent-shell-anthropic-make-claude-code-config))
+
+  ;; Dedicated side window on the right (like claude-code-ide)
+  (agent-shell-display-action
+   '((display-buffer-in-side-window)
+     (side . right)
+     (slot . 0)
+     (window-width . 90)))
+
+  ;; Don't auto-enable completion (conflicts with Corfu)
+  ;; Use M-x agent-shell-completion-mode to enable when needed
+  (agent-shell-file-completion-enabled nil)
+
+  :init
+  ;; Create prefix keymap matching claude-code-ide pattern
+  (define-prefix-command 'agent-shell-command-map)
+  (global-set-key (kbd "C-c j") 'agent-shell-command-map)
+
+  :config
+  ;; Disable Corfu in agent-shell buffers to avoid conflicts
+  (add-hook 'agent-shell-mode-hook
+            (lambda () (corfu-mode -1)))
+
+  :bind
+  (:map agent-shell-command-map
+   ("c" . agent-shell)                    ;; Start Claude
+   ("n" . agent-shell-new-shell)          ;; New session
+   ("t" . agent-shell-toggle)             ;; Toggle visibility
+   ("s" . agent-shell-prompt-compose)     ;; Compose prompt
+   ("i" . agent-shell-interrupt)          ;; Interrupt
+   ("?" . agent-shell-help-menu)))        ;; Transient help menu
 #+end_src
 
 * Linting
