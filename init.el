@@ -89,6 +89,6 @@
  (expand-file-name "init.org" user-emacs-directory))
 
 (setq custom-file (concat user-emacs-directory "custom.el"))
-(if (not (file-exists-p custom-file))
-    (f-touch custom-file))
+(unless (file-exists-p custom-file)
+  (write-region "" nil custom-file))
 (load custom-file)
