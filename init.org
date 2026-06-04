@@ -800,6 +800,7 @@ Loving use of my old colleague [[https://github.com/r-zip][Ryan Pilgrim]]'s pack
 #+begin_src emacs-lisp :load yes
 (use-package link-to-remote
   :straight (:host github :repo "jsigman/link-to-remote.el")
+  :after (magit transient)
   :bind ("C-c l" . link-to-remote))
 #+end_src
 ** Unison sync mode
@@ -2109,6 +2110,24 @@ See also `eglot-server-capable' for :documentHighlightProvider."
   ;; This enables syntax highlighting even when language is omitted
   (setq markdown-fontify-code-block-default-mode 'fundamental-mode))
 #+END_SRC
+
+*** Live Preview
+#+begin_src emacs-lisp :load yes
+(use-package markdown-preview-mode
+  :straight t
+  :after markdown-mode
+  :config
+  (setq markdown-command "pandoc")
+  (setq markdown-preview-stylesheets
+        '("https://thomasf.github.io/solarized-css/solarized-dark.min.css"))
+  (setq markdown-preview-javascript
+        '("https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"))
+  (setq markdown-preview-script-oninit
+        "mermaid.initialize({startOnLoad:false, theme:'dark'});")
+  (setq markdown-preview-script-onupdate
+        "var codes = document.querySelectorAll('pre.mermaid code'); for(var i=0; i<codes.length; i++){ var pre = codes[i].parentElement; pre.innerHTML = codes[i].innerHTML; } mermaid.run();"))
+#+END_SRC
+
 ** HTML
 #+begin_src emacs-lisp :load yes
 (use-package
