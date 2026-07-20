@@ -706,7 +706,14 @@ I find this breaks browsing of long json files, more than it helps me out.
 
  ;; ;; Content is not centered by default. To center, set
  (setq dashboard-center-content t)
- (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+ ;; Only show dashboard when no files are specified on command line
+ (setq initial-buffer-choice
+       (lambda ()
+         (if (> (length command-line-args) 1)
+             ;; Files were specified, let Emacs open them normally
+             t
+           ;; No files specified, show dashboard
+           (get-buffer "*dashboard*"))))
 
  ;; ;; To disable shortcut "jump" indicators for each section, set
  ;; (setq dashboard-show-shortcuts nil)
@@ -2117,7 +2124,6 @@ See also `eglot-server-capable' for :documentHighlightProvider."
   :straight t
   :after markdown-mode
   :config
-  (setq markdown-command "pandoc")
   (setq markdown-preview-stylesheets
         '("https://thomasf.github.io/solarized-css/solarized-dark.min.css"))
   (setq markdown-preview-javascript
@@ -2125,7 +2131,9 @@ See also `eglot-server-capable' for :documentHighlightProvider."
   (setq markdown-preview-script-oninit
         "mermaid.initialize({startOnLoad:false, theme:'dark'});")
   (setq markdown-preview-script-onupdate
-        "var codes = document.querySelectorAll('pre.mermaid code'); for(var i=0; i<codes.length; i++){ var pre = codes[i].parentElement; pre.innerHTML = codes[i].innerHTML; } mermaid.run();"))
+        "document.querySelectorAll('code.mermaid').forEach(function(code) { var pre = code.parentElement; var div = document.createElement('pre'); div.className = 'mermaid'; div.textContent = code.textContent; pre.parentElement.replaceChild(div, pre); }); mermaid.run();")
+
+)
 #+END_SRC
 
 ** HTML
