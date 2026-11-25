@@ -16,3 +16,6 @@
 # Machine-specific configuration
 local.el
 /.claude/
+
+# Ghostel native module (downloaded automatically)
+/ghostel-module/

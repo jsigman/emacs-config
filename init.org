@@ -116,7 +116,7 @@ This file is not version controlled and should contain settings like:
 #+end_src
 * Terminal
 ** Vterm
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package
  vterm
  :init
@@ -211,7 +211,7 @@ BUFFER may be either a buffer or its name (a string)."
  (add-hook 'vterm-mode-hook 'goto-address-mode))
 #+end_src
 ** Vterm Toggle
-#+begin_src emacs-lisp :load yes
+#+begin_src emacs-lisp :load no
 (use-package
  vterm-toggle
  :after vterm
@@ -294,6 +294,121 @@ BUFFER may be either a buffer or its name (a string)."
  (add-to-list 'vterm-toggle-togglable-buffer-functions
               (lambda (buf)
                 (not (string-prefix-p "*claude-code[" (buffer-name buf))))))
+#+end_src
+** Ghostel
+Alternative to Vterm (https://github.com/dakra/ghostel), built on libghostty-vt.
+To switch from vterm: set ~:load no~ on "Vterm" and "Vterm Toggle", and ~:load yes~
+on this section and "Ghostel Toggle".  Don't enable both at once (they share M-T / M-R).
+Note: ~claude-code-ide~ is vterm-based, so keep vterm installed if you re-enable it.
+The first run offers to download the prebuilt native module.
+#+begin_src emacs-lisp :load yes
+(use-package ghostel
+  :init
+  ;; Download the prebuilt native module automatically (no [d]/[c]/[s] prompt).
+  ;; Keep it outside straight's build tree so straight rebuilds don't delete it;
+  ;; it is fetched once and then reused.
+  (setq ghostel-module-auto-install 'download)
+  (setq ghostel-module-directory
+        (expand-file-name "ghostel-module/" user-emacs-directory))
+  (make-directory ghostel-module-directory t)
+  :config
+  ;; Semi-char mode forwards every M-<key> to the terminal.  List the keys
+  ;; Emacs should keep (the equivalent of the `define-key vterm-mode-map ... nil'
+  ;; lines).  `setopt' rebuilds the keymap, so do it before any define-key.
+  (setopt ghostel-keymap-exceptions
+          (append ghostel-keymap-exceptions
+                  '("M-0" "M-1" "M-2" "M-3" "M-T" "M-R" "M-G" "M-s"
+                    "M-k" "M-n" "M-p" "M-o")))
+
+  ;; ESC sends C-c to the terminal (as with vterm).  Semi-char mode only, so
+  ;; char mode still passes a real Escape to TUI apps.
+  (define-key ghostel-semi-char-mode-map (kbd "<escape>") #'ghostel-send-C-c)
+
+  ;; M-k kills the terminal buffer and its windows.
+  ;; `kill-buffer-and-its-windows' is defined in the Vterm section; it is
+  ;; redefined here so this section works on its own.
+  (defun my/ghostel-kill-buffer-and-windows ()
+    "Kill the current ghostel buffer and delete its windows."
+    (interactive)
+    (let ((buffer (current-buffer))
+          (wins (get-buffer-window-list (current-buffer) nil t)))
+      (when (kill-buffer buffer)
+        (dolist (win wins)
+          (when (window-live-p win)
+            (condition-case nil (delete-window win) (error nil)))))))
+  (define-key ghostel-mode-map (kbd "M-k") #'my/ghostel-kill-buffer-and-windows)
+
+  (add-hook 'ghostel-mode-hook #'goto-address-mode)
+  (add-hook 'ghostel-mode-hook
+            (lambda () (setq-local global-hl-line-mode nil))))
+#+end_src
+** Ghostel Toggle
+A single global popup terminal at the bottom of the frame (replaces vterm-toggle).
+- ~M-T~ shows/hides the popup.  A new popup starts in the current ~default-directory~.
+- ~M-R~ shows the popup and ~cd~'s it to the current buffer's ~default-directory~.
+- ~M-n~ / ~M-p~ cycle through all ghostel buffers while in a ghostel buffer.
+- ~ESC~ sends C-c (see above).
+#+begin_src emacs-lisp :load yes
+(defvar my/ghostel-popup-name "*ghostel-popup*"
+  "Name of the single global popup ghostel buffer.")
+
+;; Show the popup in a dedicated window at the bottom, 30% of the frame.
+(add-to-list
+ 'display-buffer-alist
+ `(,(concat "\\`" (regexp-quote my/ghostel-popup-name))
+   (display-buffer-reuse-window display-buffer-in-direction)
+   (direction . bottom)
+   (dedicated . t)
+   (reusable-frames . visible)
+   (window-height . 0.3)))
+
+(defun my/ghostel-popup-buffer ()
+  "Return the live popup ghostel buffer, or nil."
+  (let ((buf (get-buffer my/ghostel-popup-name)))
+    (and buf (buffer-live-p buf) buf)))
+
+(defun my/ghostel-popup-cd (dir)
+  "Make the popup shell `cd' to DIR when it is on the same host."
+  (with-current-buffer (my/ghostel-popup-buffer)
+    (if (equal (file-remote-p dir) (file-remote-p default-directory))
+        (unless (file-equal-p dir default-directory)
+          (ghostel-send-string
+           (concat "cd " (shell-quote-argument (file-local-name dir))))
+          (ghostel-send-key "return"))
+      (message "Popup terminal is on a different host; not changing directory"))))
+
+(defun my/ghostel-toggle (&optional cd)
+  "Toggle the global popup ghostel terminal.
+New popups start in `default-directory'.  With prefix arg CD, or when
+called from `my/ghostel-toggle-cd', also `cd' an existing popup there."
+  (interactive "P")
+  (let* ((dir default-directory)
+         (buf (my/ghostel-popup-buffer))
+         (win (and buf (get-buffer-window buf t))))
+    (cond
+     ;; Visible: hide it.
+     (win (quit-window nil win))
+     ;; Exists but hidden: show it and select it.
+     (buf
+      (select-window (display-buffer buf))
+      (when cd (my/ghostel-popup-cd dir)))
+     ;; Doesn't exist: create it in DIR.
+     (t
+      (let ((default-directory dir)
+            (ghostel-buffer-name my/ghostel-popup-name))
+        (ghostel))))))
+
+(defun my/ghostel-toggle-cd ()
+  "Toggle the popup terminal, `cd'ing it to the current buffer's directory."
+  (interactive)
+  (my/ghostel-toggle t))
+
+(global-set-key (kbd "M-T") #'my/ghostel-toggle)
+(global-set-key (kbd "M-R") #'my/ghostel-toggle-cd)
+
+(with-eval-after-load 'ghostel
+  (define-key ghostel-mode-map (kbd "M-n") #'ghostel-next)
+  (define-key ghostel-mode-map (kbd "M-p") #'ghostel-previous))
 #+end_src
 ** Eat
 #+begin_src emacs-lisp :load no
